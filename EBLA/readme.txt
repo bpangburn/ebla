@@ -86,7 +86,7 @@ CODE EXECUTION, DOCUMENTATION, & COMPILATION
 ==============================================================================
 
 This code has been tested on both Windows and Linux platforms using
-the Java 2 SDK 1.4 available from http://java.sun.com/j2se/1.4/
+the Java 2 SDK 1.4 and 1.5 beta available from http://java.sun.com/j2se/
 
 Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
 early versions of Sun's ImageIO class.
@@ -99,7 +99,8 @@ subdirectory:
                   http://jdbc.postgresql.org
  rowset.jar       Sun's JDBC RowSet implementation
                   http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
- swingUtils.jar   The Pangburn Company's database Swing utilities
+ swingset-bin_0.7.0_beta.jar
+                  The open source SwingSet toolkit for making Swing DB-Aware
                   http://swingset.sourceforge.net
  utils.jar	  The Pangburn Company's misc Java utilities
                   (no URL available)
@@ -111,11 +112,15 @@ to the desired folder/directory and type:
   
 This will create an "EBLA" folder/directory containing the entire EBLA system.
 
-Sun's JDBC Rowset Implementation is available from (registration required):
+For the Java 2 SDK 1.4, Sun's JDBC Rowset Implementation is available from
+(free registration required):
 http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
 
 It should be placed in the ./jars/ subdirectory of the EBLA installation
 directory.
+
+Note that the rowset.jar file is not required for Java 2 SDK 1.5 because it
+has beenadded to the SDK.
   
 To run EBLA:
   1. change to the directory containing this file (./EBLA/ by default)
