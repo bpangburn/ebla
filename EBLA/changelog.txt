@@ -11,7 +11,7 @@ Version 0.7.0-alpha
 
 1. Added experimental genetic algorithm utility for training vision system.
 
-2. Pass displayText variable from SessionData throug to  segmentation  system
+2. Pass displayText variable from SessionData through to  segmentation  system
    to control printing of intermediate results.
    
 3. Modified segmentation system to operate based on port of original release
@@ -20,6 +20,9 @@ Version 0.7.0-alpha
    
 4. Added edison_port_version variable to ebla_data database SQL (0=04-25-2002, 
    1=04-14-2003) to control #3 above.  Also added to EBLA GUI.
+   
+5. Modified EBLA.java to flush results to various log file for every run so
+   that results can be monitored during execution.
 
 
 ==============================================================================
