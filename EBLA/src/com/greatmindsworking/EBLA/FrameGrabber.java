@@ -114,6 +114,13 @@ public class FrameGrabber extends JFrame {
 	private StatusScreen statusScreen = null;
 
 
+	/**
+	 * Flag to indicate initializaiton errors.
+	 */
+	private boolean initializationError = false;
+
+
+
 
 	/**
 	 * Class constructor that sets parameters and calls appropriate initialization methods
@@ -136,8 +143,10 @@ public class FrameGrabber extends JFrame {
 
 			// CALL FUNCTION TO INITIALIZE PLAYER AND CONTROLS
 				if (initializePlayer()==false) {
+					initializationError = true;
 					System.out.println("Error initializing player and / or controllers ... exiting.");
-					System.exit(0);
+				} else {
+					initializationError = false;
 				}
 
 			// SET STATUS WINDOW
@@ -293,6 +302,10 @@ public class FrameGrabber extends JFrame {
 
 
 		try {
+			// DON'T BOTHER IF AN INITIALIZATION ERROR OCCURED
+				if (initializationError) {
+					return(-1);
+				}
 
 			// DETERMINE NUMBER OF FRAMES
 				duration = player.getDuration();
@@ -497,6 +510,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.14  2004/01/13 21:26:32  yoda2
+ * Updated code to kill application when an experience is not found.
+ *
  * Revision 1.13  2004/01/13 17:11:44  yoda2
  * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
  *
