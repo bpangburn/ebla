@@ -168,7 +168,7 @@ CREATE TABLE session_data (
     /* STOP DATE/TIME FOR CURRENT SESSION */
     session_stop            TIMESTAMP,
     /* IP ADDRESS OF CLIENT MACHINE */
-    session_ip		    VARCHAR(20),
+    session_ip		    VARCHAR(100),
     /* 0=NO; 1=YES (REGENERATE ALL INTEREMEDIATE IMAGES) */
     regen_int_images_code   INT2        	DEFAULT 0
                                         	NOT NULL,
