@@ -507,6 +507,11 @@ public class Params {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.15  2003/08/08 13:36:03  yoda2
+ * Rewritten for use with new database structure.
+ * Some new fields were added and many were migrated to the Session class.
+ * This allows for execution & storage of multiple calculation sessions for a single set of parameter values.
+ *
  * Revision 1.14  2003/05/15 21:19:14  yoda2
  * Removed null constructor.
  *
