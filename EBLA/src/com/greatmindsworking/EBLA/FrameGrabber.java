@@ -435,7 +435,7 @@ public class FrameGrabber extends JFrame {
 
 		try {
 			// DISPLAY USAGE INSTRUCTIONS
-				System.out.println("Usage: java FrameGrabber <path and name of video file> <PNG output path and file prefix> <display movie: true / false>");
+				System.out.println("Usage: java com.greatmindsworking.EBLA.FrameGrabber <path and name of video file> <PNG output path and file prefix> <display movie: true / false>");
 
 	  	} catch (Exception e) {
 			System.out.println("\n--- FrameGrabber.printUsage() Exception ---\n");
@@ -466,6 +466,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.8  2003/08/08 15:59:40  yoda2
+ * Added logic to display frames to EBLA GUI during rip if applicable.
+ *
  * Revision 1.7  2002/12/11 22:51:37  yoda2
  * Initial migration to SourceForge.
  *
