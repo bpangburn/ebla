@@ -89,9 +89,19 @@ The EBLA software framework requires a PostgreSQL database called ebla_data
 for storage of its parameters, dataset, intermediate results, and 
 entity-lexeme mappings.
 
-This file does not discuss how to setup a PostgreSQL database server.  For
-more information, see http://www.postgresql.org/users-lounge/docs/.  Chapter 1
-of the Administrator's Guide is particularly helpful.
+If you are interested in evaluating EBLA, but do not wish to install 
+PostgreSQL, a "demo" database with limited functionality is available at
+pgserver.greatmindsworking.com.  The "demo" database allows users to 
+process several sets of videos, but restricts access to several top-level
+tables to read-only.  For instructions on connecting to the demo server,
+see the section on "Database Configuration" under "EBLA INTERFACE" below.
+
+To fully customize EBLA, its parameters, and the video dataset requires access
+to a PostgreSQL database server.  Instructions on creating and populating the
+ebla_data database are provided below, but this file does not discuss how to
+setup a PostgreSQL database server.  For more information, see
+http://www.postgresql.org/users-lounge/docs/.  Chapter 1 of the
+Administrator's Guide is particularly helpful.
 
 The database, ebla_data, can be installed in two ways:
   1. table structure only (no sample dataset)
@@ -153,6 +163,24 @@ resolution features can be evaluated without the full set of real videos.
 Follow the steps outlined in "Method 2" under "DATABASE INSTALLATION" above
 to install the ebla_data database with all of the intermediate results
 from the vision processing stage.
+
+
+==============================================================================
+EBLA INTERFACE
+==============================================================================
+
+Description:
+
+Database Configuration:
+
+Parameters:
+
+Experiences:
+
+Sessions:
+
+Status:
+
 
 
 ==============================================================================
@@ -281,12 +309,6 @@ case_sensitive_code   0    0 = lexemes are not case-sensitive
 notes	           (blank) notes about current set of runtime parameters
 
 
-==============================================================================
-EBLA SESSION SETTINGS
-==============================================================================
-
-The parameters for EBLA are contained in the parameter_data table of the
-ebla_data database.  They control almost every aspect of EBLA's execution.
 
 
 ==============================================================================
@@ -394,8 +416,9 @@ directory or type:
   
 To generate the JavaDoc documentation for EBLA:
   1. change to the directory containing this file (/EBLA/ by default)
-  2. type "javadoc -d html ./com/greatmindsworking/EBLA/*.java 
-
+  2. type "lindocs" (Linux platforms)
+     OR
+     type "windocs" (Windows platforms)
 
 
 ==============================================================================
