@@ -61,7 +61,7 @@ public class EBLAPanel extends JPanel {
 	/**
 	 * custom widget dimensions for EBLA
 	 */
-	Dimensions EBLAdims = new Dimensions();
+	Dimensions EBLADims = new Dimensions();
 
 	/**
 	 * widget border for EBLA
@@ -102,7 +102,7 @@ public class EBLAPanel extends JPanel {
 			} else if (_component instanceof JTextField) {
 			// SINGLE-LINE TEXTBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
 				// preferred and maximum dimensions
 					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
@@ -126,7 +126,7 @@ public class EBLAPanel extends JPanel {
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
 				// line wrap options
 					((JTextArea)_component).setLineWrap(true);
@@ -203,7 +203,7 @@ public class EBLAPanel extends JPanel {
 			} else if (_component instanceof JTextField) {
 			// SINGLE-LINE TEXTBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
 				// preferred and maximum dimensions
 					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
@@ -227,7 +227,7 @@ public class EBLAPanel extends JPanel {
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
 				// line wrap options
 					((JTextArea)_component).setLineWrap(true);
@@ -247,12 +247,12 @@ public class EBLAPanel extends JPanel {
 
 					scrollPane.setMinimumSize(EBLADims.getMediumTextAreaDimension());
 
-					super.add(scrollPane);
+					super.add(scrollPane, _constraints);
 			} // end if
 
 		// ADD WIDGET AND RETURN FOR ALL EXCEPT MULTI-LINE TEXTBOX
 			if (! (_component instanceof JTextArea)) {
-				super.add((Component)_component);
+				super.add((Component)_component, _constraints);
 			}
 
 	} // end public void add
@@ -263,6 +263,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/02 04:24:46  yoda2
+ * JavaDoc and code cleanup.
+ *
  * Revision 1.2  2003/09/23 02:07:45  yoda2
  * Code cleanup & documentation.
  *
