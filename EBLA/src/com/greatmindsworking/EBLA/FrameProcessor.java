@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,9 @@ import javax.swing.*;
 import java.util.*;
 import javax.imageio.ImageIO;
 import java.sql.*;
+import com.nqadmin.Utils.DBConnector;
 import com.greatmindsworking.EDISON.segm.*;
+import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
 
 
@@ -84,9 +86,10 @@ public class FrameProcessor {
 	private DBConnector dbc = null;
 
 	/**
-	 * long containing the database record ID for the current experience
+	 * long containing the database record ID for the parameter-experience
+	 * combination begin processed
 	 */
-	private long expID = -1;
+	private long paramExpID = -1;
 
 	/**
 	 * String containing the path for storing results when processing the current experience
@@ -137,6 +140,11 @@ public class FrameProcessor {
 	private Params p = null;
 
 	/**
+	 * boolean flag indicating whether or not to update the frame_analysis_data table
+	 */
+	private boolean updateFAD = false;
+
+	/**
 	 * ArrayList of FrameObjects containing properties for a each "significant"
 	 * object in the "current" frame
 	 */
@@ -161,6 +169,12 @@ public class FrameProcessor {
 	private int maxArea = 320 * 240;
 
 
+	/**
+	 * EBLA status screen where intermediate images should be displayed as they are processed
+	 */
+	private StatusScreen statusScreen = null;
+
+
 
 	/**
 	 * Class constructor that sets parameters when a FrameProcess is created
@@ -168,13 +182,16 @@ public class FrameProcessor {
 	 *
 	 * @param _firstFrameIndex		index of first frame image to process
 	 * @param _lastFrameIndex		index of last frame image to process
-	 * @param _expID				unique id of experience for which entities are being extracted
+	 * @param _paramExpID			unique id of parameter_experience_data record
 	 * @param _expPath				processing path for experiences
 	 * @param _dbc					connection to EBLA database
 	 * @param _p					runtime parameters
+	 * @param _updateFAD			boolean indicating whether or not to update frame_analysis_data
+	 * @param _statusScreen			EBLA status window where intermediate images should be displayed (if applicable)
 	 */
 	public FrameProcessor(int _firstFrameIndex, int _lastFrameIndex,
-		long _expID, String _expPath, DBConnector _dbc, Params _p) {
+		long _paramExpID, String _expPath, DBConnector _dbc, Params _p,
+		boolean _updateFAD, StatusScreen _statusScreen) {
 
 		try {
 
@@ -182,8 +199,8 @@ public class FrameProcessor {
 				firstFrameIndex = _firstFrameIndex;
 				lastFrameIndex = _lastFrameIndex;
 
-			// SET EXPERIENCE ID FOR DATABASE
-				expID = _expID;
+			// SET PARAMETER-EXPERIENCE ID FOR DATABASE
+				paramExpID = _paramExpID;
 
 			// SET PROCESSING PATH FOR EXPERIENCE
 				expPath = _expPath;
@@ -194,45 +211,11 @@ public class FrameProcessor {
 			// SET RUNTIME PARAMETERS
 				p = _p;
 
-		} catch (Exception e) {
-			System.out.println("\n--- FrameProcessor Constructor Exception ---\n");
-			e.printStackTrace();
-		}
+			// SET frame_analysis_update FLAG
+				updateFAD = _updateFAD;
 
-  	} // end FrameProcessor()
-
-
-
-	/**
-	 * Class constructor that sets parameters when a FrameProcessor is created
-	 * internally (called from main())
-	 *
-	 * @param _expPath				processing path for experiences
-	 * @param _framePrefix			prefix for frame image file names
-	 * @param _segPrefix			prefix for segmented image file names
-	 * @param _polyPrefix			prefix for polygon image file names
-	 * @param _firstFrameIndex		index of first frame image to process
-	 * @param _lastFrameIndex		index of last frame image to process
-	 */
-	private FrameProcessor(String _expPath, String _framePrefix, String _segPrefix, String _polyPrefix,
-		int _firstFrameIndex, int _lastFrameIndex) {
-
-		try {
-
-			// SET EXPERIENCE PATH
-				expPath = _expPath;
-
-			// INITIALIZE PARAMETER OBJECT
-				p = new Params();
-
-			// SET TEMP FILE PREFIXES
-				p.setFramePrefix(_framePrefix);
-				p.setSegPrefix(_segPrefix);
-				p.setPolyPrefix(_polyPrefix);
-
-			// SET INDEX OF FIRST AND LAST FRAME IMAGES TO PROCESS
-				firstFrameIndex = _firstFrameIndex;
-				lastFrameIndex = _lastFrameIndex;
+			// SET STATUS WINDOW
+				statusScreen = _statusScreen;
 
 		} catch (Exception e) {
 			System.out.println("\n--- FrameProcessor Constructor Exception ---\n");
@@ -343,8 +326,8 @@ public class FrameProcessor {
 								// INCREMENT NUMBER OF FRAMES ACTUALLY PROCESSED
 									frameCounter++;
 
-								// ANALYZE POLYGONS IN CURRENT FRAME
-									analyzeFrame(polyList, segImage, frameCounter);
+								// ANALYZE POLYGONS IN CURRENT FRAME AND WRITE TO DB IF UPDATING
+									analyzeFrame(polyList, segImage, frameCounter, updateFAD);
 
 								// DRAW POLYGONS ON BUFFERED IMAGE
 									polyImage = drawPolys(polyList, segImage, width, height);
@@ -357,6 +340,14 @@ public class FrameProcessor {
 									ImageIO.write(segImage, "png", new File(segFile));
 									ImageIO.write(polyImage, "png", new File(polyFile));
 							}
+
+						// ADD CURRENT FRAME ON STATUS SCREEN
+							statusScreen.updateImage(frameImage, 1);
+							statusScreen.updateImage(segImage, 2);
+							statusScreen.updateImage(polyImage, 3);
+
+						// SET STATUS SCREEN REFRESH
+							Thread.sleep(100);
 
 				} // end for
 
@@ -376,7 +367,8 @@ public class FrameProcessor {
 	 * @param _segImage		BufferedImage containing frame segmentation into significant regions
 	 * @param _frameNumber	index of the current frame
 	 */
-	protected void analyzeFrame(ArrayList _polyList, BufferedImage _segImage, int _frameNumber) {
+	protected void analyzeFrame(ArrayList _polyList, BufferedImage _segImage,
+		int _frameNumber, boolean _updateFAD) {
 
 		// DECLARATIONS
 			Statement tmpState = null;	// USED TO EXECUTE DELETE AND INSERT STATEMENTS AGAINT frame_analysis_data
@@ -390,7 +382,7 @@ public class FrameProcessor {
 		try {
 
 			// CREATE STATEMENT
-				if (useDataBase) {
+				if (_updateFAD) {
 					tmpState = dbc.getStatement();
 				}
 
@@ -534,8 +526,8 @@ public class FrameProcessor {
 				} // end correlation
 
 
-			// WRITE ALL OBJECT IN cfoArrayList TO DATABASE
-				if (useDataBase) {
+			// WRITE ALL OBJECTS IN cfoArrayList TO DATABASE
+				if (_updateFAD) {
 
 					Iterator itr = cfoArrayList.iterator();
 
@@ -545,12 +537,12 @@ public class FrameProcessor {
 							FrameObject fo = (FrameObject)itr.next();
 
 						// WRITE TO DATABASE
-							fo.writeToDB(tmpState, expID);
+							fo.writeToDB(tmpState, paramExpID);
 					}
 				}
 
 			// CLOSE STATEMENT
-				if (useDataBase) {
+				if (_updateFAD) {
 					tmpState.close();
 				}
 
@@ -630,69 +622,6 @@ public class FrameProcessor {
 
 	} // end drawPolys()
 
-
-	/**
-     * Main procedure (used primarily for stand-alone testing)
-     */
-    public static void main(String [] args) {
-
-		// DECLARATIONS
-			String expPath;				// DEST PATH FOR FILES GENERATED DURING PROCESSING
-			String framePrefix; 		// FILE PREFIX FOR SOURCE FRAME IMAGES
-			String segPrefix; 			// FILE PREFIX FOR GENERATED SEGMENTATION IMAGES
-			String polyPrefix; 			// FILE PREFIX FOR GENERATED POLYGON IMAGES
-			int firstImage = 0;			// INDEX OF FIRST FRAME IMAGE (ALLOWS SUBSET TO BE PROCESSED)
-			int lastImage = 0;			// INDEX OF LAST FRAME IMAGE (ALLOWS SUBSET TO BE PROCESSED)
-			FrameProcessor myFP = null; // FRAMEPROCESSOR OBJECT
-
-
-		try {
-
-			// VERIFY THAT ONE COMMAND LINE ARGUMENT WAS PASSED
-				if (args.length != 6) {
-					printUsage();
-					System.exit(0);
-				}
-
-			// EXTRACT COMMAND LINE ARGUMENTS
-				expPath = args[0];
-				framePrefix = args[1];
-				segPrefix = args[2];
-				polyPrefix = args[3];
-				firstImage = Integer.parseInt(args[4]);
-				lastImage = Integer.parseInt(args[5]);
-
-
-			// CREATE INSTANCE OF OBJECT AND CALL CONSTRUCTOR
-				myFP = new FrameProcessor(expPath, framePrefix, segPrefix,
-					polyPrefix, firstImage, lastImage);
-
-			// PROCESS FRAMES
-				myFP.processFrames();
-
-			// SET FRAMEPROCESSOR TO NULL
-				myFP = null;
-
-			// EXIT
-				System.out.println("Exiting FrameProcessor.main() standalone testing routine.");
-				System.exit(0);
-
-		} catch (Exception e) {
-			System.out.println("\n--- FrameProcessor.main() Exception ---\n");
-			e.printStackTrace();
-		}
-	} // end main() procedure
-
-
-	/**
-	 * Display usage info.
-	 */
-	static void printUsage() {
-
-		System.out.println("Usage: java FrameProcessor <experience path> <frame prefix> <seg prefix> <poly prefix> <1st image #> <last image #>");
-
-	} // end printUsage()
-
 } // end FrameProcessor
 
 
@@ -705,11 +634,14 @@ public class FrameProcessor {
  *  07-26-2001  - 1.01 - added DBConnection to constructor and added logic to
  *						 write basic frame analysis results to database
  *  01-20-2002  - 1.02 - added reduceColorDepth code to limit palette to 27 colors
- *  02-04-2002  - 1.1  - migrated code to CVS
+ *  02-04-2002  - 1.10 - migrated code to CVS
  *
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.27  2002/12/11 22:52:54  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.26  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
