@@ -24,4 +24,4 @@
 # character to interpose another module into the current module.  This
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
-jEDISON -d jEDISON -a EBLA/my_image.png EBLA/seg_readme.txt EBLA/segment.png EBLA/SegTest.java EBLA/com/greatmindsworking/EDISON
+jEDISON -a EBLA/my_image.png EBLA/seg_readme.txt EBLA/segment.png EBLA/SegTest.java EBLA/com/greatmindsworking/EDISON
