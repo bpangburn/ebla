@@ -225,25 +225,7 @@ public class Params {
 
 
 	/**
-	 * Class constructor that creates an object containing default runtime parameters for BULA
-	 */
-    public Params() {
-
-		try {
-
-			// NOTHING TO DO FOR CASE WHERE NO DATABASE LOOKUP OCCURS
-
-		} catch (Exception e) {
-			System.out.println("\n--- Params Constructor Exception ---\n");
-			e.printStackTrace();
-		}
-
-	} // end Params()
-
-
-
-	/**
-	 * Class constructor that creates an object containing runtime parameters for BULA based
+	 * Class constructor that creates an object containing runtime parameters for EBLA based
 	 * on a record in the parameter_data database table
 	 *
 	 * @param _dbc			connection to database containing parameter table
@@ -858,6 +840,9 @@ public class Params {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.13  2003/05/15 21:04:17  yoda2
+ * Removed include_code as part of DB restructuring.
+ *
  * Revision 1.12  2002/12/11 22:55:37  yoda2
  * Initial migration to SourceForge.
  *
