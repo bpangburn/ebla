@@ -40,13 +40,11 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
 import com.nqadmin.swingSet.*;
-import com.greatmindsworking.EBLA.Session;
+import com.greatmindsworking.EBLA.SessionData;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -64,352 +62,364 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class SessionScreen extends JInternalFrame {
 
-	StatusScreen statusScreen = null;
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR SESSION SCREEN
+		Container desktop = null;
 
-	JTabbedPane tabbedPane = new JTabbedPane();
+	// INITIALIZE ID OF PARENT VISION PARAMETER RECORD
+		long parameterID = -1;
 
-	EBLAPanel generalPanel   = new EBLAPanel();
-	EBLAPanel entitiesPanel  = new EBLAPanel();
-	EBLAPanel lexemesPanel   = new EBLAPanel();
-	EBLAPanel resultsPanel   = new EBLAPanel();
-	EBLAPanel miscPanel      = new EBLAPanel();
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR SESSION SCREEN
+		DBConnector connector = null;
+		JdbcRowSetImpl rowset = null;
 
-	DBConnector connector       = null;
-	SSDataNavigator dataNavigator = null;
-	JdbcRowSetImpl rowset           = null;
+	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
+		JTabbedPane tabbedPane = new JTabbedPane();
 
+	// INITIALIZE "GENERAL" TAB AND CONTENTS
+		EBLAPanel generalPanel   			= new EBLAPanel();
 
+		JTextField txtDescription 			= new JTextField();
+//		SSComboBox cmbProcessVideosCode   	= new SSComboBox();
+//		SSComboBox cmbProcessEntitiesCode 	= new SSComboBox();
+//		SSComboBox cmbProcessLexemesCode  	= new SSComboBox();
+		SSComboBox cmbLogToFileCode       	= new SSComboBox();
+		SSComboBox cmbRandomizeExpCode    	= new SSComboBox();
+		SSComboBox cmbRegenerateImages    	= new SSComboBox();
+		SSComboBox cmbDisplayVideosCode 	= new SSComboBox();
+		SSComboBox cmbDisplayMessages 		= new SSComboBox();
 
-	JLabel lblDescription 		= new JLabel("Description");
-	JTextField txtDescription 	= new JTextField();
+	// INITIALIZE "ENTITIES" TAB AND CONTENTS
+		EBLAPanel entitiesPanel    			= new EBLAPanel();
 
-	JButton btnStartEBLA  = new JButton("Start EBLA");
+		JTextField txtMinSDStart   			= new JTextField();
+		JTextField txtMinSDStop    			= new JTextField();
+		JTextField txtMinSDStep    			= new JTextField();
+		JTextField txtLoopCount    			= new JTextField();
+		SSComboBox cmbFixedSDCode  			= new SSComboBox();
 
-/*	JLabel lblParameterCode 		= new JLabel("Parameter Code");
-	SSDBComboBox cmbParameterCode 	= new SSDBComboBox();
-	JButton btnParameterScreen = new JButton("...");
-*/
-	//LABELS FOR GENERAL PANEL
-	JLabel lblProcessVideosCode   	  = new JLabel("Process Videos Code");
-	JLabel lblProcessEntitiesCode  	  = new JLabel("Process Entities Code");
-	JLabel lblProcessLexemesCode   	  = new JLabel("Process Lexemes Code");
-	JLabel lblLogToFileCode  	   	  = new JLabel("Log To File?");
-	JLabel lblRandomizeExpCode     	  = new JLabel("Randomize Experiences?");
-	JLabel lblRegenerateImages        = new JLabel("Regenerate Local Images?");
+	// INITIALIZE "LEXEMES" TAB AND CONTENTS
+		EBLAPanel lexemesPanel    			= new EBLAPanel();
 
-	//COMBOS FOR THE GENERAL PANEL
-	SSComboBox cmbProcessVideosCode   = new SSComboBox();
-	SSComboBox cmbProcessEntitiesCode = new SSComboBox();
-	SSComboBox cmbProcessLexemesCode  = new SSComboBox();
-	SSComboBox cmbLogToFileCode       = new SSComboBox();
-	SSComboBox cmbRandomizeExpCode    = new SSComboBox();
-	SSComboBox cmbRegenerateImages    = new SSComboBox();
+		JTextField txtDescToGenerate     	= new JTextField();
+		SSComboBox cmbCaseSensitiveCode 	= new SSComboBox();
 
-	//LABELS FOR THE ENTITIES PANEL
-	JLabel lblMinSDStart       = new JLabel("Starting Min. Std. Dev.");
-	JLabel lblMinSDStop        = new JLabel("Stopping Min. Std. Dev.");
-	JLabel lblMinSDStep        = new JLabel("Min. Std. Dev. Step Size");
-	JLabel lblLoopCount  	   = new JLabel("# Runs for Each Std. Dev.");
-	JLabel lblFixedSDCode      = new JLabel("Limit Actual Std. Dev?");
+	// INITIALIZE "MISC" TAB AND CONTENTS
+		EBLAPanel miscPanel      		= new EBLAPanel();
 
-	//TEXT FIELDS FOR THE ENTITIES PANEL
-	JTextField txtMinSDStart   = new JTextField();
-	JTextField txtMinSDStop    = new JTextField();
-	JTextField txtMinSDStep    = new JTextField();
-	JTextField txtLoopCount    = new JTextField();
-	SSComboBox cmbFixedSDCode  = new SSComboBox();
+		JTextArea txtNotes 				= new JTextArea(30,15);
 
-	// LABELS FOR LEXEMES PANEL
+	// INITIALIZE SCREENS CALLED FROM SESSION SCREEN AND CORRESPONDING BUTTONS
+		StatusScreen statusScreen = null;
+		JButton btnStartEBLA  = new JButton("Start EBLA");
 
-	JLabel lblDescToGenerate  	    = new JLabel("# Descriptions To Generate");
-	JLabel lblCaseSensitiveCode     = new JLabel("Are Lexemes Case Sensitive?");
+	// INITIALIZE DATA NAVIGATOR
+		SSDataNavigator dataNavigator = null;
 
-	JTextField txtDescToGenerate     = new JTextField();
-	SSComboBox cmbCaseSensitiveCode = new SSComboBox();
 
-	JLabel lblDisplayMovieCode  		= new JLabel("Display Videos When Ripping?");
-	JLabel lblDisplayText  			= new JLabel("Display Detailed Messages");
-//	JLabel lblSaveImagesCode  		= new JLabel("Save Images Code");
-
-	SSComboBox cmbDisplayMovieCode 	= new SSComboBox();
-	SSComboBox cmbDisplayText 		= new SSComboBox();
-//	SSComboBox cmbSaveImagesCode	= new SSComboBox();
-
-	JLabel lblNotes  				= new JLabel("Notes");
-	JTextArea txtNotes 				= new JTextArea(30,15);
-
-	long parameterID = -1;
-	Container desktop = null;
-
-	public SessionScreen(Container _desktop,long _parameterID){
-		super("Session Form", false,true,true,true);
-		setSize(550,400);
-
-		desktop = _desktop;
-		parameterID = _parameterID;
-
-		cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
-
-//		cmbLogToFileCode.setDocument(new SSTextDocument(rowset,"log_to_file_code"));
-
-		cmbRandomizeExpCode.setOption(SSComboBox.YES_NO_OPTION);
-		cmbRegenerateImages.setOption(SSComboBox.YES_NO_OPTION);
-
-//		cmbRandomizeExpCode.setDocument(new SSTextDocument(rowset,"randomize_exp_code"));
-
-/*
-		txtMinSDStart.setDocument(new SSTextDocument(rowset,"min_sd_start"));
-		txtMinSDStop.setDocument(new SSTextDocument(rowset,"min_sd_stop"));
-		txtMinSDStep.setDocument(new SSTextDocument(rowset,"min_sd_step"));
-		txtLoopCount.setDocument(new SSTextDocument(rowset,"loop_count"));
-*/
-		cmbFixedSDCode.setOption(SSComboBox.YES_NO_OPTION);
-//		cmbFixedSDCode.setDocument(new SSTextDocument(rowset,"fixed_sd_code"));
-
-
-
-//		txtDescToGenerate.setDocument(new SSTextDocument(rowset,"desc_to_generate"));
-		cmbCaseSensitiveCode.setOption(SSComboBox.YES_NO_OPTION);
-//		cmbCaseSensitiveCode.setDocument(new SSTextDocument(rowset,"case_sensitive_code"));
-
-		cmbDisplayMovieCode.setOption(SSComboBox.YES_NO_OPTION);
-//		cmbDisplayMovieCode.setDocument(new SSTextDocument(rowset,"display_movie_code"));
-		cmbDisplayText.setOption(SSComboBox.YES_NO_OPTION);
-//		cmbDisplayText.setDocument(new SSTextDocument(rowset,"display_text_code"));
-//		cmbSaveImagesCode.setOption(SSComboBox.YES_NO_OPTION);
-//		cmbSaveImagesCode.setDocument(new SSTextDocument(rowset,"save_images_code"));
-
-/*
-		btnParameterScreen.setPreferredSize(new Dimension(25,20));
-		btnParameterScreen.setMaximumSize(new Dimension(25,20));
-
-		btnParameterScreen.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				long parameterCode = -1;
-				if( cmbParameterCode.getText().trim().equals("") ){
-				}
-				else{
-					try{
-						parameterCode = Integer.parseInt(txtParameterCode.getText());
-					}catch(NumberFormatException nfe){
-						nfe.printStackTrace();
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-				if(ParameterScreen == null){
-					ParameterScreen = new ParameterScreen(includeCode);
-				}else{
-					ParameterScreen.setIncludeCode(includeCode);
-				}
-				ParameterScreen.showUp(desktop);
-			}
-		});
-*/
-
-		cmbLogToFileCode.getComboBox().setSelectedIndex(1);
-		cmbRandomizeExpCode.getComboBox().setSelectedIndex(1);
-		cmbRegenerateImages.getComboBox().setSelectedIndex(0);
-
-		txtMinSDStart.setText("5");
-		txtMinSDStop.setText("15");
-		txtMinSDStep.setText("5");
-		txtLoopCount.setText("1");
-		cmbFixedSDCode.getComboBox().setSelectedIndex(0);
-
-		txtDescToGenerate.setText("0");
-		cmbCaseSensitiveCode.getComboBox().setSelectedIndex(0);
-
-		cmbDisplayMovieCode.getComboBox().setSelectedIndex(1);
-		cmbDisplayText.getComboBox().setSelectedIndex(0);
-
-		btnStartEBLA.addActionListener(new StartEBLAListener());
-
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new GridBagLayout());
-
-		generalPanel.setLayout(new GridBagLayout());
-		entitiesPanel.setLayout(new GridBagLayout());
-		lexemesPanel.setLayout(new GridBagLayout());
-		resultsPanel.setLayout(new GridBagLayout());
-		miscPanel.setLayout(new GridBagLayout());
-
-		GridBagConstraints constraints = new GridBagConstraints();
-
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		generalPanel.add(lblLogToFileCode,constraints);
-		constraints.gridy = 1;
-		generalPanel.add(lblRandomizeExpCode,constraints);
-		constraints.gridy = 2;
-		generalPanel.add(lblRegenerateImages,constraints);
-
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		generalPanel.add(cmbLogToFileCode.getComboBox(),constraints);
-		constraints.gridy = 1;
-		generalPanel.add(cmbRandomizeExpCode.getComboBox(),constraints);
-		constraints.gridy = 2;
-		generalPanel.add(cmbRegenerateImages.getComboBox(),constraints);
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		entitiesPanel.add(lblMinSDStart,constraints);
-		constraints.gridy = 1;
-		entitiesPanel.add(lblMinSDStop,constraints);
-		constraints.gridy = 2;
-		entitiesPanel.add(lblMinSDStep,constraints);
-		constraints.gridy = 3;
-		entitiesPanel.add(lblLoopCount,constraints);
-		constraints.gridy = 4;
-		entitiesPanel.add(lblFixedSDCode,constraints);
-		constraints.gridy = 5;
-		entitiesPanel.add(lblFixedSDCode,constraints);
-
-
-
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		entitiesPanel.add(txtMinSDStart,constraints);
-		constraints.gridy = 1;
-		entitiesPanel.add(txtMinSDStop,constraints);
-		constraints.gridy = 2;
-		entitiesPanel.add(txtMinSDStep,constraints);
-		constraints.gridy = 3;
-		entitiesPanel.add(txtLoopCount,constraints);
-		constraints.gridy = 4;
-		entitiesPanel.add(cmbFixedSDCode.getComboBox(),constraints);
-		constraints.gridy = 5;
-		entitiesPanel.add(cmbFixedSDCode.getComboBox(),constraints);
-
-
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		lexemesPanel.add(lblDescToGenerate,constraints);
-		constraints.gridy = 2;
-		lexemesPanel.add(lblCaseSensitiveCode,constraints);
-
-
-		constraints.gridx = 1;
-		constraints.gridy = 1;
-		lexemesPanel.add(txtDescToGenerate,constraints);
-		constraints.gridy = 2;
-		lexemesPanel.add(cmbCaseSensitiveCode.getComboBox(),constraints);
-
-		constraints.gridx =0;
-		constraints.gridy =1;
-		resultsPanel.add(lblDisplayMovieCode,constraints);
-		constraints.gridy =2;
-		resultsPanel.add(lblDisplayText,constraints);
-
-		constraints.gridx =1;
-		constraints.gridy =1;
-		resultsPanel.add(cmbDisplayMovieCode.getComboBox(),constraints);
-		constraints.gridy =2;
-		resultsPanel.add(cmbDisplayText.getComboBox(),constraints);
-
-		miscPanel.add(lblNotes);
-		miscPanel.add(txtNotes);
-
-		tabbedPane.addTab("General",generalPanel);
-		tabbedPane.addTab("Entities",entitiesPanel);
-		tabbedPane.addTab("Lexemes",lexemesPanel);
-		tabbedPane.addTab("Results",resultsPanel);
-		tabbedPane.addTab("Misc",miscPanel);
-
-		EBLAPanel panel = new EBLAPanel();
-		panel.setLayout(new GridBagLayout());
-		constraints.gridx =0;
-		constraints.gridy =0;
-		panel.add(lblDescription,constraints);
-		constraints.gridx =1;
-		panel.add(txtDescription,constraints);
-/*
-		constraints.gridx =0;
-		constraints.gridy =1;
-		panel.add(lblParameterCode,constraints);
-		constraints.gridx =1;
-		panel.add(cmbParameterCode.getComboBox(),constraints);
-		constraints.gridx =2;
-		panel.add(btnParameterScreen,constraints,false);
-*/
-		constraints.gridx =0;
-		constraints.gridy =0;
-		constraints.gridwidth = 2;
-		contentPane.add(panel,constraints);
-		constraints.gridy =1;
-		contentPane.add(tabbedPane,constraints);
-		constraints.gridy =2;
-		contentPane.add(btnStartEBLA,constraints);
-	}
-
-	private class StartEBLAListener implements ActionListener{
-		public void actionPerformed(ActionEvent ae){
-			int logToFileCode = cmbLogToFileCode.getComboBox().getSelectedIndex();
-			int randomizeExpCode = cmbRandomizeExpCode.getComboBox().getSelectedIndex();
-			int regenerateImages = cmbRegenerateImages.getComboBox().getSelectedIndex();
-
-			boolean boolLogToFile = logToFileCode == 0? false : true;
-			boolean boolRandomizeExp = 	randomizeExpCode == 0? false : true;
-			boolean boolRegenerateImages = 	regenerateImages == 0? false : true;
-
-			int minSDStart   = txtMinSDStart.getText().equals("") ? 5: Integer.parseInt(txtMinSDStart.getText());
-			int minSDStop	 = txtMinSDStop.getText().equals("") ? 15: Integer.parseInt(txtMinSDStop.getText());
-			int minSDStep	 = txtMinSDStep.getText().equals("") ? 5: Integer.parseInt(txtMinSDStep.getText());
-			int loopCount    = txtLoopCount.getText().equals("") ? 1: Integer.parseInt(txtLoopCount.getText());
-
-			int fixedSDCode = cmbFixedSDCode.getComboBox().getSelectedIndex();
-			boolean boolFixedSD = 	fixedSDCode == 0? false : true;
-
-
-			int descToGenerate = txtDescToGenerate.getText().equals("") ? 0: Integer.parseInt(txtDescToGenerate.getText());
-			int caseSensitiveCode = cmbCaseSensitiveCode.getComboBox().getSelectedIndex();
-			boolean boolCaseSensitive = 	caseSensitiveCode == 0? false : true;
-
-			int displayMovieCode = cmbDisplayMovieCode.getComboBox().getSelectedIndex();
-			boolean boolDisplayMovie = displayMovieCode == 0 ? false : true ;
-
-			int displayText  = cmbDisplayText.getComboBox().getSelectedIndex();
-			boolean boolDisplayText = displayText == 0 ? false : true ;
-
-			String desc = txtDescription.getText();
-
-			String notes = txtNotes.getText();
-
-			try{
-				connector = new DBConnector(EBLAGui.dbFileName, true);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-
-
-			Session session = new Session(connector,parameterID,desc,boolRegenerateImages,boolLogToFile,
-				boolRandomizeExp, descToGenerate, minSDStart, minSDStop, minSDStep, loopCount, boolFixedSD,
-				boolDisplayMovie, boolDisplayText, boolCaseSensitive, notes);
-
-			if(statusScreen == null){
-				statusScreen = new StatusScreen(desktop, session, connector);
-			}
-			statusScreen.showUp(desktop);
-
-		}
-	}
 
 	/**
-	 *	adds the census screen to the specified container at the specified position.
-	 *@param container the container in which the screen has to showup.
-	 *@param positionX the x co-ordinate of the position where the screen has to showup.
-	 *@param positionY the y co-ordinate of the position where the screen has to showup.
+	 * SessionScreen constructor.
+	 *
+	 * @param the container in which the screen has to showup.
+	 */
+	public SessionScreen(Container _desktop,long _parameterID) {
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE SESSION SCREEN
+			super("EBLA - Session Screen",false,true,true,true);
+
+		// SET SIZE
+			setSize(640,480);
+
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
+
+		// SET ID OF PARENT VISION PARAMETER RECORD
+			parameterID = _parameterID;
+
+/*
+		// DATABASE CONFIGURATION
+			try {
+
+			// INITIALIZE DATABASE CONNECTION
+				connector = new DBConnector(EBLAGui.dbFileName,true);
+
+			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
+				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
+
+				String url = bufRead.readLine();
+				if (url == null) {
+					url = "";
+				}
+
+				String username = bufRead.readLine();
+				if (username == null) {
+					username = "";
+				}
+
+				String password = bufRead.readLine();
+				if (password == null) {
+					password = "";
+				}
+
+			// INITIALIZE ROWSET FOR PARAMETER DATA
+				rowset = new JdbcRowSetImpl(url, username, password);
+
+				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
+				dataNavigator = new SSDataNavigator(rowset);
+				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+
+			} catch(SQLException se) {
+				se.printStackTrace();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+*/
+
+		// SETUP ACTION LISTENER FOR START EBLA BUTTON
+			btnStartEBLA.addActionListener(new StartEBLAListener());
+
+
+		// SET COMBOBOX ITEMS AND VARIOUS DEFAULTS FOR EACH PANEL
+			// "GENERAL" TAB
+				cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbLogToFileCode.getComboBox().setSelectedIndex(1);
+
+				cmbRandomizeExpCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbRandomizeExpCode.getComboBox().setSelectedIndex(1);
+
+				cmbRegenerateImages.setOption(SSComboBox.YES_NO_OPTION);
+				cmbRegenerateImages.getComboBox().setSelectedIndex(0);
+
+				cmbDisplayVideosCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbDisplayVideosCode.getComboBox().setSelectedIndex(1);
+
+				cmbDisplayMessages.setOption(SSComboBox.YES_NO_OPTION);
+				cmbDisplayMessages.getComboBox().setSelectedIndex(0);
+
+			// "ENTITIES" TAB
+				txtMinSDStart.setText("5");
+
+				txtMinSDStop.setText("15");
+
+				txtMinSDStep.setText("5");
+
+				txtLoopCount.setText("1");
+
+				cmbFixedSDCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbFixedSDCode.getComboBox().setSelectedIndex(0);
+
+			// "LEXEMES" TAB
+				txtDescToGenerate.setText("0");
+
+				cmbCaseSensitiveCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbCaseSensitiveCode.getComboBox().setSelectedIndex(0);
+
+			// "MISC" TAB
+				// NOTHING TO DO...
+
+
+		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
+			int currentRow = 0;
+			GridBagConstraints constraints = new GridBagConstraints();
+
+		// LAYOUT EACH TAB
+			// "GENERAL" TAB
+				// SET LAYOUT
+					generalPanel.setLayout(new GridBagLayout());
+
+				// ADD WIDGETS
+					currentRow=0;
+
+					generalPanel.addRow(txtDescription, currentRow++, "Description");
+					generalPanel.addRow(cmbLogToFileCode.getComboBox(), currentRow++, "Log To File?");
+					generalPanel.addRow(cmbRandomizeExpCode.getComboBox(), currentRow++, "Randomize Experiences?");
+					generalPanel.addRow(cmbRegenerateImages.getComboBox(), currentRow++, "Regenerate Imagess?");
+					generalPanel.addRow(cmbDisplayVideosCode.getComboBox(), currentRow++, "Display Videos When Ripping?");
+					generalPanel.addRow(cmbDisplayMessages.getComboBox(), currentRow++, "Display Detailed Messages?");
+
+
+			// "ENTITIES" TAB
+				// SET LAYOUT
+					entitiesPanel.setLayout(new GridBagLayout());
+
+				// ADD WIDGETS
+					currentRow=0;
+
+					entitiesPanel.addRow(txtMinSDStart, currentRow++, "Starting Min. Std. Dev.");
+					entitiesPanel.addRow(txtMinSDStop, currentRow++, "Stopping Min. Std. Dev.");
+					entitiesPanel.addRow(txtMinSDStep, currentRow++, "Min. Std. Dev. Step Size");
+					entitiesPanel.addRow(txtLoopCount, currentRow++, "# Runs for Each Std. Dev.");
+					entitiesPanel.addRow(cmbFixedSDCode.getComboBox(), currentRow++, "Limit Actual Std. Dev?");
+
+
+			// "LEXEMES" TAB
+				// SET LAYOUT
+					lexemesPanel.setLayout(new GridBagLayout());
+
+				// ADD WIDGETS
+					currentRow=0;
+
+					lexemesPanel.addRow(txtDescToGenerate, currentRow++, "# Descriptions To Generate");
+					lexemesPanel.addRow(cmbCaseSensitiveCode.getComboBox(), currentRow++, "Are Lexemes Case Sensitive?");
+
+
+			// "MISC" TAB
+				// SET LAYOUT
+					miscPanel.setLayout(new GridBagLayout());
+
+				// ADD WIDGETS
+					currentRow=0;
+
+					miscPanel.addRow(txtNotes, currentRow++, "Notes");
+
+
+		// ADD TABS TO TABBED PANE
+			tabbedPane.addTab("General", generalPanel);
+			tabbedPane.addTab("Entity Recognition", entitiesPanel);
+			tabbedPane.addTab("Lexeme Generation", lexemesPanel);
+			tabbedPane.addTab("Misc", miscPanel);
+
+		// CREATE PANEL FOR BUTTON
+			EBLAPanel btnPanel = new EBLAPanel();
+			//btnPanel.setLayout(new GridBagLayout());
+
+			//constraints.gridx = 0;
+			//constraints.gridy = 0;
+			//btnPanel.add(btnStartEBLA,constraints);
+			btnPanel.add(btnStartEBLA);
+
+		// ADD TABBED PANE AND BUTTON PANE TO SESSION SCREEN
+			Container contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			contentPane.add(tabbedPane,constraints);
+
+			constraints.gridy = 1;
+			contentPane.add(btnPanel,constraints);
+
+	} // end of SessionScreen constructor
+
+
+
+	/**
+	 * Listener to launch create a Session object and launch the EBLA controller/status screen.
+	 */
+	private class StartEBLAListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent ae) {
+
+			// EXTRACT "GENERAL" TAB WIDGET VALUES
+				String desc = txtDescription.getText();
+
+				boolean boolLogToFile = false;
+				if (cmbLogToFileCode.getComboBox().getSelectedIndex() == 1) {
+					boolLogToFile = true;
+				}
+
+				boolean boolRandomizeExp = false;
+				if (cmbRandomizeExpCode.getComboBox().getSelectedIndex() == 1) {
+					boolRandomizeExp = true;
+				}
+
+				boolean boolRegenerateImages = false;
+				if (cmbRegenerateImages.getComboBox().getSelectedIndex() == 1) {
+					boolRegenerateImages = true;
+				}
+
+				boolean boolDisplayVideos = false;
+				if (cmbDisplayVideosCode.getComboBox().getSelectedIndex() == 1) {
+					boolDisplayVideos = true;
+				}
+
+				boolean boolDisplayMessages = false;
+				if (cmbDisplayMessages.getComboBox().getSelectedIndex() == 1) {
+					boolDisplayMessages = true;
+				}
+
+
+			// EXTRACT "ENTITY" TAB WIDGET VALUES
+				int minSDStart = 5;
+				if (! txtMinSDStart.getText().equals("")) {
+					minSDStart = Integer.parseInt(txtMinSDStart.getText());
+				}
+
+				int minSDStop = 15;
+				if (! txtMinSDStop.getText().equals("")) {
+					minSDStop = Integer.parseInt(txtMinSDStop.getText());
+				}
+
+				int minSDStep = 5;
+				if (! txtMinSDStep.getText().equals("")) {
+					minSDStep = Integer.parseInt(txtMinSDStep.getText());
+				}
+
+				int loopCount = 1;
+				if (! txtLoopCount.getText().equals("")) {
+					loopCount = Integer.parseInt(txtLoopCount.getText());
+				}
+
+				boolean boolFixedSD = false;
+				if (cmbFixedSDCode.getComboBox().getSelectedIndex() == 1) {
+					boolFixedSD = true;
+				}
+
+
+			// EXTRACT "LEXEME" TAB WIDGET VALUES
+				int descToGenerate = 0;
+				if (! txtDescToGenerate.getText().equals("")) {
+					descToGenerate = Integer.parseInt(txtDescToGenerate.getText());
+				}
+
+				boolean boolCaseSensitive = false;
+				if (cmbCaseSensitiveCode.getComboBox().getSelectedIndex() == 1) {
+					boolCaseSensitive = true;
+				}
+
+
+			// EXTRACT "MISC" TAB WIDGET VALUES
+				String notes = txtNotes.getText();
+
+
+			// INITIALIZE EBLA DATABASE CONNECTION
+				try {
+					connector = new DBConnector(EBLAGui.dbFileName, true);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+
+			// CREATE EBLA SESSION
+				SessionData sd = new SessionData(connector,parameterID,desc,boolRegenerateImages,boolLogToFile,
+					boolRandomizeExp, descToGenerate, minSDStart, minSDStop, minSDStep, loopCount, boolFixedSD,
+					boolDisplayVideos, boolDisplayMessages, boolCaseSensitive, notes);
+
+			// CREATE STATUS SCREEN IF IT DOESN'T YET EXIST
+				if (statusScreen == null) {
+					statusScreen = new StatusScreen(desktop, sd, connector);
+				}
+
+			// DISPLAY STATUS SCREEN
+				statusScreen.showUp(desktop);
+
+		} // end actionPerformed() method
+
+	} // end StartEBLAListener class
+
+
+
+	/**
+	 * Adds the session screen to the specified container at the specified position.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the x co-ordinate of the position where the screen has to showup.
+	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
 	public void showUp(Container container,double positionX, double positionY){
 
-		int optionChoosen = -1;
 		// SET THE POSITION OF THE SCREEN.
-		this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)positionX, (int)positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-
 			Component[] components = container.getComponents();
 			int i=0;
 			for(i=0; i< components.length;i++){
@@ -418,33 +428,38 @@ public class SessionScreen extends JInternalFrame {
 					break;
 				}
 			}
-			// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
+
+		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
 			if(i == components.length) {
 				container.add(this);
 			}
-			this.setVisible(true);
-			// MOVE THE SCREEN TO THE FRONT
-			this.moveToFront();
 
-			// REQUEST FOCUS FOR THE SCREEN
+		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
+			this.setVisible(true);
+			this.moveToFront();
 			this.requestFocus();
-			// MAKE THE SCREEN SELECTED SCREEN
+
+		// MAKE THE SCREEN SELECTED SCREEN
 			try{
 				this.setClosed(false);
 				this.setSelected(true);
-			}catch(PropertyVetoException pve){
+			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
 			}
 
-	}
+	} // end showUp()
+
+
 
 	/**
-	 * shows the census screen at the default location on the specified container.
-	 *@param container the container in which the screen has to showup.
+	 * Shows the session screen at the default location on the specified container.
+	 *
+	 * @param the container in which the screen has to showup.
 	 */
 	public void showUp(Container container) {
 		showUp(container, 30,30);
-	}
+	} // end showUp()
+
 
 } // end of SessionScreen class
 
@@ -452,6 +467,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *

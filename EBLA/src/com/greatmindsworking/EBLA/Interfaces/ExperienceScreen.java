@@ -40,8 +40,6 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -63,10 +61,10 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class ExperienceScreen extends JInternalFrame {
 
-	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR PARAMETER SCREEN
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR EXPERIENCE SCREEN
 		Container desktop = null;
 
-	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR EXPERIENCE SCREEN
 		DBConnector connector = null;
 		JdbcRowSetImpl rowset = null;
 
@@ -87,8 +85,8 @@ public class ExperienceScreen extends JInternalFrame {
 	 * @param the container in which the screen has to showup.
 	 */
 	public ExperienceScreen(Container _desktop) {
-		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE VISION PARAMETER SCREEN
-			super("EBLA Experience Form",false,true,true,true);
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
+			super("EBLA - Experience Screen",false,true,true,true);
 
 		// SET SIZE
 			setSize(640,480);
@@ -120,7 +118,7 @@ public class ExperienceScreen extends JInternalFrame {
 					password = "";
 				}
 
-			// INITIALIZE ROWSET FOR PARAMETER DATA
+			// INITIALIZE ROWSET FOR EXPERIENCE DATA
 				rowset = new JdbcRowSetImpl(url, username, password);
 
 				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
@@ -237,6 +235,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/24 19:15:52  yoda2
+ * General clean up.  Added JavaDoc and removed explicit coding of labels in favor of automatic labels via EBLAPanel.addRow().
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *
