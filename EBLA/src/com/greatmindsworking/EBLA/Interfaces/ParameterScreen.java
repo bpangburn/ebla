@@ -82,6 +82,7 @@ public class ParameterScreen extends JInternalFrame {
 	// INITIALIZE "VISION" TAB AND CONTENTS
 		EBLAPanel visionPanel    		= new EBLAPanel();
 
+		SSComboBox cmbEdisonPortVersion	= new SSComboBox();
 		JTextField txtSegColorRadius 	= new JTextField();
 		JTextField txtSegSpatialRadius 	= new JTextField();
 		JTextField txtSegMinRegion 		= new JTextField();
@@ -235,14 +236,18 @@ public class ParameterScreen extends JInternalFrame {
 				txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
 			// "VISION" TAB
+				String[] tmpString1 = {"Original (04-25-2002)", "Revised (04-14-2003)"};
+				cmbEdisonPortVersion.setOption(tmpString1);
+				cmbEdisonPortVersion.setDocument(new SSTextDocument(rowset,"edison_port_version"));
+
 				txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
 
 				txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
 
 				txtSegMinRegion.setDocument(new SSTextDocument(rowset,"seg_min_region"));
 
-				String[] tmpString = {"None", "Medium", "High"};
-				cmbSegSpeedUpCode.setOption(tmpString);
+				String[] tmpString2 = {"None", "Medium", "High"};
+				cmbSegSpeedUpCode.setOption(tmpString2);
 				cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
 
 				txtSegSpeedUpFactor.setDocument(new SSTextDocument(rowset, "seg_speed_up_factor"));
@@ -294,6 +299,7 @@ public class ParameterScreen extends JInternalFrame {
 				// ADD WIDGETS
 					currentRow=0;
 
+					visionPanel.addRow(cmbEdisonPortVersion.getComboBox(), currentRow++, "EDISON Port Version");
 					visionPanel.addRow(txtSegColorRadius, currentRow++, "Segmentation Color Radius");
 					visionPanel.addRow(txtSegSpatialRadius, currentRow++, "Segmentation Spatial Radius");
 					visionPanel.addRow(txtSegMinRegion, currentRow++, "Segmentation Minimum Region");
@@ -430,6 +436,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.15  2004/01/09 18:56:35  yoda2
+ * Small eyewash changes to labels/tabs.
+ *
  * Revision 1.14  2004/01/09 14:22:31  yoda2
  * Modified screens to use a single database connection.
  *

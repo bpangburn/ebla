@@ -42,28 +42,31 @@
 CREATE SEQUENCE parameter_data_seq;
 CREATE TABLE parameter_data (
     /* UNIQUE ID FOR EACH PARAMETER RECORD */
-    parameter_id            INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('parameter_data_seq'),
+    parameter_id            INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('parameter_data_seq'),
     /* DESCRIPTION OF PARAMETER SET */
     description             VARCHAR(100),
     /* DIRECTORY PATH FOR STORAGE OF TEMPORARY FILES DURING PROCESSING */
     tmp_path                VARCHAR(50),
+    /* 0=Version 1 (04-25-2002); 1=Version 2 (04-14-2003) */
+    edison_port_version     INT2                DEFAULT 0
+                                                NOT NULL,
     /* COLOR RADIUS FOR MEAN-SHIFT ANALYSIS COLOR IMAGE SEGMENTATION */
-    seg_color_radius        FLOAT       	DEFAULT 6.5
-                                        	NOT NULL,
+    seg_color_radius        FLOAT               DEFAULT 6.5
+                                                NOT NULL,
     /* SPATIAL RADIUS FOR MEAN-SHIFT ANALYSIS COLOR IMAGE SEGMENTATION */
-    seg_spatial_radius      INTEGER     	DEFAULT 7
-                                        	NOT NULL,
+    seg_spatial_radius      INTEGER             DEFAULT 7
+                                                NOT NULL,
     /* MINIMUM PIXEL REGION FOR MEAN-SHIFT ANALYSIS COLOR IMAGE SEGMENTATION */
-    seg_min_region          INTEGER     	DEFAULT 20
-                                        	NOT NULL,
+    seg_min_region          INTEGER             DEFAULT 20
+                                                NOT NULL,
     /* 0=NO SPEEDUP; 1=MEDIUM SPEEDUP; 2=HIGH SPEEDUP (SPEEDUP FOR 
        MEAN-SHIFT ANALYSIS COLOR IMAGE SEGMENTATION */
-    seg_speed_up_code       INT2        	DEFAULT 0
-                                        	NOT NULL,
+    seg_speed_up_code       INT2                DEFAULT 0
+                                                NOT NULL,
     /* SPEEDUP FACTOR FOR HIGH SPEEDUP OPTION */
-    seg_speed_up_factor     FLOAT       	DEFAULT 0.5
-                                        	NOT NULL,
+    seg_speed_up_factor     FLOAT               DEFAULT 0.5
+                                                NOT NULL,
     /* FILE PREFIX FOR TEMP FRAMES EXTRACTED FROM EACH MOVIE/EXPERIENCE */
     frame_prefix            VARCHAR(50),
     /* FILE PREFIX FOR TEMP SEGMENTED IMAGES CREATED FOR EACH FRAME */
@@ -72,19 +75,19 @@ CREATE TABLE parameter_data (
     poly_prefix             VARCHAR(50),
     /* PERCENTAGE OF TOTAL PIXELS THAT AN OBJECT MUST CONTAIN TO BE CONSIDERED
        PART OF THE BACKGROUND RATHER THAN A SIGNIFICANT OBJECT (0 - 100) */
-    background_pixels       FLOAT       	DEFAULT 20.0
-                                        	NOT NULL,
+    background_pixels       FLOAT               DEFAULT 20.0
+                                                NOT NULL,
     /* MINIMUM NUMBER OF PIXELS THAT CONSTITUTE A "SIGNIFICANT" OBJECT */
-    min_pixel_count         INTEGER     	DEFAULT 500
-                                        	NOT NULL,
+    min_pixel_count         INTEGER             DEFAULT 500
+                                                NOT NULL,
     /* MINIMUM NUMBER OF CONSECUTIVE FRAMES THAT AN OBJECT MUST APPEAR IN TO
        BE CONSIDERED A SIGNIFICANT OBJECT (HELPS TO ELIMINATE NOISE /
        SHADOWS). */
-    min_frame_count         INTEGER     	DEFAULT 7
-                                        	NOT NULL,
+    min_frame_count         INTEGER             DEFAULT 7
+                                                NOT NULL,
     /* 0=NO; 1=YES (REDUCE COLOR DEPTH OF SEGMENTED REGIONS) */
-    reduce_color_code       INT2        	DEFAULT 0
-                                        	NOT NULL,
+    reduce_color_code       INT2                DEFAULT 0
+                                                NOT NULL,
     /* NOTES ABOUT THE PARAMETERS */
     notes                   VARCHAR(255)
     );
@@ -99,14 +102,14 @@ CREATE TABLE parameter_data (
 CREATE SEQUENCE experience_data_seq;
 CREATE TABLE experience_data (
     /* UNIQUE ID FOR EACH EXPERIENCE DATA RECORD */
-    experience_id           INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('experience_data_seq'),
+    experience_id           INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('experience_data_seq'),
     /* DESCRIPTION OF EXPERIENCE */
-    description             VARCHAR(50)     	NOT NULL,
+    description             VARCHAR(50)         NOT NULL,
 
     /* COMPLETE PATH AND FILENAME OF SOURCE MOVIE (AVI OR MOV) THAT CONTAINS
        EXPERIENCE   */
-    video_path              VARCHAR(100)    	NOT NULL,
+    video_path              VARCHAR(100)        NOT NULL,
     /* SUBDIRECTORY FOR STORAGE OF TEMPORARY FILES DURING PROCESSING
        ADDED TO tmp_path FROM parameter_data */
     tmp_path                VARCHAR(50),
@@ -125,18 +128,18 @@ CREATE TABLE experience_data (
 CREATE SEQUENCE attribute_list_data_seq;
 CREATE TABLE attribute_list_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE LIST DATA RECORD */
-    attribute_list_id       INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('attribute_list_data_seq'),
+    attribute_list_id       INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('attribute_list_data_seq'),
     /* ATTRIBUTE DESCRIPTION */
-    description             VARCHAR(50) 	NOT NULL,
+    description             VARCHAR(50)         NOT NULL,
     /* 0=NO; 1=YES (INCLUDE ATTRIBUTE WHEN ANALYZING EXPERIENCES) */
-    include_code            INT2        	DEFAULT 1
-                                        	NOT NULL,
+    include_code            INT2                DEFAULT 1
+                                                NOT NULL,
     /* 0=OBJECT; 1=RELATION (INDICATES WHETHER ATTRIBUTE APPLIES TO AN OBJECT
        OR THE RELATION BETWEEN TWO OBJECTS) */
-    type_code               INT2        	DEFAULT 0
-                                        	NOT NULL,
+    type_code               INT2                DEFAULT 0
+                                                NOT NULL,
     /* NAME OF JAVA CLASS THAT SHOULD BE INVOKED TO ANALYZE ATTRIBUTE 
        (CURRENTLY NOT IMPLEMENTED) */   
     class_name              VARCHAR(50),
@@ -154,59 +157,59 @@ CREATE INDEX att_list_description_idx ON attribute_list_data (description);
 CREATE SEQUENCE session_data_seq;
 CREATE TABLE session_data (
     /* UNIQUE ID FOR EACH SESSION RECORD */
-    session_id              INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('session_data_seq'),
+    session_id              INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('session_data_seq'),
     /* ID OF PARENT PARAMETER DATA RECORD */
-    parameter_id            INTEGER     	REFERENCES parameter_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    parameter_id            INTEGER             REFERENCES parameter_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* DESCRIPTION OF SESSION SET */
     description             VARCHAR(100),
     /* START DATE/TIME FOR CURRENT SESSION */
     session_start           TIMESTAMP           DEFAULT now()
-						NOT NULL,
+                                                NOT NULL,
     /* STOP DATE/TIME FOR CURRENT SESSION */
     session_stop            TIMESTAMP,
     /* IP ADDRESS OF CLIENT MACHINE */
-    session_ip		    VARCHAR(100),
+    session_ip              VARCHAR(100),
     /* 0=NO; 1=YES (REGENERATE ALL INTEREMEDIATE IMAGES) */
-    regen_int_images_code   INT2        	DEFAULT 0
-                                        	NOT NULL,
+    regen_int_images_code   INT2                DEFAULT 0
+                                                NOT NULL,
     /* 0=NO; 1=YES (REDIRECT SCREEN OUTPUT TO LOG FILE) */
-    log_to_file_code        INT2        	DEFAULT 0
-                                        	NOT NULL,
+    log_to_file_code        INT2                DEFAULT 0
+                                                NOT NULL,
     /* 0=NO; 1=YES (RANDOMIZE EXPERIENCES WHEN QUERYING FROM DATABASE) */
-    randomize_exp_code      INT2        	DEFAULT 0
-                                        	NOT NULL,
+    randomize_exp_code      INT2                DEFAULT 0
+                                                NOT NULL,
     /* NUMBER OF EXPERIENCES TO GENERATE DESCRIPTIONS FOR */
-    desc_to_generate        INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    desc_to_generate        INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* STARTING MINIMUM STANDARD DEVIATION */
-    min_sd_start            INTEGER     	DEFAULT 5
-                                        	NOT NULL,
+    min_sd_start            INTEGER             DEFAULT 5
+                                                NOT NULL,
     /* STOPPING MINIMUM STANDARD DEVIATION */
-    min_sd_stop             INTEGER     	DEFAULT 5
-                                        	NOT NULL,
+    min_sd_stop             INTEGER             DEFAULT 5
+                                                NOT NULL,
     /* MINIMUM STANDARD DEVIATION STEP SIZE*/
-    min_sd_step             INTEGER     	DEFAULT 5
-                                        	NOT NULL,                       
+    min_sd_step             INTEGER             DEFAULT 5
+                                                NOT NULL,                       
     /* # OF TIMES TO PROCESS EXPERIENCES FOR EACH MIN STANDARD DEVIATION */
-    loop_count              INTEGER     	DEFAULT 1
-                                        	NOT NULL,
+    loop_count              INTEGER             DEFAULT 1
+                                                NOT NULL,
     /* 0=NO; 1=YES (LIMIT STANDARD DEVIATION FOR ENTITY MATCHING TO SPECIFIED
        VALUE - IF NO THEN UTILIZE CALCULATED SD FOR CURRENT ENTITY
-       ATTRIBUTES) */	
-    fixed_sd_code           INT2        	DEFAULT 0
-                                        	NOT NULL,
+       ATTRIBUTES) */   
+    fixed_sd_code           INT2                DEFAULT 0
+                                                NOT NULL,
     /* 0=NO; 1=YES (DISPLAY MOVIE DURING FRAME EXTRACTION) */
-    display_movie_code      INT2        	DEFAULT 0
-                                        	NOT NULL,
+    display_movie_code      INT2                DEFAULT 0
+                                                NOT NULL,
     /* 0=NO; 1=YES (DISPLAY DETAILED DATA DURING FRAME PROCESSING) */
-    display_text_code       INT2        	DEFAULT 0
-                                        	NOT NULL,
+    display_text_code       INT2                DEFAULT 0
+                                                NOT NULL,
     /* 0=NO; 1=YES (LEXEMES ARE CASE-SENSITIVE) */
-    case_sensitive_code     INT2        	DEFAULT 0
-                                        	NOT NULL,
+    case_sensitive_code     INT2                DEFAULT 0
+                                                NOT NULL,
     /* NOTES ABOUT THE SESSION */
     notes                   VARCHAR(255)
     ); 
@@ -222,25 +225,25 @@ CREATE INDEX session_parameter_id_idx ON session_data (parameter_id);
 CREATE SEQUENCE parameter_experience_data_seq;
 CREATE TABLE parameter_experience_data (
     /* UNIQUE ID FOR EACH PARAMETER-EXPERIENCE RECORD */
-    parameter_experience_id INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('parameter_experience_data_seq'),
+    parameter_experience_id INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('parameter_experience_data_seq'),
     /* ID OF PARENT PARAMETER DATA RECORD */
-    parameter_id            INTEGER     	REFERENCES parameter_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    parameter_id            INTEGER             REFERENCES parameter_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER     	REFERENCES experience_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    experience_id           INTEGER             REFERENCES experience_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* STATUS OF frame_analysis_data CALCULATIONS FOR PARAMETER-EXPERIENCE COMBO:
-    	0 = NOT CALCULATED
-    	1 = CALCULATIONS IN PROGRESS
-    	2 = CALCULATIONS COMPLETED */
-    calc_status_code        INT2        	DEFAULT 0
-                                        	NOT NULL,                       
+        0 = NOT CALCULATED
+        1 = CALCULATIONS IN PROGRESS
+        2 = CALCULATIONS COMPLETED */
+    calc_status_code        INT2                DEFAULT 0
+                                                NOT NULL,                       
     calc_timestamp          TIMESTAMP           DEFAULT now()
-						NOT NULL
+                                                NOT NULL
     );
 CREATE INDEX para_exp_parameter_id_idx ON parameter_experience_data (parameter_id);
 CREATE INDEX para_exp_experience_id_idx ON parameter_experience_data (experience_id);    
@@ -255,40 +258,40 @@ CREATE INDEX para_exp_experience_id_idx ON parameter_experience_data (experience
 CREATE SEQUENCE frame_analysis_data_seq;
 CREATE TABLE frame_analysis_data (
     /* UNIQUE ID FOR EACH FRAME ANALYSIS RECORD */
-    frame_analysis_id       INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('frame_analysis_data_seq'),
+    frame_analysis_id       INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('frame_analysis_data_seq'),
     /* ID OF PARENT EXPERIENCE RECORD */
-    parameter_experience_id INTEGER     	REFERENCES parameter_experience_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    parameter_experience_id INTEGER             REFERENCES parameter_experience_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* NUMBER OF CURRENT FRAME */
-    frame_number            INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    frame_number            INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* OBJECT INDEX (AS OBJECTS ARE DETECTED, THEY ARE INDEXED FROM THE TOP
        DOWN AND CORRELATED FROM FRAME TO FRAME) */
-    object_number           INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    object_number           INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* NUMBER OF POINTS IN POLYGON */
-    polygon_point_count     INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    polygon_point_count     INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* COMMA-SEPARATED LIST OF POLYGON POINTS */
-    polygon_point_list      TEXT        	NOT NULL,
+    polygon_point_list      TEXT                NOT NULL,
     /* RGB COLOR OF OBJECT (27 POSSIBLE VALUES - EACH RGB COMPONENT IS ROUNDED
        TO 0, 128, OR 255) */
-    rgb_color               INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    rgb_color               INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* COMMA-SEPARTED LIST OF BOUNDING RECTANGLE POINTS */
-    bound_rect_points       VARCHAR(50) 	NOT NULL,
+    bound_rect_points       VARCHAR(50)         NOT NULL,
     /* X COORDINATE OF CENTER OF GRAVITY */
-    centroid_x              INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    centroid_x              INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* Y COORDINATE OF CENTER OF GRAVITY */
-    centroid_y              INTEGER     	DEFAULT 0
-                                        	NOT NULL,
+    centroid_y              INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* AREA OF OBJECT */
-    area                    FLOAT       	DEFAULT 0
-                                        	NOT NULL
+    area                    FLOAT               DEFAULT 0
+                                                NOT NULL
     );
 CREATE INDEX fra_ana_para_exp_id_idx ON frame_analysis_data (parameter_experience_id);
 CREATE INDEX fra_ana_frame_number_idx ON frame_analysis_data (frame_number);
@@ -303,23 +306,23 @@ CREATE INDEX fra_ana_object_number_idx ON frame_analysis_data (object_number);
 CREATE SEQUENCE run_data_seq;
 CREATE TABLE run_data (
     /* UNIQUE ID FOR EACH RUN DATA RECORD */
-    run_id                  INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('run_data_seq'),
+    run_id                  INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('run_data_seq'),
     /* ID OF PARENT SESSION DATA RECORD */
-    session_id              INTEGER     	REFERENCES session_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    session_id              INTEGER             REFERENCES session_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ORDER THAT RUN OCCURS IN CURRENT SESSION */
-    run_index               INTEGER         	DEFAULT 0
-                                        	NOT NULL,
+    run_index               INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* START DATE/TIME FOR CURRENT RUN */
     run_start               TIMESTAMP           DEFAULT now()
-						NOT NULL,
+                                                NOT NULL,
     /* STOP DATE/TIME FOR CURRENT RUN */
     run_stop                TIMESTAMP,
     /* MINIMUM STANDARD DEVIATION FOR RUN */
-    min_sd                  INTEGER     	DEFAULT 0
-                                        	NOT NULL
+    min_sd                  INTEGER             DEFAULT 0
+                                                NOT NULL
     );
 
 
@@ -331,16 +334,16 @@ CREATE TABLE run_data (
 CREATE SEQUENCE entity_data_seq;
 CREATE TABLE entity_data (
     /* UNIQUE ID FOR EACH ENTITY DATA RECORD */
-    entity_id               INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('entity_data_seq'),
+    entity_id               INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('entity_data_seq'),
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* NUMBER OF TIMES THAT ENTITY HAS BEEN RECOGNIZED WHEN PROCESSING EBLA
        EXPERIENCES */
-    occurance_count         INTEGER     	DEFAULT 1
-                                        	NOT NULL
+    occurance_count         INTEGER             DEFAULT 1
+                                                NOT NULL
     );
 CREATE INDEX entity_run_id_idx ON entity_data (run_id); 
 
@@ -355,18 +358,18 @@ CREATE INDEX entity_run_id_idx ON entity_data (run_id);
 CREATE SEQUENCE lexeme_data_seq;
 CREATE TABLE lexeme_data (
     /* UNIQUE ID FOR EACH LEXICAL ITEM RECORD */
-    lexeme_id               INTEGER     	PRIMARY KEY
-                                        	DEFAULT nextval('lexeme_data_seq'),
+    lexeme_id               INTEGER             PRIMARY KEY
+                                                DEFAULT nextval('lexeme_data_seq'),
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* LEXICAL ITEM / WORD */
-    lexeme                  VARCHAR(50) 	NOT NULL,
+    lexeme                  VARCHAR(50)         NOT NULL,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
        EBLA EXPERIENCES */
-    occurance_count         INTEGER     	DEFAULT 1
-                                        	NOT NULL
+    occurance_count         INTEGER             DEFAULT 1
+                                                NOT NULL
     );
 CREATE INDEX lexeme_run_id_idx ON lexeme_data (run_id); 
 CREATE INDEX lexeme_lexeme_idx ON lexeme_data (lexeme);
@@ -380,21 +383,21 @@ CREATE INDEX lexeme_lexeme_idx ON lexeme_data (lexeme);
 CREATE SEQUENCE experience_run_data_seq;
 CREATE TABLE experience_run_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-RUN RECORD */
-    experience_run_id       INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('experience_run_data_seq'),
+    experience_run_id       INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('experience_run_data_seq'),
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER     	REFERENCES experience_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    experience_id           INTEGER             REFERENCES experience_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ORDER THAT EXPERIENCE IS PROCESSED DURING CURRENT RUN
        (USED FOR DETERMINING HOW LONG IT TAKES TO RESOLVE EACH LEXEME) */
-    experience_index        INTEGER         	DEFAULT 0
-                                        	NOT NULL,
+    experience_index        INTEGER             DEFAULT 0
+                                                NOT NULL,
     /* PROTOTLANGUAGE GENERATED BY EBLA TO DESCRIBE AN EXPERIENCE BASED ON
        PRIOR EXPERIENCES */
     experience_description  VARCHAR(100)
@@ -411,21 +414,21 @@ CREATE INDEX exp_run_run_id_idx ON experience_run_data (run_id);
 CREATE SEQUENCE entity_lexeme_data_seq;
 CREATE TABLE entity_lexeme_data (
     /* UNIQUE ID FOR EACH ENTITY-LEXEME RECORD */
-    entity_lexeme_id        INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('entity_lexeme_data_seq'),
+    entity_lexeme_id        INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('entity_lexeme_data_seq'),
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER     	REFERENCES entity_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    entity_id               INTEGER             REFERENCES entity_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT LEXEME DATA RECORD */
-    lexeme_id               INTEGER     	REFERENCES lexeme_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    lexeme_id               INTEGER             REFERENCES lexeme_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
        EBLA EXPERIENCES */
-    occurance_count         INTEGER     	DEFAULT 1
-                                        	NOT NULL
+    occurance_count         INTEGER             DEFAULT 1
+                                                NOT NULL
     );
 CREATE INDEX ent_lex_entity_id_idx ON entity_lexeme_data (entity_id);
 CREATE INDEX ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);    
@@ -440,25 +443,25 @@ CREATE INDEX ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);
 CREATE SEQUENCE experience_entity_data_seq;
 CREATE TABLE experience_entity_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-ENTITY RECORD */
-    experience_entity_id    INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('experience_entity_data_seq'),
+    experience_entity_id    INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('experience_entity_data_seq'),
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER     	REFERENCES experience_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    experience_id           INTEGER             REFERENCES experience_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER     	REFERENCES entity_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    entity_id               INTEGER             REFERENCES entity_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
-    resolution_code         INT2        	DEFAULT 0
-                                        	NOT NULL                        
+    resolution_code         INT2                DEFAULT 0
+                                                NOT NULL                        
     );
 CREATE INDEX exp_ent_exp_id_idx ON experience_entity_data (experience_id);
 CREATE INDEX exp_ent_run_id_idx ON experience_entity_data (run_id);
@@ -474,29 +477,29 @@ CREATE INDEX exp_ent_entity_id_idx ON experience_entity_data (entity_id);
 CREATE SEQUENCE experience_lexeme_data_seq;
 CREATE TABLE experience_lexeme_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-LEXEME RECORD */
-    experience_lexeme_id    INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                        	nextval('experience_lexeme_data_seq'),
+    experience_lexeme_id    INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('experience_lexeme_data_seq'),
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER     	REFERENCES experience_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    experience_id           INTEGER             REFERENCES experience_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT LEXEME DATA RECORD */
-    lexeme_id               INTEGER     	REFERENCES lexeme_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    lexeme_id               INTEGER             REFERENCES lexeme_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
-    resolution_code         INT2        	DEFAULT 0
-                                        	NOT NULL,
+    resolution_code         INT2                DEFAULT 0
+                                                NOT NULL,
     /* NUMBER OF EXPERIENCES PROCESSED BEFORE RESOLUTION OCCURS (ZERO IF NOT
        RESOLVED) */
-    resolution_index        INTEGER     	DEFAULT 0
-                                        	NOT NULL
+    resolution_index        INTEGER             DEFAULT 0
+                                                NOT NULL
     );
 CREATE INDEX exp_lex_exp_id_idx ON experience_lexeme_data (experience_id);
 CREATE INDEX exp_lex_run_id_idx ON experience_lexeme_data (run_id);
@@ -512,27 +515,27 @@ CREATE INDEX exp_lex_lexeme_id_idx ON experience_lexeme_data (lexeme_id);
 CREATE SEQUENCE attribute_value_data_seq;
 CREATE TABLE attribute_value_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE-VALUE RECORD */
-    attribute_value_id      INTEGER     	PRIMARY KEY
-                                        	DEFAULT 
-                                    		nextval('attribute_value_data_seq'),
+    attribute_value_id      INTEGER             PRIMARY KEY
+                                                DEFAULT 
+                                                nextval('attribute_value_data_seq'),
     /* ID OF PARENT ATTRIBUTE LIST DATA RECORD */
-    attribute_list_id       INTEGER     	REFERENCES attribute_list_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    attribute_list_id       INTEGER             REFERENCES attribute_list_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER     	REFERENCES run_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    run_id                  INTEGER             REFERENCES run_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER     	REFERENCES entity_data
-                                        	ON UPDATE CASCADE
-                                        	ON DELETE CASCADE,
+    entity_id               INTEGER             REFERENCES entity_data
+                                                ON UPDATE CASCADE
+                                                ON DELETE CASCADE,
     /* AVERAGE VALUE OF ATTRIBUTE */
-    avg_value               FLOAT       	DEFAULT 0
-                                        	NOT NULL,
+    avg_value               FLOAT               DEFAULT 0
+                                                NOT NULL,
     /* STANDARD DEVIATION OF ATTRIBUTE */
-    std_deviation           FLOAT       	DEFAULT 0
-                                        	NOT NULL
+    std_deviation           FLOAT               DEFAULT 0
+                                                NOT NULL
     );
 CREATE INDEX att_val_attribute_list_id_idx ON attribute_value_data (attribute_list_id);
 CREATE INDEX att_val_run_id_idx ON attribute_value_data (run_id);
