@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import java.beans.PropertyVetoException;
 import com.nqadmin.Utils.DBConnector;
 
@@ -170,7 +171,7 @@ public class EBLAGui extends JFrame {
 				// TELL USER THAT DB INFO NOT PRESENT
 					int option = JOptionPane.showInternalConfirmDialog
 						(desktop,"No database settings found.\nPlease provide the database connection information.",
-						"No database settings",JOptionPane.OK_CANCEL_OPTION);
+						"No Database Settings",JOptionPane.OK_CANCEL_OPTION);
 
 				// IF USER WISHES TO ENTER THE INFO, SHOW THE DATABASE SETTINGS SCREEN
 					if (option == JOptionPane.OK_OPTION) {
@@ -350,20 +351,11 @@ public class EBLAGui extends JFrame {
 
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (dbSettingsScreen == null) {
-				dbSettingsScreen = new DBSettingsScreen(file);
+				dbSettingsScreen = new DBSettingsScreen(desktop, file);
 			}
 
 		// MAKE SCREEN VISIBLE
 			dbSettingsScreen.showUp(desktop);
-
-		// ADD A LISTENER TO THE SCREEN
-		// WHEN THE USER IS DONE ASK HIM TO LOGIN AGAIN
-			dbSettingsScreen.addWindowListener(new WindowAdapter(){
-				public void windowClosed(WindowEvent we){
-					JOptionPane.showMessageDialog(desktop,"Please try logging in now.",
-					"Attempt login",JOptionPane.INFORMATION_MESSAGE);
-				}
-			});
 
 	} // end showDBSettings()
 
@@ -378,6 +370,12 @@ public class EBLAGui extends JFrame {
 			if (guiDebug) {
 				System.out.println("Show About Screen");
 			}
+
+		// GENERATE EBLA ABOUT DIALOG
+			JOptionPane.showInternalMessageDialog(desktop,"EBLA -- " + eblaVersion
+				+ "\n\u00A9 Brian E. Pangburn 2002-2004"
+				+ "\n<html><a href=http:\\www.greatmindsworking.com>www.greatmindsworking.com</a></html>",
+					"Experience Based Language Acquisition",JOptionPane.INFORMATION_MESSAGE);
 
 	} // end showAboutScreen()
 
@@ -449,7 +447,7 @@ public class EBLAGui extends JFrame {
 					menuEditExperiences = menuEdit.add("Experiences");
 					menuEditAttributes = menuEdit.add("Attributes");
 
-					menuUtilitiesDBSettings = menuUtilities.add("DB Settings");
+					menuUtilitiesDBSettings = menuUtilities.add("Database Settings");
 
 					menuHelpAbout = menuHelp.add("About");
 
@@ -526,6 +524,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/26 20:30:13  yoda2
+ * Removed unnecessary import statements.
+ *
  * Revision 1.5  2003/12/24 19:14:00  yoda2
  * Small JavaDoc fixes, added version to titlebar, and set application size to 800x600.
  *
