@@ -169,6 +169,8 @@ public class FrameGrabber extends JFrame {
 	 */
 	private boolean initializePlayer() {
 
+		boolean result = false;
+
 		try {
 			// ATTEMPT TO BUILD MEDIA LOCATOR
 				if ((ml = new MediaLocator(sourceURL)) == null) {
@@ -199,13 +201,16 @@ public class FrameGrabber extends JFrame {
 					return false;
 				}
 
+			// INDICATE SUCCESS
+				result = true;
+
 	  	} catch (Exception e) {
 			System.out.println("\n--- FrameGrabber.initializePlayer() Exception ---\n");
 			e.printStackTrace();
 		}
 
 		// INDICATE SUCCESS AND RETURN
-			return true;
+			return result;
 
 	} // end initializePlayer()
 
@@ -492,6 +497,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.13  2004/01/13 17:11:44  yoda2
+ * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
+ *
  * Revision 1.12  2004/01/05 23:35:57  yoda2
  * Added code to recommend garbage collection following ripping of frames and frame analysis.
  *
