@@ -36,11 +36,6 @@ package com.greatmindsworking.EBLA;
 
 
 
-import java.sql.*;
-import java.awt.*;
-
-
-
 /**
  * Attribute.java
  *<p>
@@ -98,6 +93,9 @@ public class Attribute {
 
 /*
  * $Log$
+ * Revision 1.4  2002/12/11 22:47:55  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.3  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
