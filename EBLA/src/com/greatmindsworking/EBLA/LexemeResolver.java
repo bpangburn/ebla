@@ -261,7 +261,8 @@ public class LexemeResolver {
 				tmpState2 = dbc.getStatement();
 
 			// FILL CURRENT ENTITY SET
-				sql = "SELECT entity_id FROM experience_entity_data WHERE run_id = " + runID + ";";
+				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID
+					+ " AND run_id = " + runID + ";";
 
 			// EXECUTE QUERY
 				eedRS = tmpState.executeQuery(sql);
@@ -1401,6 +1402,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.22  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.21  2003/08/08 13:32:53  yoda2
  * Rewritten for use with new database structure (e.g. run_data).
  *
