@@ -86,6 +86,7 @@ public class ParameterScreen extends JInternalFrame {
 		JTextField txtSegSpatialRadius 	= new JTextField();
 		JTextField txtSegMinRegion 		= new JTextField();
 		SSComboBox cmbSegSpeedUpCode 	= new SSComboBox();
+		JTextField txtSegSpeedUpFactor	= new JTextField();
 		JTextField txtBackGroundPixels 	= new JTextField();
 		JTextField txtMinPixelCount 	= new JTextField();
 		JTextField txtMinFrameCount 	= new JTextField();
@@ -168,6 +169,18 @@ public class ParameterScreen extends JInternalFrame {
 			}
 
 
+		// SETUP ACTION LISTENER FOR SPEED UP CODE COMBOBOX
+			cmbSegSpeedUpCode.getComboBox().addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					if (cmbSegSpeedUpCode.getComboBox().getSelectedIndex() == 2) {
+						txtSegSpeedUpFactor.setEnabled(true);
+					} else {
+						txtSegSpeedUpFactor.setEnabled(false);
+					}
+				}
+			});
+
+
 		// SETUP ACTION LISTENER FOR SELECT EXPERIENCES BUTTON
 			btnSelectExperiences.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
@@ -222,6 +235,16 @@ public class ParameterScreen extends JInternalFrame {
 			});
 
 
+		// ADD INTERNAL FRAME LISTENER TO SAVE RECORD UPON LOSS OF FOCUS
+			addInternalFrameListener(new InternalFrameAdapter() {
+			// FRAME DEACTIVATED
+				public void internalFrameDeactivated(InternalFrameEvent ife) {
+					dataNavigator.updatePresentRow();
+				} // end internalFrameDeactivated()
+
+			});
+
+
 		// SET DATABASE COLUMNS FOR EACH PANEL'S WIDGETS ALONG WITH ANY COMBOBOX ITEMS
 			// "GENERAL" TAB
 				txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
@@ -238,6 +261,8 @@ public class ParameterScreen extends JInternalFrame {
 				String[] tmpString = {"None", "Medium", "High"};
 				cmbSegSpeedUpCode.setOption(tmpString);
 				cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
+
+				txtSegSpeedUpFactor.setDocument(new SSTextDocument(rowset, "seg_speed_up_factor"));
 
 				txtBackGroundPixels.setDocument(new SSTextDocument(rowset,"background_pixels"));
 
@@ -290,6 +315,7 @@ public class ParameterScreen extends JInternalFrame {
 					visionPanel.addRow(txtSegSpatialRadius, currentRow++, "Segmentation Spatial Radius");
 					visionPanel.addRow(txtSegMinRegion, currentRow++, "Segmentation Minimum Region");
 					visionPanel.addRow(cmbSegSpeedUpCode.getComboBox(), currentRow++, "Segmentation Speed Up");
+					visionPanel.addRow(txtSegSpeedUpFactor, currentRow++, "    Speed Up Factor (0.0 - 1.0)");
 					visionPanel.addRow(txtBackGroundPixels, currentRow++, "Background Pixel Threshold");
 					visionPanel.addRow(txtMinPixelCount, currentRow++, "Min Pixels for Object");
 					visionPanel.addRow(txtMinFrameCount, currentRow++, "Min Frames for Object");
@@ -415,6 +441,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2003/12/30 23:21:20  yoda2
+ * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
+ *
  * Revision 1.7  2003/12/29 23:20:27  yoda2
  * Added close button.
  *
