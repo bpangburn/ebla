@@ -183,8 +183,8 @@ public class FrameAnalysisData {
 			// 06-25-2004 - GOING FROM 0-255 GRAYSCALE TO 216 COLORS (0-215)
 			// DIVIDE EACH COLOR BY 51 AND THEN TAKE B*36 + G*6 + R
 			// (see "Death of the Websafe Color Palette?" @ http://hotwired.lycos.com/webmonkey/00/37/index2a.html
-				grayScale = ((blue/51)*36) + ((green/51)*6) + (red/51);
-
+			//	grayScale = ((blue/51)*36) + ((green/51)*6) + (red/51);
+				grayScale = ((blue/85)*16) + ((green/85)*4) + (red/85);
 		} catch (Exception e) {
 			System.out.println("\n--- FrameAnalysisData Constructor() Exception ---\n");
 			e.printStackTrace();
@@ -198,6 +198,9 @@ public class FrameAnalysisData {
 
 /*
  * $Log$
+ * Revision 1.10  2004/06/26 02:56:56  yoda2
+ * Started conversion of 256 grayscale calc to 216 color calc for "color" attribute.  Still need to update other references and attribute name in database.
+ *
  * Revision 1.9  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *
