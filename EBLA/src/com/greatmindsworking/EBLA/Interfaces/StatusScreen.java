@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,6 +80,10 @@ public class StatusScreen extends JInternalFrame {
 
 	// TEMP IMAGE TO BE USED AS PLACE HOLDER
 		BufferedImage tmpImage = null;
+
+	// DEFAULT IMAGE DIMENSIONS
+		int imageX = 192;
+		int imageY = 140;
 
 	// INITIALIZE MISC WIDGETS USED FOR DISPLAYING PROGRESS/INTERMEDIATE RESULTS
 		// INITIALIZE IMAGE COMPONENTS TO DISPLAY INTERMEDIATE RESULTS
@@ -184,7 +188,7 @@ public class StatusScreen extends JInternalFrame {
 		// CREATE/LAYOUT PANEL FOR INTERMEDIATE RESULT IMAGES
 			imagePanel.setLayout(new GridBagLayout());
 
-			tmpImage = new BufferedImage(160, 116, BufferedImage.TYPE_INT_RGB);
+			tmpImage = new BufferedImage(imageX, imageY, BufferedImage.TYPE_INT_RGB);
 
 			Border blackBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
 
@@ -236,20 +240,26 @@ public class StatusScreen extends JInternalFrame {
 				constraints.gridx = 1;
 				contentPane.add(statusBar1, constraints);
 
-			// ROW 2
+			// ROW 2 (BLANK)
 				constraints.anchor = GridBagConstraints.WEST;
 				constraints.gridx = 0;
 				constraints.gridy = 1;
+				contentPane.add(new JLabel("   "), constraints);
+
+			// ROW 3
+				constraints.anchor = GridBagConstraints.WEST;
+				constraints.gridx = 0;
+				constraints.gridy = 2;
 				contentPane.add(statusText2, constraints);
 
 				constraints.anchor = GridBagConstraints.EAST;
 				constraints.gridx = 1;
 				contentPane.add(statusBar2, constraints);
 
-			// ROW 3
+			// ROW 4
 				constraints.anchor = GridBagConstraints.WEST;
 				constraints.gridx = 0;
-				constraints.gridy = 2;
+				constraints.gridy = 3;
 				contentPane.add(statusText3, constraints);
 
 				constraints.anchor = GridBagConstraints.EAST;
@@ -259,7 +269,7 @@ public class StatusScreen extends JInternalFrame {
 			// IMAGE PANEL
 				constraints.anchor = GridBagConstraints.CENTER;
 				constraints.gridx = 0;
-				constraints.gridy = 3;
+				constraints.gridy = 4;
 				constraints.gridwidth = 2;
 				contentPane.add(imagePanel, constraints);
 
@@ -429,15 +439,15 @@ public class StatusScreen extends JInternalFrame {
         Runnable doUpdateImage = new Runnable() {
             public void run() {
 				if (imageIndex==1) {
-					ic1.updateImage(scaleToSize(160, 116, bi));
+					ic1.updateImage(scaleToSize(imageX, imageY, bi));
 					ic1.setVisible(true);
 					ic1.repaint();
 				} else if (imageIndex==2) {
-					ic2.updateImage(scaleToSize(160, 116, bi));
+					ic2.updateImage(scaleToSize(imageX, imageY, bi));
 					ic2.setVisible(true);
 					ic2.repaint();
 				} else {
-					ic3.updateImage(scaleToSize(160, 116, bi));
+					ic3.updateImage(scaleToSize(imageX, imageY, bi));
 					ic3.setVisible(true);
 					ic3.repaint();
 				}
@@ -543,6 +553,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/31 19:38:08  yoda2
+ * Fixed various thread synchronization issues.
+ *
  * Revision 1.6  2003/12/30 23:20:30  yoda2
  * Added more details of EBLA processing and cleaned up layout.
  *
