@@ -91,11 +91,14 @@ public class SegTest {
 												// MEAN SHIFT ANALYSIS IMAGE SEGMENTATION
 			int speedUp = 1; 					// SPEED-UP LEVEL FOR MEAN SHIFT ANALYSIS IMAGE SEGMENTATION
 												// 0=NO SPEEDUP, 1=MEDIUM SPEEDUP, 2=HIGH SPEEDUP
+			float highSpeedUpFactor = (float)0.0; // WHEN speedUp = 2, values range between 0.0 (high quality) and 1.0 (high speed)
+
+			boolean warnUser = false;
 
 		try {
 
 			// CHECK TO SEE SIX PARAMETERS WERE PASSED FROM THE COMMAND LINE
-				if (args.length == 5) {
+				if (args.length >= 5) {
 					// EXTRACT SOURCE IMAGE
 						inputFile = args[0];
 
@@ -103,37 +106,52 @@ public class SegTest {
 						colorRadius = Float.parseFloat(args[1]);
 
 					// EXTRACT SPATIAL RADIUS
-						colorRadius = Integer.parseInt(args[2]);
+						spatialRadius = Integer.parseInt(args[2]);
 
 					// EXTRACT MINIMUM REGION
 						minRegion = Integer.parseInt(args[3]);
 
 					// EXTRACT SPEEDUP LEVEL
 						speedUp = Integer.parseInt(args[4]);
+						if (speedUp == 2) {
+							if (args.length==6) {
+								highSpeedUpFactor = Float.parseFloat(args[5]);
+							} else {
+								warnUser=true;
+							}
+						}
+
 
 				} else {
-					// TELL USER HOW TO USE TEST CLASS
-						System.out.println("Usage: java SegTest <source image> <color radius> <spatial radius>"
-							+ " <min region> <speedup: 0=none, 1=medium, 2=high>");
-						System.out.println("");
-						System.out.println("e.g. java SegTest my_image.png 6.5 7 20 1");
-						System.out.println("");
-						System.out.println("For more information on mean shift image segmentaton, consult:");
-						System.out.println(" [1] D. Comanicu, P. Meer: 'Mean shift: A robust approach toward feature");
-						System.out.println("     space analysis'. IEEE Trans. Pattern Anal. Machine Intell., May 2002.");
-						System.out.println("");
-						System.out.println(" [2] P. Meer, B. Georgescu: 'Edge detection with embedded confidence'.");
-						System.out.println("     IEEE Trans. Pattern Anal. Machine Intell., 28, 2001.");
-						System.out.println("");
-						System.out.println(" [3] C. Christoudias, B. Georgescu, P. Meer: 'Synergism in low level vision'.");
-						System.out.println("     16th International Conference of Pattern Recognition, Track 1 - Computer");
-						System.out.println("     Vision and Robotics, Quebec City, Canada, August 2001.");
-						System.out.println("");
-						System.out.println(" The above cited papers are available from:");
-						System.out.println(" http://www.caip.rutgers.edu/riul/research/robust.html");
+					// WARN USER
+						warnUser = true;
+				}
 
-					// EXIT
-						System.exit(0);
+
+			// TELL USER HOW TO USE TEST CLASS (IF NECESSARY)
+				if (warnUser) {
+				// DISPLAY MESSAGE
+					System.out.println("Usage: java SegTest <source image> <color radius> <spatial radius>"
+						+ " <min region> <speedup: 0=none, 1=medium, 2=high> <for speedup of 2, speed factor: 0.0=better quality, 1.0=better speed>");
+					System.out.println("");
+					System.out.println("e.g. java SegTest my_image.png 6.5 7 20 1");
+					System.out.println("");
+					System.out.println("For more information on mean shift image segmentaton, consult:");
+					System.out.println(" [1] D. Comanicu, P. Meer: 'Mean shift: A robust approach toward feature");
+					System.out.println("     space analysis'. IEEE Trans. Pattern Anal. Machine Intell., May 2002.");
+					System.out.println("");
+					System.out.println(" [2] P. Meer, B. Georgescu: 'Edge detection with embedded confidence'.");
+					System.out.println("     IEEE Trans. Pattern Anal. Machine Intell., 28, 2001.");
+					System.out.println("");
+					System.out.println(" [3] C. Christoudias, B. Georgescu, P. Meer: 'Synergism in low level vision'.");
+					System.out.println("     16th International Conference of Pattern Recognition, Track 1 - Computer");
+					System.out.println("     Vision and Robotics, Quebec City, Canada, August 2001.");
+					System.out.println("");
+					System.out.println(" The above cited papers are available from:");
+					System.out.println(" http://www.caip.rutgers.edu/riul/research/robust.html");
+
+				// EXIT
+					System.exit(0);
 				}
 
 
@@ -145,7 +163,7 @@ public class SegTest {
 				int height = tmpImage.getHeight();
 
 			// CROP IMAGE
-				tmpImage = tmpImage.getSubimage(5, 5, width-5, height-5);
+			//	tmpImage = tmpImage.getSubimage(5, 5, width-5, height-5);
 
 			// RECALCULATE WIDTH AND HEIGHT
 				width = tmpImage.getWidth();
@@ -162,7 +180,12 @@ public class SegTest {
 				MSImageProcessor mySegm = new MSImageProcessor();
 
 			// SET IMAGE
-				mySegm.DefineImage(rgbPixels, ImageType.COLOR, height, width);
+				mySegm.DefineBgImage(rgbPixels, ImageType.COLOR, height, width);
+
+			// SET SetSpeedThreshold FOR HIGH SPEEDUP OPTION
+				if (speedUp == 2) {
+					mySegm.SetSpeedThreshold(highSpeedUpFactor);
+				}
 
 			// SEGMENT IMAGE
 				if (speedUp == 0) {
@@ -172,6 +195,8 @@ public class SegTest {
 				} else {
 					mySegm.Segment(spatialRadius, colorRadius, minRegion, SpeedUpLevel.HIGH_SPEEDUP);
 				}
+
+
 
 			// GET RESULTING SEGMENTED IMAGE (RGB) PIXELS
 				int segpixels[] = new int[pixelCount];
@@ -200,6 +225,9 @@ public class SegTest {
 
 /*
  * $Log$
+ * Revision 1.2  2002/12/11 22:37:52  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.1  2002/09/20 19:48:04  bpangburn
  * Added stand-alone test class for EDISON port to CVS.
  *
