@@ -134,7 +134,9 @@ public class SegTest {
 					System.out.println("Usage: java SegTest <source image> <color radius> <spatial radius>"
 						+ " <min region> <speedup: 0=none, 1=medium, 2=high> <for speedup of 2, speed factor: 0.0=better quality, 1.0=better speed>");
 					System.out.println("");
-					System.out.println("e.g. java SegTest my_image.png 6.5 7 20 1");
+					System.out.println("e.g.  java SegTest my_image.png 6.5 7 20 0");
+					System.out.println(" -or- java SegTest my_image.png 6.5 7 20 1");
+					System.out.println(" -or- java SegTest my_image.png 6.5 7 20 2 0.5");
 					System.out.println("");
 					System.out.println("For more information on mean shift image segmentaton, consult:");
 					System.out.println(" [1] D. Comanicu, P. Meer: 'Mean shift: A robust approach toward feature");
@@ -225,6 +227,9 @@ public class SegTest {
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/24 16:19:29  yoda2
+ * Updated copyright to 2002-2003.
+ *
  * Revision 1.3  2003/11/24 14:47:48  yoda2
  * Fixed bug that was setting the color and spatial radii to the value supplied for the spatial radius.  Added a factor to control speed (1.0) vs. quality (0.0) for the high speedup option (added for 4-14-2003 release of C++ EDISON).
  *
