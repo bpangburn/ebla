@@ -54,11 +54,6 @@ import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
  */
 public class Params {
 	/**
-	 * code used to determine which movies from experience_data table to process
-	 */
-	private int includeCode = 1;
-
-	/**
 	 * boolean flag indicating whether to process videos for current run
 	 *
 	 * If true, all video pre-processing will be performed up to the entity analysis stage.
@@ -301,12 +296,6 @@ public class Params {
 
 			// IF A RECORD IS RETURNED, EXTRACT PARAMETERS, OTHERWISE WARN USER
 				if (paramRS.next()) {
-					// EXTRACT INCLUDE CODE (MUST BE GREATER THAN ZERO)
-						includeCode = paramRS.getInt("include_code");
-						if (includeCode < 1) {
-							includeCode = 1;
-						}
-
 					// EXTRACT VIDEO PROCESSING FLAG
 						if (paramRS.getInt("process_videos_code")==0) {
 							processVideos = false;
@@ -465,19 +454,6 @@ public class Params {
 		}
 
 	} // end lookupParams()
-
-
-
-	/**
-	 * Returns an integer (greater than zero) indicating which movies (experiences)
-	 * in the ebla_data database to process.  This value is usually 1, but creative
-	 * use of this field can enable multiple machines to process experiences in parallel.
-	 *
-	 * @return include code used to determine which movies (experiences) to process
-	 */
-	public int getIncludeCode() {
-		return includeCode;
-	} // end getIncludeCode()
 
 
 
@@ -882,6 +858,9 @@ public class Params {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.12  2002/12/11 22:55:37  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.11  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
