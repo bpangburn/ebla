@@ -67,7 +67,7 @@ public class ParameterScreen extends JInternalFrame {
 		Container desktop = null;
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
-		DBConnector connector = null;
+		DBConnector dbc = null;
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
@@ -120,8 +120,9 @@ public class ParameterScreen extends JInternalFrame {
 	 * ParameterScreen constructor.
 	 *
 	 * @param the container in which the screen has to showup.
+	 * @param _dbc connection to ebla_data database
 	 */
-	public ParameterScreen(Container _desktop) {
+	public ParameterScreen(Container _desktop, DBConnector _dbc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE PARAMETER SCREEN
 			super("EBLA - Parameter Screen",false,true,true,true);
 
@@ -131,32 +132,14 @@ public class ParameterScreen extends JInternalFrame {
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
 
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
+
 		// DATABASE CONFIGURATION
 			try {
 
-			// INITIALIZE DATABASE CONNECTION
-				connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
-				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-				String url = bufRead.readLine();
-				if (url == null) {
-					url = "";
-				}
-
-				String username = bufRead.readLine();
-				if (username == null) {
-					username = "";
-				}
-
-				String password = bufRead.readLine();
-				if (password == null) {
-					password = "";
-				}
-
 			// INITIALIZE ROWSET FOR PARAMETER DATA
-				rowset = new JdbcRowSetImpl(url, username, password);
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -195,7 +178,7 @@ public class ParameterScreen extends JInternalFrame {
 						}
 					}
 					if (selectExperiencesScreen == null) {
-						selectExperiencesScreen = new SelectExperiencesScreen(desktop, parameterID);
+						selectExperiencesScreen = new SelectExperiencesScreen(desktop, dbc, parameterID);
 
 						selectExperiencesScreen.addInternalFrameListener(new InternalFrameAdapter() {
 						// FRAME CLOSED
@@ -220,7 +203,7 @@ public class ParameterScreen extends JInternalFrame {
 					parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
 
 					if (sessionScreen == null) {
-						sessionScreen = new SessionScreen(desktop, parameterID, txtDescription.getText());
+						sessionScreen = new SessionScreen(desktop, dbc, parameterID, txtDescription.getText());
 
 						sessionScreen.addInternalFrameListener(new InternalFrameAdapter() {
 						// FRAME CLOSED
@@ -447,6 +430,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.13  2004/01/08 23:19:32  yoda2
+ * Disabled reduce color depth field.
+ *
  * Revision 1.12  2004/01/07 21:18:15  yoda2
  * Swapped location of Select Experiences and Start Session buttons.
  *

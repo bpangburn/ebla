@@ -67,7 +67,7 @@ public class ExperienceScreen extends JInternalFrame {
 		Container desktop = null;
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR EXPERIENCE SCREEN
-		DBConnector connector = null;
+		DBConnector dbc = null;
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE EXPERIENCE SCREEN WIDGETS
@@ -88,8 +88,9 @@ public class ExperienceScreen extends JInternalFrame {
 	 * ExperienceScreen constructor.
 	 *
 	 * @param the container in which the screen has to showup.
+	 * @param _dbc connection to ebla_data database
 	 */
-	public ExperienceScreen(Container _desktop) {
+	public ExperienceScreen(Container _desktop, DBConnector _dbc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
 			super("EBLA - Experience Screen",false,true,true,true);
 
@@ -99,32 +100,14 @@ public class ExperienceScreen extends JInternalFrame {
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
 
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
+
 		// DATABASE CONFIGURATION
 			try {
 
-			// INITIALIZE DATABASE CONNECTION
-				connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
-				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-				String url = bufRead.readLine();
-				if (url == null) {
-					url = "";
-				}
-
-				String username = bufRead.readLine();
-				if (username == null) {
-					username = "";
-				}
-
-				String password = bufRead.readLine();
-				if (password == null) {
-					password = "";
-				}
-
 			// INITIALIZE ROWSET FOR EXPERIENCE DATA
-				rowset = new JdbcRowSetImpl(url, username, password);
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -277,6 +260,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2004/01/07 19:44:21  yoda2
+ * Verified that primary key is displayed on each screen and is disabled.
+ *
  * Revision 1.7  2003/12/31 15:46:59  yoda2
  * Added listener to save current record if form loses focus.
  *

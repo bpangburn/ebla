@@ -76,9 +76,9 @@ public class EBLAGui extends JFrame {
 	EBLAMenuBar menuBar = new EBLAMenuBar();
 
 	/**
-	 * database connection object
+	 * database connector
 	 */
-	DBConnector connector = null;
+	DBConnector dbc = null;
 
 	/**
 	 * database settings screen object
@@ -127,7 +127,7 @@ public class EBLAGui extends JFrame {
 			setSize(800, 600);
 
 		// SET APPLICATION NAME
-			setTitle("Experience Based Language Acquistion -- " + eblaVersion);
+			setTitle("Experience Based Language Acquisition -- " + eblaVersion);
 
 		// MAKE THE FRAME VISIBLE
 			setVisible(true);
@@ -207,7 +207,7 @@ public class EBLAGui extends JFrame {
 			if (getDBSettings()) {
 				// TRY CONNECTING TO THE DATABASE. IF SUCCESSFUL SHOW THE PARAMETER SCREEN.
 					try {
-						connector = new DBConnector("dbSettings",false);
+						dbc = new DBConnector("dbSettings",false);
 						showParameterScreen();
 					} catch(IOException ioe) {
 						return false;
@@ -241,12 +241,6 @@ public class EBLAGui extends JFrame {
 				System.out.println("Logout");
 			}
 
-		// IF THE CONNECTION OBJECT IS NOT NULL CLOSE THE CONNECTION.
-			if (connector != null) {
-				connector.closeConnection();
-				connector = null;
-			}
-
 		// CLOSE ALL THE OPEN SCREENS
 			try {
 				if (parameterScreen != null) {
@@ -264,6 +258,12 @@ public class EBLAGui extends JFrame {
 
 			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
+			}
+
+		// IF THE CONNECTION OBJECT IS NOT NULL CLOSE THE CONNECTION.
+			if (dbc != null) {
+				dbc.closeConnection();
+				dbc = null;
 			}
 
 		// UPDATE THE MENUBAR TO REFLECT SUCCESSFUL LOGOUT
@@ -288,7 +288,7 @@ public class EBLAGui extends JFrame {
 
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP
 			if (parameterScreen == null) {
-				parameterScreen = new ParameterScreen(desktop);
+				parameterScreen = new ParameterScreen(desktop, dbc);
 
 				parameterScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
@@ -318,7 +318,7 @@ public class EBLAGui extends JFrame {
 
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (attributeScreen == null) {
-				attributeScreen = new AttributeScreen(desktop);
+				attributeScreen = new AttributeScreen(desktop, dbc);
 
 				attributeScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
@@ -347,7 +347,7 @@ public class EBLAGui extends JFrame {
 
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (experienceScreen == null) {
-				experienceScreen = new ExperienceScreen(desktop);
+				experienceScreen = new ExperienceScreen(desktop, dbc);
 
 				experienceScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
@@ -632,6 +632,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2003/12/31 21:17:39  yoda2
+ * Added menu items to display a popup under "Reports" and the readme file under "Help"
+ *
  * Revision 1.8  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *

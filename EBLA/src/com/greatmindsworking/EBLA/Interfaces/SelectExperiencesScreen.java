@@ -66,6 +66,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR EXPERIENCE SCREEN
 		Container desktop = null;
 
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR SELECT EXPERIENCES SCREEN
+		DBConnector dbc = null;
+
 	// INITIALIZE EXPERIENCE SELECTION SCREEN WIDGETS
 		JList lstAvailableExperiences 		= null;
 		JList lstSelectedExperiences   	  	= null;
@@ -86,9 +89,10 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	 * SelectExperiencesScreen constructor.
 	 *
 	 * @param the container in which the screen has to showup.
+	 * @param _dbc connection to ebla_data database
 	 * @param ID of parent parameter_data record
 	 */
-	public SelectExperiencesScreen(Container _desktop, long _parameterID) {
+	public SelectExperiencesScreen(Container _desktop, DBConnector _dbc, long _parameterID) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE PARAMETER SCREEN
 			super("EBLA - Select Experiences Screen",false,false,false,false);
 
@@ -98,11 +102,11 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
 
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
+
 		// SET PARENT parameter ID
 			parameterID = _parameterID;
-
-		//System.out.println("parameterID = " + parameterID);
-
 
 		// INITIALIZE LIST MODELS AND WIDGETS WITH SCROLL PANES
 			availableListModel = new AvailableExperiencesListModel();
@@ -115,30 +119,30 @@ public class SelectExperiencesScreen extends JInternalFrame {
 			JScrollPane selectedScrollPane = new JScrollPane(lstSelectedExperiences);
 			selectedScrollPane.setPreferredSize(new Dimension(250,300));
 
-
 		// CREATE ACTION LISTENER FOR ADD BUTTON
 			btnAddExperiences.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					long[] ids = availableListModel.getExperienceIDs(lstAvailableExperiences.getSelectedIndices());
 					Statement statement = null;
-					DBConnector connector = null;
 
 					try {
-						connector = new DBConnector(EBLAGui.dbFileName,true);
-						statement = connector.getStatement();
+						statement = dbc.getStatement();
 					} catch(Exception e) {
 						e.printStackTrace();
 					}
 
-					for(int i=0;i<ids.length;i++){
-						System.out.println(ids[i]);
-						try {
+					try {
+
+						for (int i=0;i<ids.length;i++) {
+							System.out.println(ids[i]);
 							statement.executeUpdate("INSERT INTO parameter_experience_data(parameter_id,experience_id) VALUES(" + parameterID +"," + ids[i] + ");");
-						} catch(SQLException se) {
-							se.printStackTrace();
 						}
+
+						statement.close();
+					} catch(SQLException se) {
+						se.printStackTrace();
 					}
-					connector.closeConnection();
+
 					selectedListModel = null;
 					selectedListModel = new SelectedExperiencesListModel(parameterID);
 					lstSelectedExperiences.setModel(selectedListModel);
@@ -152,11 +156,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 				public void actionPerformed(ActionEvent ae) {
 					long[] ids = selectedListModel.getParameterExperienceIDs(lstSelectedExperiences.getSelectedIndices());
 					Statement statement = null;
-					DBConnector connector = null;
 
 					try {
-						connector = new DBConnector(EBLAGui.dbFileName,true);
-						statement = connector.getStatement();
+						statement = dbc.getStatement();
 					} catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -172,9 +174,10 @@ public class SelectExperiencesScreen extends JInternalFrame {
 					}
 
 					strIDs = strIDs + ")";
+
 					try {
 						statement.executeUpdate("DELETE FROM parameter_experience_data WHERE parameter_experience_id IN " + strIDs + ";" );
-						connector.closeConnection();
+						statement.close();
 					} catch(SQLException se) {
 						se.printStackTrace();
 					}
@@ -301,6 +304,8 @@ public class SelectExperiencesScreen extends JInternalFrame {
 					experienceName.add(rs.getString("description") + "--" + rs.getString("notes") );
 					experienceID.add(new Long(rs.getLong("experience_id")));
 				} // end while
+				rs.close();
+				statement.close();
 
 			} catch(SQLException se) {
 				se.printStackTrace();
@@ -348,22 +353,21 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		public SelectedExperiencesListModel(long parameterID){
 
 			try {
-				connector = new DBConnector(EBLAGui.dbFileName,true);
-				Statement statement = connector.getStatement();
+				Statement statement = dbc.getStatement();
 				String query = "SELECT description, notes, parameter_experience_id"
 					+ " FROM parameter_experience_data,experience_data"
 					+ " WHERE experience_data.experience_id = parameter_experience_data.experience_id"
 					+ " AND parameter_id=" + parameterID
 					+ " ORDER BY description;";
 				ResultSet rs = statement.executeQuery(query);
-				while(rs.next()){
+				while (rs.next()) {
 					experienceName.add(rs.getString("description") + "--" + rs.getString("notes") );
 					parameterExperienceID.add(new Long(rs.getLong("parameter_experience_id")));
 				}
+				rs.close();
+				statement.close();
 			} catch(SQLException se) {
 				se.printStackTrace();
-			} catch(IOException ioe) {
-				ioe.printStackTrace();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -455,6 +459,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/30 23:21:20  yoda2
+ * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
+ *
  * Revision 1.3  2003/12/29 23:19:42  yoda2
  * Finished JavaDoc and code cleanup.
  * Simulated modal behavior by retaking focus when lost.

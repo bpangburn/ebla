@@ -71,7 +71,7 @@ public class SessionScreen extends JInternalFrame {
 		long parameterID = -1;
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR SESSION SCREEN
-		DBConnector connector = null;
+		DBConnector dbc = null;
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
@@ -122,8 +122,9 @@ public class SessionScreen extends JInternalFrame {
 	 * SessionScreen constructor.
 	 *
 	 * @param the container in which the screen has to showup.
+	 * @param _dbc connection to ebla_data database
 	 */
-	public SessionScreen(Container _desktop,long _parameterID, String _parameterDesc) {
+	public SessionScreen(Container _desktop,DBConnector _dbc, long _parameterID, String _parameterDesc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE SESSION SCREEN
 			super("EBLA - Session Screen",false,true,true,true);
 
@@ -132,6 +133,9 @@ public class SessionScreen extends JInternalFrame {
 
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
+
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
 
 		// SET ID OF PARENT VISION PARAMETER RECORD
 			parameterID = _parameterID;
@@ -364,21 +368,14 @@ public class SessionScreen extends JInternalFrame {
 				String notes = txtNotes.getText();
 
 
-			// INITIALIZE EBLA DATABASE CONNECTION
-				try {
-					connector = new DBConnector(EBLAGui.dbFileName, true);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-
 			// CREATE EBLA SESSION
-				SessionData sd = new SessionData(connector,parameterID,desc,boolRegenerateImages,boolLogToFile,
+				SessionData sd = new SessionData(dbc, parameterID,desc,boolRegenerateImages,boolLogToFile,
 					boolRandomizeExp, descToGenerate, minSDStart, minSDStop, minSDStep, loopCount, boolFixedSD,
 					boolDisplayVideos, boolDisplayMessages, boolCaseSensitive, notes);
 
 			// CREATE STATUS SCREEN IF IT DOESN'T YET EXIST
 				if (statusScreen == null) {
-					statusScreen = new StatusScreen(desktop, sd, connector);
+					statusScreen = new StatusScreen(desktop, sd, dbc);
 
 					statusScreen.addInternalFrameListener(new InternalFrameAdapter() {
 					// FRAME CLOSED
@@ -458,6 +455,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2003/12/31 19:44:26  yoda2
+ * Added logic to set a default session description based on the parameter description and current date/time.
+ *
  * Revision 1.9  2003/12/31 19:38:08  yoda2
  * Fixed various thread synchronization issues.
  *

@@ -67,7 +67,7 @@ public class AttributeScreen extends JInternalFrame {
 		Container desktop = null;
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR ATTRIBUTE SCREEN
-		DBConnector connector = null;
+		DBConnector dbc = null;
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE ATTRIBUTE SCREEN WIDGETS
@@ -88,8 +88,9 @@ public class AttributeScreen extends JInternalFrame {
 	 * AttributeScreen constructor.
 	 *
 	 * @param the container in which the screen has to showup.
+	 * @param _dbc connection to ebla_data database
 	 */
-	public AttributeScreen(Container _desktop) {
+	public AttributeScreen(Container _desktop, DBConnector _dbc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
 			super("EBLA - Attribute Screen",false,true,true,true);
 
@@ -99,32 +100,14 @@ public class AttributeScreen extends JInternalFrame {
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
 
-		// DATABASE CONFIGURATION
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
+
+		// ROWSET CONFIGURATION
 			try {
 
-			// INITIALIZE DATABASE CONNECTION
-				connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
-				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-				String url = bufRead.readLine();
-				if (url == null) {
-					url = "";
-				}
-
-				String username = bufRead.readLine();
-				if (username == null) {
-					username = "";
-				}
-
-				String password = bufRead.readLine();
-				if (password == null) {
-					password = "";
-				}
-
 			// INITIALIZE ROWSET FOR ATTRIBUTE LIST DATA
-				rowset = new JdbcRowSetImpl(url, username, password);
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -285,6 +268,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2004/01/07 21:33:00  yoda2
+ * Updated labels, changed fields for include_code and type_code to SSComboBoxes, and disabled Attribute Type and Attribute Calculation Class fields (not currently used).
+ *
  * Revision 1.7  2004/01/07 19:44:21  yoda2
  * Verified that primary key is displayed on each screen and is disabled.
  *
