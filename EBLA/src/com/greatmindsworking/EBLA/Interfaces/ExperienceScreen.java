@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.sun.rowset.JdbcRowSetImpl;
 import com.nqadmin.swingSet.*;
+import com.nqadmin.swingSet.datasources.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -68,15 +68,15 @@ public class ExperienceScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR EXPERIENCE SCREEN
 		DBConnector dbc = null;
-		JdbcRowSetImpl rowset = null;
+		SSJdbcRowSetImpl rowset = null;
 
 	// INITIALIZE EXPERIENCE SCREEN WIDGETS
-		JTextField txtExperienceID 		= new JTextField();
-		JTextField txtDescription 		= new JTextField();
-		JTextField txtVideoPath 		= new JTextField();
-		JTextField txtTmpPath 			= new JTextField();
-		JTextField txtExperienceLexemes = new JTextField();
-		JTextArea txtNotes 				= new JTextArea(20,10);
+		SSTextField txtExperienceID 	= new SSTextField();
+		SSTextField txtDescription 		= new SSTextField();
+		SSTextField txtVideoPath 		= new SSTextField();
+		SSTextField txtTmpPath 			= new SSTextField();
+		SSTextField txtExperienceLexemes = new SSTextField();
+		SSTextArea txtNotes 			= new SSTextArea(20,10);
 
 		JButton btnClose				= new JButton("Close");
 
@@ -107,7 +107,7 @@ public class ExperienceScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR EXPERIENCE DATA
-				rowset = new JdbcRowSetImpl(dbc.getConnection());
+				rowset = new SSJdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -144,17 +144,17 @@ public class ExperienceScreen extends JInternalFrame {
 
 
 		// SET DATABASE COLUMNS FOR EACH WIDGET
-			txtExperienceID.setDocument(new SSTextDocument(rowset,"experience_id"));
+			txtExperienceID.bind(rowset,"experience_id");
 
-			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+			txtDescription.bind(rowset,"description");
 
-			txtVideoPath.setDocument(new SSTextDocument(rowset,"video_path"));
+			txtVideoPath.bind(rowset,"video_path");
 
-			txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+			txtTmpPath.bind(rowset,"tmp_path");
 
-			txtExperienceLexemes.setDocument(new SSTextDocument(rowset,"experience_lexemes"));
+			txtExperienceLexemes.bind(rowset,"experience_lexemes");
 
-			txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+			txtNotes.bind(rowset,"notes");
 
 
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
@@ -260,6 +260,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.11  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.10  2004/01/09 18:56:35  yoda2
  * Small eyewash changes to labels/tabs.
  *

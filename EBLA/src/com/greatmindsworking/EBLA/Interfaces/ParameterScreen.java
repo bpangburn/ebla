@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.sun.rowset.JdbcRowSetImpl;
 import com.nqadmin.swingSet.*;
+import com.nqadmin.swingSet.datasources.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -68,7 +68,7 @@ public class ParameterScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
 		DBConnector dbc = null;
-		JdbcRowSetImpl rowset = null;
+		SSJdbcRowSetImpl rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -76,35 +76,35 @@ public class ParameterScreen extends JInternalFrame {
 	// INITIALIZE "GENERAL" TAB AND CONTENTS
 		EBLAPanel generalPanel   		= new EBLAPanel();
 
-		JTextField txtParameterID 		= new JTextField();
-		JTextField txtDescription 		= new JTextField();
+		SSTextField txtParameterID 		= new SSTextField();
+		SSTextField txtDescription 		= new SSTextField();
 
 	// INITIALIZE "VISION" TAB AND CONTENTS
 		EBLAPanel visionPanel    		= new EBLAPanel();
 
 		SSComboBox cmbEdisonPortVersion	= new SSComboBox();
-		JTextField txtSegColorRadius 	= new JTextField();
-		JTextField txtSegSpatialRadius 	= new JTextField();
-		JTextField txtSegMinRegion 		= new JTextField();
+		SSTextField txtSegColorRadius 	= new SSTextField();
+		SSTextField txtSegSpatialRadius = new SSTextField();
+		SSTextField txtSegMinRegion 	= new SSTextField();
 		SSComboBox cmbSegSpeedUpCode 	= new SSComboBox();
-		JTextField txtSegSpeedUpFactor	= new JTextField();
-		JTextField txtBackGroundPixels 	= new JTextField();
-		JTextField txtMinPixelCount 	= new JTextField();
-		JTextField txtMinFrameCount 	= new JTextField();
+		SSTextField txtSegSpeedUpFactor	= new SSTextField();
+		SSTextField txtBackGroundPixels 	= new SSTextField();
+		SSTextField txtMinPixelCount 	= new SSTextField();
+		SSTextField txtMinFrameCount 	= new SSTextField();
 		SSComboBox cmbReduceColorCode 	= new SSComboBox();
 
 	// INITIALIZE "RESULTS" TAB AND CONTENTS
 		EBLAPanel resultsPanel   		= new EBLAPanel();
 
-		JTextField txtTmpPath 			= new JTextField();
-		JTextField txtFramePrefix 		= new JTextField();
-		JTextField txtSegPrefix 		= new JTextField();
-		JTextField txtPolyPrefix 		= new JTextField();
+		SSTextField txtTmpPath 			= new SSTextField();
+		SSTextField txtFramePrefix 		= new SSTextField();
+		SSTextField txtSegPrefix 		= new SSTextField();
+		SSTextField txtPolyPrefix 		= new SSTextField();
 
 	// INITIALIZE "MISC" TAB AND CONTENTS
 		EBLAPanel miscPanel      		= new EBLAPanel();
 
-		JTextArea txtNotes 				= new JTextArea(30,15);
+		SSTextArea txtNotes 			= new SSTextArea(30,15);
 
 	// INITIALIZE SCREENS CALLED FROM PARAMETER SCREEN AND CORRESPONDING BUTTONS
 		SelectExperiencesScreen selectExperiencesScreen = null;
@@ -140,7 +140,7 @@ public class ParameterScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR PARAMETER DATA
-				rowset = new JdbcRowSetImpl(dbc.getConnection());
+				rowset = new SSJdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -154,9 +154,9 @@ public class ParameterScreen extends JInternalFrame {
 
 
 		// SETUP ACTION LISTENER FOR SPEED UP CODE COMBOBOX
-			cmbSegSpeedUpCode.getComboBox().addActionListener(new ActionListener() {
+			cmbSegSpeedUpCode.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-					if (cmbSegSpeedUpCode.getComboBox().getSelectedIndex() == 2) {
+					if (cmbSegSpeedUpCode.getSelectedIndex() == 2) {
 						txtSegSpeedUpFactor.setEnabled(true);
 					} else {
 						txtSegSpeedUpFactor.setEnabled(false);
@@ -231,47 +231,47 @@ public class ParameterScreen extends JInternalFrame {
 
 		// SET DATABASE COLUMNS FOR EACH PANEL'S WIDGETS ALONG WITH ANY COMBOBOX ITEMS
 			// "GENERAL" TAB
-				txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
+				txtParameterID.bind(rowset,"parameter_id");
 
-				txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+				txtDescription.bind(rowset,"description");
 
 			// "VISION" TAB
 				String[] tmpString1 = {"Original (04-25-2002)", "Revised (04-14-2003)"};
-				cmbEdisonPortVersion.setOption(tmpString1);
-				cmbEdisonPortVersion.setDocument(new SSTextDocument(rowset,"edison_port_version"));
+				cmbEdisonPortVersion.setOptions(tmpString1);
+				cmbEdisonPortVersion.bind(rowset,"edison_port_version");
 
-				txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
+				txtSegColorRadius.bind(rowset,"seg_color_radius");
 
-				txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
+				txtSegSpatialRadius.bind(rowset,"seg_spatial_radius");
 
-				txtSegMinRegion.setDocument(new SSTextDocument(rowset,"seg_min_region"));
+				txtSegMinRegion.bind(rowset,"seg_min_region");
 
 				String[] tmpString2 = {"None", "Medium", "High"};
-				cmbSegSpeedUpCode.setOption(tmpString2);
-				cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
+				cmbSegSpeedUpCode.setOptions(tmpString2);
+				cmbSegSpeedUpCode.bind(rowset,"seg_speed_up_code");
 
-				txtSegSpeedUpFactor.setDocument(new SSTextDocument(rowset, "seg_speed_up_factor"));
+				txtSegSpeedUpFactor.bind(rowset, "seg_speed_up_factor");
 
-				txtBackGroundPixels.setDocument(new SSTextDocument(rowset,"background_pixels"));
+				txtBackGroundPixels.bind(rowset,"background_pixels");
 
-				txtMinPixelCount.setDocument(new SSTextDocument(rowset,"min_pixel_count"));
+				txtMinPixelCount.bind(rowset,"min_pixel_count");
 
-				txtMinFrameCount.setDocument(new SSTextDocument(rowset,"min_frame_count"));
+				txtMinFrameCount.bind(rowset,"min_frame_count");
 
-				cmbReduceColorCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbReduceColorCode.setDocument(new SSTextDocument(rowset,"reduce_color_code"));
+				cmbReduceColorCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbReduceColorCode.bind(rowset,"reduce_color_code");
 
 			// "RESULTS" TAB
-				txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+				txtTmpPath.bind(rowset,"tmp_path");
 
-				txtFramePrefix.setDocument(new SSTextDocument(rowset,"frame_prefix"));
+				txtFramePrefix.bind(rowset,"frame_prefix");
 
-				txtSegPrefix.setDocument(new SSTextDocument(rowset,"seg_prefix"));
+				txtSegPrefix.bind(rowset,"seg_prefix");
 
-				txtPolyPrefix.setDocument(new SSTextDocument(rowset,"poly_prefix"));
+				txtPolyPrefix.bind(rowset,"poly_prefix");
 
 			// "MISC" TAB
-				txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+				txtNotes.bind(rowset,"notes");
 
 
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
@@ -299,16 +299,16 @@ public class ParameterScreen extends JInternalFrame {
 				// ADD WIDGETS
 					currentRow=0;
 
-					visionPanel.addRow(cmbEdisonPortVersion.getComboBox(), currentRow++, "EDISON Port Version");
+					visionPanel.addRow(cmbEdisonPortVersion, currentRow++, "EDISON Port Version");
 					visionPanel.addRow(txtSegColorRadius, currentRow++, "Segmentation Color Radius");
 					visionPanel.addRow(txtSegSpatialRadius, currentRow++, "Segmentation Spatial Radius");
 					visionPanel.addRow(txtSegMinRegion, currentRow++, "Segmentation Minimum Region");
-					visionPanel.addRow(cmbSegSpeedUpCode.getComboBox(), currentRow++, "Segmentation Speed Up");
+					visionPanel.addRow(cmbSegSpeedUpCode, currentRow++, "Segmentation Speed Up");
 					visionPanel.addRow(txtSegSpeedUpFactor, currentRow++, "    Speed Up Factor (0.0 - 1.0)");
 					visionPanel.addRow(txtBackGroundPixels, currentRow++, "Background Pixel Threshold");
 					visionPanel.addRow(txtMinPixelCount, currentRow++, "Min Pixels for Object");
 					visionPanel.addRow(txtMinFrameCount, currentRow++, "Min Frames for Object");
-					visionPanel.addRow(cmbReduceColorCode.getComboBox(), currentRow++, "Reduce Color Depth?");
+					visionPanel.addRow(cmbReduceColorCode, currentRow++, "Reduce Color Depth?");
 
 
 			// "RESULTS" TAB
@@ -370,7 +370,7 @@ public class ParameterScreen extends JInternalFrame {
 			txtParameterID.setEnabled(false);
 
 		// DISABLE REDUCE COLOR DEPTH OPTION
-			cmbReduceColorCode.getComboBox().setEnabled(false);
+			cmbReduceColorCode.setEnabled(false);
 
 	} // end of ParameterScreen constructor
 
@@ -436,6 +436,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.17  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.16  2004/02/25 21:26:07  yoda2
  * Added option for chosing which EDISON port to use.
  *

@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.sun.rowset.JdbcRowSetImpl;
 import com.nqadmin.swingSet.*;
+import com.nqadmin.swingSet.datasources.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -68,15 +68,15 @@ public class AttributeScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR ATTRIBUTE SCREEN
 		DBConnector dbc = null;
-		JdbcRowSetImpl rowset = null;
+		SSJdbcRowSetImpl rowset = null;
 
 	// INITIALIZE ATTRIBUTE SCREEN WIDGETS
-		JTextField txtAttributeID 		= new JTextField();
-		JTextField txtDescription 		= new JTextField();
+		SSTextField txtAttributeID 		= new SSTextField();
+		SSTextField txtDescription 		= new SSTextField();
 		SSComboBox cmbIncludeCode 		= new SSComboBox();
 		SSComboBox cmbTypeCode 			= new SSComboBox();
-		JTextField txtClassName 		= new JTextField();
-		JTextArea txtNotes 				= new JTextArea(20,10);
+		SSTextField txtClassName 		= new SSTextField();
+		SSTextArea txtNotes 			= new SSTextArea(20,10);
 
 		JButton btnClose				= new JButton("Close");
 
@@ -107,7 +107,7 @@ public class AttributeScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR ATTRIBUTE LIST DATA
-				rowset = new JdbcRowSetImpl(dbc.getConnection());
+				rowset = new SSJdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
 				dataNavigator = new SSDataNavigator(rowset);
@@ -144,20 +144,20 @@ public class AttributeScreen extends JInternalFrame {
 
 
 		// SET DATABASE COLUMNS FOR EACH WIDGET
-			txtAttributeID.setDocument(new SSTextDocument(rowset,"attribute_list_id"));
+			txtAttributeID.bind(rowset,"attribute_list_id");
 
-			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+			txtDescription.bind(rowset,"description");
 
-			cmbIncludeCode.setOption(SSComboBox.YES_NO_OPTION);
-			cmbIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
+			cmbIncludeCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+			cmbIncludeCode.bind(rowset,"include_code");
 
 			String[] tmpString = {"Object", "Object-Object Relation"};
-			cmbTypeCode.setOption(tmpString);
-			cmbTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
+			cmbTypeCode.setOptions(tmpString);
+			cmbTypeCode.bind(rowset,"type_code");
 
-			txtClassName.setDocument(new SSTextDocument(rowset,"class_name"));
+			txtClassName.bind(rowset,"class_name");
 
-			txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+			txtNotes.bind(rowset,"notes");
 
 
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
@@ -172,8 +172,8 @@ public class AttributeScreen extends JInternalFrame {
 
 			panel.addRow(txtAttributeID, currentRow++, "Attribute ID");
 			panel.addRow(txtDescription, currentRow++, "Description");
-			panel.addRow(cmbIncludeCode.getComboBox(), currentRow++, "Include Attribute?");
-			panel.addRow(cmbTypeCode.getComboBox(), currentRow++, "Attribute Type");
+			panel.addRow(cmbIncludeCode, currentRow++, "Include Attribute?");
+			panel.addRow(cmbTypeCode, currentRow++, "Attribute Type");
 			panel.addRow(txtClassName, currentRow++, "Attribute Calculation Class");
 			panel.addRow(txtNotes, currentRow++, "Notes");
 
@@ -200,7 +200,7 @@ public class AttributeScreen extends JInternalFrame {
 			txtAttributeID.setEnabled(false);
 
 		// DISABLE TYPE CODE AND CLASS NAME
-			cmbTypeCode.getComboBox().setEnabled(false);
+			cmbTypeCode.setEnabled(false);
 			txtClassName.setEnabled(false);
 
 
@@ -268,6 +268,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.9  2004/01/09 14:22:31  yoda2
  * Modified screens to use a single database connection.
  *

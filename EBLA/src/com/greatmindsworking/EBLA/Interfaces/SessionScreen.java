@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.sun.rowset.JdbcRowSetImpl;
 import com.nqadmin.swingSet.*;
+import com.nqadmin.swingSet.datasources.*;
 import com.greatmindsworking.EBLA.SessionData;
 import com.nqadmin.Utils.DBConnector;
 
@@ -72,7 +72,7 @@ public class SessionScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR SESSION SCREEN
 		DBConnector dbc = null;
-		JdbcRowSetImpl rowset = null;
+		SSJdbcRowSetImpl rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -80,7 +80,7 @@ public class SessionScreen extends JInternalFrame {
 	// INITIALIZE "GENERAL" TAB AND CONTENTS
 		EBLAPanel generalPanel   			= new EBLAPanel();
 
-		JTextField txtDescription 			= new JTextField();
+		SSTextField txtDescription 			= new SSTextField();
 		SSComboBox cmbLogToFileCode       	= new SSComboBox();
 		SSComboBox cmbRandomizeExpCode    	= new SSComboBox();
 		SSComboBox cmbRegenerateImages    	= new SSComboBox();
@@ -90,22 +90,22 @@ public class SessionScreen extends JInternalFrame {
 	// INITIALIZE "ENTITIES" TAB AND CONTENTS
 		EBLAPanel entitiesPanel    			= new EBLAPanel();
 
-		JTextField txtMinSDStart   			= new JTextField();
-		JTextField txtMinSDStop    			= new JTextField();
-		JTextField txtMinSDStep    			= new JTextField();
-		JTextField txtLoopCount    			= new JTextField();
+		SSTextField txtMinSDStart   			= new SSTextField();
+		SSTextField txtMinSDStop    			= new SSTextField();
+		SSTextField txtMinSDStep    			= new SSTextField();
+		SSTextField txtLoopCount    			= new SSTextField();
 		SSComboBox cmbFixedSDCode  			= new SSComboBox();
 
 	// INITIALIZE "LEXEMES" TAB AND CONTENTS
 		EBLAPanel lexemesPanel    			= new EBLAPanel();
 
-		JTextField txtDescToGenerate     	= new JTextField();
+		SSTextField txtDescToGenerate     	= new SSTextField();
 		SSComboBox cmbCaseSensitiveCode 	= new SSComboBox();
 
 	// INITIALIZE "MISC" TAB AND CONTENTS
 		EBLAPanel miscPanel      		= new EBLAPanel();
 
-		JTextArea txtNotes 				= new JTextArea(30,15);
+		SSTextArea txtNotes 				= new SSTextArea(30,15);
 
 	// INITIALIZE SCREENS CALLED FROM SESSION SCREEN AND CORRESPONDING BUTTONS
 		StatusScreen statusScreen = null;
@@ -161,20 +161,20 @@ public class SessionScreen extends JInternalFrame {
 				java.util.Date now = new java.util.Date();
 				txtDescription.setText(_parameterDesc + " - " + now);
 
-				cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbLogToFileCode.getComboBox().setSelectedIndex(1);
+				cmbLogToFileCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbLogToFileCode.setSelectedIndex(1);
 
-				cmbRandomizeExpCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbRandomizeExpCode.getComboBox().setSelectedIndex(1);
+				cmbRandomizeExpCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbRandomizeExpCode.setSelectedIndex(1);
 
-				cmbRegenerateImages.setOption(SSComboBox.YES_NO_OPTION);
-				cmbRegenerateImages.getComboBox().setSelectedIndex(0);
+				cmbRegenerateImages.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbRegenerateImages.setSelectedIndex(0);
 
-				//cmbDisplayVideosCode.setOption(SSComboBox.YES_NO_OPTION);
-				//cmbDisplayVideosCode.getComboBox().setSelectedIndex(1);
+				//cmbDisplayVideosCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				//cmbDisplayVideosCode.setSelectedIndex(1);
 
-				cmbDisplayMessages.setOption(SSComboBox.YES_NO_OPTION);
-				cmbDisplayMessages.getComboBox().setSelectedIndex(0);
+				cmbDisplayMessages.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbDisplayMessages.setSelectedIndex(0);
 
 			// "ENTITIES" TAB
 				txtMinSDStart.setText("5");
@@ -185,14 +185,14 @@ public class SessionScreen extends JInternalFrame {
 
 				txtLoopCount.setText("1");
 
-				cmbFixedSDCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbFixedSDCode.getComboBox().setSelectedIndex(0);
+				cmbFixedSDCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbFixedSDCode.setSelectedIndex(0);
 
 			// "LEXEMES" TAB
 				txtDescToGenerate.setText("0");
 
-				cmbCaseSensitiveCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbCaseSensitiveCode.getComboBox().setSelectedIndex(0);
+				cmbCaseSensitiveCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbCaseSensitiveCode.setSelectedIndex(0);
 
 			// "MISC" TAB
 				// NOTHING TO DO...
@@ -212,11 +212,11 @@ public class SessionScreen extends JInternalFrame {
 					currentRow=0;
 
 					generalPanel.addRow(txtDescription, currentRow++, "Description");
-					generalPanel.addRow(cmbLogToFileCode.getComboBox(), currentRow++, "Log To File?");
-					generalPanel.addRow(cmbRandomizeExpCode.getComboBox(), currentRow++, "Randomize Experiences?");
-					generalPanel.addRow(cmbRegenerateImages.getComboBox(), currentRow++, "Regenerate Images?");
-					//generalPanel.addRow(cmbDisplayVideosCode.getComboBox(), currentRow++, "Display Videos When Ripping?");
-					generalPanel.addRow(cmbDisplayMessages.getComboBox(), currentRow++, "Display Detailed Messages?");
+					generalPanel.addRow(cmbLogToFileCode, currentRow++, "Log To File?");
+					generalPanel.addRow(cmbRandomizeExpCode, currentRow++, "Randomize Experiences?");
+					generalPanel.addRow(cmbRegenerateImages, currentRow++, "Regenerate Images?");
+					//generalPanel.addRow(cmbDisplayVideosCode, currentRow++, "Display Videos When Ripping?");
+					generalPanel.addRow(cmbDisplayMessages, currentRow++, "Display Detailed Messages?");
 
 
 			// "ENTITIES" TAB
@@ -230,7 +230,7 @@ public class SessionScreen extends JInternalFrame {
 					entitiesPanel.addRow(txtMinSDStop, currentRow++, "Stopping Min. Std. Dev.");
 					entitiesPanel.addRow(txtMinSDStep, currentRow++, "Min. Std. Dev. Step Size");
 					entitiesPanel.addRow(txtLoopCount, currentRow++, "# Runs for Each Std. Dev.");
-					entitiesPanel.addRow(cmbFixedSDCode.getComboBox(), currentRow++, "Limit Actual Std. Dev?");
+					entitiesPanel.addRow(cmbFixedSDCode, currentRow++, "Limit Actual Std. Dev?");
 
 
 			// "LEXEMES" TAB
@@ -241,7 +241,7 @@ public class SessionScreen extends JInternalFrame {
 					currentRow=0;
 
 					lexemesPanel.addRow(txtDescToGenerate, currentRow++, "# Descriptions To Generate");
-					lexemesPanel.addRow(cmbCaseSensitiveCode.getComboBox(), currentRow++, "Are Lexemes Case Sensitive?");
+					lexemesPanel.addRow(cmbCaseSensitiveCode, currentRow++, "Are Lexemes Case Sensitive?");
 
 
 			// "MISC" TAB
@@ -299,28 +299,28 @@ public class SessionScreen extends JInternalFrame {
 				String desc = txtDescription.getText();
 
 				boolean boolLogToFile = false;
-				if (cmbLogToFileCode.getComboBox().getSelectedIndex() == 1) {
+				if (cmbLogToFileCode.getSelectedIndex() == 1) {
 					boolLogToFile = true;
 				}
 
 				boolean boolRandomizeExp = false;
-				if (cmbRandomizeExpCode.getComboBox().getSelectedIndex() == 1) {
+				if (cmbRandomizeExpCode.getSelectedIndex() == 1) {
 					boolRandomizeExp = true;
 				}
 
 				boolean boolRegenerateImages = false;
-				if (cmbRegenerateImages.getComboBox().getSelectedIndex() == 1) {
+				if (cmbRegenerateImages.getSelectedIndex() == 1) {
 					boolRegenerateImages = true;
 				}
 
 				//boolean boolDisplayVideos = false;
-				//if (cmbDisplayVideosCode.getComboBox().getSelectedIndex() == 1) {
+				//if (cmbDisplayVideosCode.getSelectedIndex() == 1) {
 				//	boolDisplayVideos = true;
 				//}
 				boolean boolDisplayVideos = true;
 
 				boolean boolDisplayMessages = false;
-				if (cmbDisplayMessages.getComboBox().getSelectedIndex() == 1) {
+				if (cmbDisplayMessages.getSelectedIndex() == 1) {
 					boolDisplayMessages = true;
 				}
 
@@ -347,7 +347,7 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolFixedSD = false;
-				if (cmbFixedSDCode.getComboBox().getSelectedIndex() == 1) {
+				if (cmbFixedSDCode.getSelectedIndex() == 1) {
 					boolFixedSD = true;
 				}
 
@@ -359,7 +359,7 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolCaseSensitive = false;
-				if (cmbCaseSensitiveCode.getComboBox().getSelectedIndex() == 1) {
+				if (cmbCaseSensitiveCode.getSelectedIndex() == 1) {
 					boolCaseSensitive = true;
 				}
 
@@ -455,6 +455,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.14  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.13  2004/01/10 04:08:54  yoda2
  * Renamed the "Lexeme Generation" tab "Lexical Analysis and Generation"
  *
