@@ -82,6 +82,9 @@ public class EBLAPanel extends JPanel {
 	/**
 	 * Method to add a component to the panel using the default dimensions.
 	 *
+	 * For consistent behavior, both minimum and preferred size are set for all
+	 * widgets.
+	 *
 	 * @param _component widget to add to panel
 	 *
 	 * @return new component added to panel
@@ -94,29 +97,33 @@ public class EBLAPanel extends JPanel {
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum & preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumLabelDimension());
+					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
 			} else if (_component instanceof JTextField) {
 			// SINGLE-LINE TEXTBOX
 				// border
 				//	_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JButton){
 			// BUTTON
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize  (EBLADims.getMediumButtonDimension());
+					_component.setPreferredSize  (EBLADims.getMediumButtonDimension());
 			} else if (_component instanceof JComboBox) {
 			// COMBOBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize  (EBLADims.getMediumTextFieldDimension());
+					_component.setPreferredSize  (EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
@@ -180,6 +187,9 @@ public class EBLAPanel extends JPanel {
 	/**
 	 * Method to add a component to the panel with the specified (grid bag) constraints.
 	 *
+	 * For consistent behavior, both minimum and preferred size are set for all
+	 * widgets.
+	 *
 	 * @param _component widget to add to panel
 	 * @param _constraints (grid bag) constraints for widget
 	 */
@@ -191,7 +201,7 @@ public class EBLAPanel extends JPanel {
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumLabelDimension());
 					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
 			} else if (_component instanceof JTextField) {
@@ -199,7 +209,7 @@ public class EBLAPanel extends JPanel {
 				// border
 				//	_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
 					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JButton){
@@ -207,15 +217,17 @@ public class EBLAPanel extends JPanel {
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumButtonDimension());
+					_component.setPreferredSize(EBLADims.getMediumButtonDimension());
 			} else if (_component instanceof JComboBox) {
 			// COMBOBOX
 				// border
-					_component.setBorder(softBevelBorder);
+				//	_component.setBorder(softBevelBorder);
 
-				// minimum dimension
+				// set minimum and preferred dimensions
 					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
@@ -260,18 +272,69 @@ public class EBLAPanel extends JPanel {
 	 */
 	public void addRow(JComponent _component, int _row, String _labelText) {
 
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = _row;
+		// CREATE LABEL
+			JLabel tmpLabel	= new JLabel(_labelText);
 
-		JLabel tmpLabel	= new JLabel(_labelText);
+		// GENERATE CONSTRAINTS FOR POSITIONING WIDGETS
+			GridBagConstraints constraints = new GridBagConstraints();
 
-		add(tmpLabel, constraints);
+		// SET LABEL POSITION
+			constraints.gridx = 0;
+			constraints.gridy = _row;
 
-		constraints.gridx++;
-		add(_component, constraints);
+		// ADD LABEL
+			add(tmpLabel, constraints);
+
+		// SET WIDGET POSITION
+			constraints.gridx++;
+
+		// ADD WIDGET
+			add(_component, constraints);
+
+		// ADD LISTENER TO BRING FOCUS TO TEXT FIELDS WHEN MOUSE IS MOVED OVER LABEL
+			if (_component instanceof JTextField || _component instanceof JTextArea) {
+				tmpLabel.addMouseListener(new MyMouseListener(_component));
+			}
 
 	} // end public void addRow
+
+
+
+	protected class MyMouseListener implements MouseListener {
+
+		Component component = null;
+
+		public MyMouseListener(Component _component){
+			component = _component;
+		}
+
+		public void mouseClicked(MouseEvent ae) {
+			if (component instanceof JTextField) {
+				((JTextField)component).requestFocus();
+				((JTextField)component).selectAll();
+			} else {
+				((JTextArea)component).requestFocus();
+			}
+		}
+
+		public void mouseEntered(MouseEvent me){
+			if (component instanceof JTextField) {
+				((JTextField)component).requestFocus();
+				((JTextField)component).selectAll();
+			} else {
+				((JTextArea)component).requestFocus();
+			}
+		}
+
+		public void mouseExited(MouseEvent me){
+		}
+
+		public void mousePressed(MouseEvent me){
+		}
+
+		public void mouseReleased(MouseEvent me){
+		}
+	}
 
 
 
@@ -281,6 +344,11 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/23 23:18:47  yoda2
+ * Continued code cleanup.
+ * Discovered that both PreferredSize and MinimumSize must be set to generate consistent widget widths across all tabs on a given screen.
+ * Added addRow() method to EBLAPanel to auto-add labels to widgets on a given panel.
+ *
  * Revision 1.4  2003/12/03 02:04:21  yoda2
  * Widget border tweaks.
  *
