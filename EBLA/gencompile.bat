@@ -7,4 +7,4 @@ REM
 echo off
 rmdir .\bin /s
 mkdir .\bin
-javac -source 1.4 -target 1.4 -Xlint:deprecation -Xlint:unchecked -d .\bin -classpath .;.\jars\rowset.jar;.\jars\pg74.1jdbc3.jar;.\jars\utils.jar; .\src\com\greatmindsworking\EDISON\segm\*.java .\src\com\greatmindsworking\EDISON\utils\*.java
+javac -source 1.4 -target 1.4 -Xlint:deprecation -Xlint:unchecked -d .\bin -classpath .;.\jars\rowset.jar;.\jars\postgresql-8.0-310.jdbc3.jar; .\src\com\greatmindsworking\utils\*.java .\src\com\greatmindsworking\EDISON\segm\*.java .\src\com\greatmindsworking\EDISON\utils\*.java
