@@ -220,7 +220,7 @@ public class ParameterScreen extends JInternalFrame {
 					parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
 
 					if (sessionScreen == null) {
-						sessionScreen = new SessionScreen(desktop, parameterID);
+						sessionScreen = new SessionScreen(desktop, parameterID, txtDescription.getText());
 
 						sessionScreen.addInternalFrameListener(new InternalFrameAdapter() {
 						// FRAME CLOSED
@@ -441,6 +441,10 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2003/12/31 15:46:37  yoda2
+ * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
+ * Added listener to save current record if form loses focus.
+ *
  * Revision 1.8  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *

@@ -123,7 +123,7 @@ public class SessionScreen extends JInternalFrame {
 	 *
 	 * @param the container in which the screen has to showup.
 	 */
-	public SessionScreen(Container _desktop,long _parameterID) {
+	public SessionScreen(Container _desktop,long _parameterID, String _parameterDesc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE SESSION SCREEN
 			super("EBLA - Session Screen",false,true,true,true);
 
@@ -138,7 +138,6 @@ public class SessionScreen extends JInternalFrame {
 
 		// SETUP ACTION LISTENER FOR START EBLA BUTTON
 			btnStartEBLA.addActionListener(new StartEBLAListener());
-
 
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
@@ -155,6 +154,9 @@ public class SessionScreen extends JInternalFrame {
 
 		// SET COMBOBOX ITEMS AND VARIOUS DEFAULTS FOR EACH PANEL
 			// "GENERAL" TAB
+				java.util.Date now = new java.util.Date();
+				txtDescription.setText(_parameterDesc + " - " + now);
+
 				cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
 				cmbLogToFileCode.getComboBox().setSelectedIndex(1);
 
@@ -456,6 +458,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2003/12/31 19:38:08  yoda2
+ * Fixed various thread synchronization issues.
+ *
  * Revision 1.8  2003/12/31 16:21:35  yoda2
  * Removed display video option - doesn't apply to GUI as frames are always displayed during rip.
  *
