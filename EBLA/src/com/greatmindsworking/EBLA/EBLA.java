@@ -375,7 +375,7 @@ public class EBLA extends Thread {
 										sql = "UPDATE parameter_experience_data SET calc_status_code=1, calc_timestamp=now()"
 											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 
-										tmpState.executeQuery(sql);
+										tmpState.executeUpdate(sql);
 								}
 
 							// IF UPDATING frame_analysis_data, DELETE ANY EXISTING DATA FOR CURRENT EXPERIENCE
@@ -441,7 +441,7 @@ public class EBLA extends Thread {
 			// PERFORM VISION PROCESSING FOR ALL EXPERIENCES ASSOCIATED WITH
 			// CURRENT PARAMETER SET IF NOT ALREADY DONE
 
-			// UPDATE STATUS SCREEB
+			// UPDATE STATUS SCREEN
 			// SET STATUS SCREEN TEXT
 				// UPDATE STATUS TEXT #1
 					statusScreen.updateStatus(1, "Current Operation: Video Processing");
@@ -468,7 +468,7 @@ public class EBLA extends Thread {
 							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
 							+ "		WHERE parameter_id=" + sd.getParameterID()
 // check next line...
-							+ " 	AND (calc_status_code=0 OR (now()-calc_timestamp)>" + maxCalcMS + ") LIMIT 1);";
+							+ " 	AND (calc_status_code=0 OR (calc_status_code=1 AND (now()-calc_timestamp)>" + maxCalcMS + ")) LIMIT 1);";
 
 					// CREATE STATEMENT FOR EXPERIENCES
 						experienceState = dbc.getStatement();
@@ -1065,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.39  2004/02/25 21:58:09  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.38  2004/02/25 21:24:45  yoda2
  * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
  *
