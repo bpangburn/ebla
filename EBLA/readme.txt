@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002, Brian E. Pangburn
+Copyright (c) 2002-2003, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,9 @@ Georgescu at the Robust Image Understanding Laboratory at Rutgers University
 (http://www.caip.rutgers.edu/riul/).  See the "seg_readme.txt" file for
 more information.
 
+The graphical user interface (GUI) for EBLA was developed in part by
+Prasanth R. Pasala.
+
 
 ==============================================================================
 DATABASE INSTALLATION
@@ -131,22 +134,6 @@ GUI interfaces for both Windows and Linux:
 
 
 ==============================================================================
-DATABASE CONNECTION
-==============================================================================
-
-The parameters needed to connect to the database server from EBLA are stored
-in a file called "connect.txt" in the EBLA installation directory.  This file
-should contain a single line (separated by semicolons) with the IP address of
-the database server, the port used by PostgreSQL (normally 5432), the name of
-the EBLA database (normally ebla_data), the username, and the password.  The
-file, by default, contains only placeholders, which MUST be replaced with
-actual parameters.  In addition, EBLA only reads the first line of the file so
-all of the parameters MUST be on the first line.  For example:
-
-127.0.0.1;5432;ebla_data;postgres;mypass
-
-
-==============================================================================
 DATASET
 ==============================================================================
 
@@ -156,9 +143,9 @@ the files were delivered to EBLA as AVI files.
      
 The set of animations are contained in ./experiences/ subdirectory of
 the installation directory.  The full set of real videos used to
-evaluate EBLA is about 350MB compressed.  I will be happy to make it available
-on CD for $5 (to cover the cost of burning and mailing the CD).  Please
-e-mail me at ebla@greatmindsworking.com for details.
+evaluate EBLA is just over 150MB compressed.  I will be happy to make it
+available on request.  Please e-mail me at ebla@greatmindsworking.com for
+details.
 
 Because the vision processing, entity extraction, and lexical resolution
 stages of EBLA can be run separately, the entity extraction and lexical
@@ -169,11 +156,18 @@ from the vision processing stage.
 
 
 ==============================================================================
-EBLA PARAMETERS
+EBLA PARAMETERS & SESSION SETTINGS
 ==============================================================================
 
-The parameters for EBLA are contained in the parameter_data table of the
-ebla_data database.  They control almost every aspect of EBLA's execution.
+All of the settings needed to control the operation of EBLA are stored in
+the parameter_data and session_data tables of ebla_data database.
+
+In general, the values in parameter_data control the vision processing stage
+and the values in session_data control the entity extraction and lexical
+resolution stages. 
+
+
+They control almost every aspect of EBLA's execution.
 
 A full discussion of EBLA's implementation including the function of many of
 its parameters is contained in Chapter 5 of my dissertation.  See 
@@ -288,6 +282,14 @@ notes	           (blank) notes about current set of runtime parameters
 
 
 ==============================================================================
+EBLA SESSION SETTINGS
+==============================================================================
+
+The parameters for EBLA are contained in the parameter_data table of the
+ebla_data database.  They control almost every aspect of EBLA's execution.
+
+
+==============================================================================
 RESULTS
 ==============================================================================
 
@@ -372,37 +374,28 @@ the Java 2 SDK 1.4 available from http://java.sun.com/j2se/1.4/
 Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
 early versions of Sun's ImageIO class.
 
-EBLA requires the Java Media Framework 2.1.1 available from
-http://java.sun.com/products/java-media/jmf/2.1.1/download.html
-
-EBLA also requires a JDBC driver for PostgreSQL available from
-http://jdbc.postgresql.org. For a Windows installation, the JAR file for the
-PostgreSQL JDBC driver should be placed in BOTH c:\[jdk]\jre\lib\ext for the
-JDK (e.g. for access by the javac compiler) AND
-c:\program files\[java]\[jdk]\jre\lib\ext for the JRE (e.g. for access by
-the java runtime library)
-
-To compile EBLA:
-  1. extract the files (retaining the directory structure)
-  2. change to the directory containing this file (/EBLA/ by default)
-  3. type "javac ./com/greatmindsworking/EBLA/EBLA.java"
+EBLA uses the following JAR files which have been included in the /jars
+subdirectory:
+  jmf.jar		Java Media Framework
+  pg73jdbc3.jar		PostgreSQL JDBC driver
+  rowset.jar		Sun's JDBC RowSet implementation
+  swingUtils.jar	The Pangburn Company's database Swing utilities
+  utils.jar		The Pangburn Company's misc Java utilities
+  
+Everything needed to run EBLA has been included in the SourceForge release
+file.  To install EBLA, simply download the release file to the desired
+folder/directory and type:
+  jar -xf ebla.jar
+  
+This will create an "EBLA" folder/directory containing the entire EBLA system.
+To run EBLA, either double-click the ebla.jar file in the EBLA folder/
+directory or type:
+  java -jar ebla.jar
   
 To generate the JavaDoc documentation for EBLA:
   1. change to the directory containing this file (/EBLA/ by default)
   2. type "javadoc -d html ./com/greatmindsworking/EBLA/*.java 
-                           ./com/greatmindsworking/EDISON/segm/*.java"
-  
-To run EBLA:
-  1. change to the directory containing this file (/EBLA/ by default)
-  2. type "java com.greatmindsworking.EBLA.EBLA <parameter id>"
-  
-  e.g. "java com.greatmindsworking.EBLA.EBLA 1"
-  
-Note that <parameter id> is the ID of the parameter_data record in the
-ebla_data PostgreSQL database containing the runtime parameters for EBLA.
 
-Running EBLA with out a parameter ID will force EBLA to use the default
-parameters contained in the Params class.
 
 
 ==============================================================================
