@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ package com.greatmindsworking.EBLA;
 
 import java.sql.*;
 import java.io.*;
+import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
 
 
@@ -85,25 +87,28 @@ import java.io.*;
  *     forName()
  *  2. revisit color attributes (R, G, B) and color reduction
  *  3. weight words based on # of prior occurrences when generating descriptions
- *  4. add logic to FrameProcessor to discard intermediate images based on
- *     saveImages Boolean in Params class
- *  5. revise drawPolys method in FrameProcessor to use cfoArrayList rather
+ *  4. revise drawPolys method in FrameProcessor to use cfoArrayList rather
  *     than _polyList
  *</pre>
  *<p>
  * @author	$Author$
  * @version	$Revision$ $Date$
  */
-public class EBLA {
+public class EBLA extends Thread {
 	/**
 	 * database connection info
 	 */
 	private DBConnector dbc = null;
 
 	/**
-	 * runtime parameters
+	 * calculation session runtime options
 	 */
-	private Params p = null;
+	private Session session = null;
+
+	/**
+	 * vision processing parameters
+	 */
+	private Params params = null;
 
 	/**
 	 * name of semi-colon separated text file for performance results
@@ -120,61 +125,50 @@ public class EBLA {
 	 */
 	private final static String descriptionFN = "description.ssv";
 
+	/**
+	 * maximum time (in milliseconds) allowed for a client to perform
+	 * the vision processing for a given experience (try 10 minutes)
+	 */
+	private final static int maxCalcMS = 1000 * 60 * 10;
+
+	/**
+	 * EBLA status screen where intermediate images should be displayed as they are processed
+	 */
+	private StatusScreen statusScreen = null;
+
 
 
 	/**
-	 * Class constructor that initializes database connection and looks up runtime
-	 * parameters based on the user specified parameter ID
+	 * Class constructor that initializes database connection and retrieves
+	 * the vision processing parameters based on the supplied Session object.
 	 *
-	 * @param _parameterID	long containing database record id for runtime parameters
-	 *						(-1 if unavailable)
+	 * @param _session		Session object with EBLA runtime options
+	 * @param _dbc			connection to database containing parameter table
+	 * @param _statusScreen	EBLA status window
 	 */
-    public EBLA(long _parameterID) {
+    public EBLA(Session _session, DBConnector _dbc, StatusScreen _statusScreen) {
 
 		try {
+			// SET SESSION OBJECT
+				session = _session;
 
-			// INITIALIZE DATABASE DRIVER AND CONNECTION WITH AUTOCOMMIT ON
-				dbc = new DBConnector(true);
+			// SET DATABASE OBJECT
+				dbc = _dbc;
 
-			// INITIALIZE RUNTIME PARAMETER OBJECT
-				p = new Params(dbc, _parameterID);
+			// SET STATUS WINDOW
+				statusScreen = _statusScreen;
+
+			// INITIALIZE VISION PROCESSING PARAMETERS OBJECT
+				params = new Params(dbc, session.getParameterID());
 
 			// REDIRECT OUTPUT TO LOG FILE
-				if (p.getLogToFile()) {
-					PrintStream outputPS = new PrintStream (new FileOutputStream ("ebla_log.txt"));
+				if (session.getLogToFile()) {
+					PrintStream outputPS = new PrintStream (new FileOutputStream ("ebla_log_"
+						+ session.getSessionID() + ".txt"));
 					System.setOut (outputPS);
 					System.setErr (outputPS);
 				}
 
-		} catch (Exception e) {
-			System.out.println("\n--- EBLA Constructor Exception ---\n");
-			e.printStackTrace();
-		}
-
-	} // end EBLA()
-
-
-
-	/**
-	 * Class constructor that initializes database connection and sets the runtime
-	 * parameters based on the defaults in the Params class
-	 */
-    public EBLA() {
-
-		try {
-
-			// INITIALIZE DATABASE DRIVER AND CONNECTION WITH AUTOCOMMIT ON
-				dbc = new DBConnector(true);
-
-			// INITIALIZE RUNTIME PARAMETER OBJECT
-				p = new Params();
-
-			// REDIRECT OUTPUT TO LOG FILE
-				if (p.getLogToFile()) {
-					PrintStream outputPS = new PrintStream (new FileOutputStream ("ebla_log.txt"));
-					System.setOut (outputPS);
-					System.setErr (outputPS);
-				}
 		} catch (Exception e) {
 			System.out.println("\n--- EBLA Constructor Exception ---\n");
 			e.printStackTrace();
@@ -202,60 +196,420 @@ public class EBLA {
 	 * Params class.  This allows the computationally expensive video
 	 * processing phase to be run separately from the other phases.
 	 */
-	public void processExperiences() {
+	private void processExperiences() {
 
 		// DECLARATIONS
-			Statement tmpState;			// USED TO EXECUTE DELETE STATEMENTS AGAINST frame_analysis_data
-			Statement experienceState;  // STATEMENT FOR CREATING EXPERIENCE DATA RESULTSET
-			ResultSet experienceRS; 	// RESULTSET FOR QUERIES AGAINST experience_data TABLE
-			String sql;					// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
+			Statement tmpState=null;		// USED TO EXECUTE MISC QUERIES
+			ResultSet tmpRS=null;			// USED TO HOLD RESULTS OF MISC QUERIES
+			Statement experienceState=null;	// STATEMENT FOR CREATING EXPERIENCE DATA RESULTSET
+			ResultSet experienceRS=null;	// RESULTSET FOR QUERIES AGAINST experience_data TABLE
+			String sql;						// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 
-			long experienceID;			// DATABASE RECORD ID OF "CURRENT" EXPERIENCE
-			String moviePath;			// PATH TO "CURRENT" EXPERIENCE SOURCE MOVIE
-			String experienceLabel; 	// LABEL OF "CURRENT" EXPERIENCE - USED FOR NAMING TEMP FILE DIRECTORY
-			String experiencePath;		// PATH TO TMP DIRECTORY FOR PROCESSING "CURRENT" EXPERIENCE
-			int frameCount;				// NUMBER OF FRAMES IN "CURRENT" EXPERIENCE
-			String lexemes;				// LEXEMES (WORDS) IN LANGUAGE ASSOCIATED WITH "CURRENT" EXPERIENCE
+			long runID=0;					// DATABASE RECORD ID FOR CURRENT CALCULATION RUN
+			long experienceID=0;			// DATABASE RECORD ID OF "CURRENT" EXPERIENCE
+			String moviePath;				// PATH TO "CURRENT" EXPERIENCE SOURCE MOVIE
+			String expTmpPath; 				// SUBDIRECTORY TO STORE INTERMEDIATE IMAGES GENERATED FOR EACH EXPERIENCE
+											// APPENDED TO tmp_path IN parameter_data
+			int frameCount=0;					// NUMBER OF FRAMES IN "CURRENT" EXPERIENCE
+			String lexemes;					// LEXEMES (WORDS) IN LANGUAGE ASSOCIATED WITH "CURRENT" EXPERIENCE
 
-			long experienceIndex;		// COUNTER USED TO TRACK ORDER THAT EXPERIENCES ARE PROCESSES
+			long experienceIndex=0;			// COUNTER USED TO TRACK ORDER THAT EXPERIENCES ARE PROCESSES
 
-			java.util.Date startTime;	// USED TO TIME DURATION OF PROCESSING FOR EACH SET OF EXPERIENCES
+			java.util.Date startTime;		// USED TO TIME DURATION OF PROCESSING FOR EACH SET OF EXPERIENCES
 
-			int loopCount;				// CUMULATIVE # OF EXPERIENCES PROCESSED (i.e. NOT RESET FOR EACH BATCH)
+			int loopCount=0;				// CUMULATIVE # OF EXPERIENCES PROCESSED (i.e. NOT RESET FOR EACH BATCH)
+
+			int calcStatusCode=0;			// INDICATES WHETHER OR NOT frame_analysis_data NEEDS TO BE RECALCUALTED
+											// FOR THE CURRENT EXPERIENCE
+			long calcElapsedTime;			// TIME ELAPSED SINCE LAST PERSON STARTED frame_analysis_data
+											// CALCULATIONS FOR THE CURRENT EXPERIENCE
+			boolean updateFAD=false;		// BOOLEAN FLAG INDICATING WHETHER frame_analysis_data SHOULD BE
+											// UPDATED DURING VIDEO PROCESSING FOR THE CURRENT EXPERIENCE
+			long parameterExperienceID=0;	// ID OF RECORD FROM parameter_experience_data MAPPING EXPERIENCE TO
+											// PARAMETERS
+			boolean visionDone=false;		// INDICATES WHETHER OR NOT frame_analysis_data RECORDS REMAIN TO BE
+											// CALCULATED FOR THE EXPERIENCES IN THE CURRENT SESSION
+			int experienceCount=0;			// # OF EXPERIENCES TO BE ANALYIZED IN CURRENT SESSION
+			int progressBarValue = 0;		// USED FOR UPDATING PROGRESS BAR
+
+			FileWriter fo1 = null;
+			FileWriter fo2 = null;
+			FileWriter fo3 = null;
+
+			Date currentTimeStamp=null;
+			Date priorTimeStamp=null;
 
 
 		try {
+			// CREATE TMP STATEMENT
+				tmpState = dbc.getStatement();
 
-			// INITIALIZE LOG FILES
-				FileWriter fo1 = new FileWriter("performance.ssv");
+			// DETERMINE MAX # OF EXPERIENCES THAT WILL BE PROCESSED IN ORDER TO SET STATUS BAR
+				sql = "SELECT COUNT(*) AS row_count FROM parameter_experience_data"
+					+ " WHERE parameter_id = " + session.getParameterID() + ";";
+				tmpRS = tmpState.executeQuery(sql);
+				tmpRS.next();
+				experienceCount = tmpRS.getInt("row_count");
+				tmpRS.close();
+
+			// SEE IF USER WANTS TO REGENERATE ALL INTERMEDIATE IMAGES
+			// GENERATED BY VISION PROCESSING SYSTEM
+				if (session.getRegenIntImages()) {
+
+					// INITIALIZE PROGRESS BAR...
+						statusScreen.setBarMax(experienceCount);
+
+					// SET STATUS SCREEN TEXT
+						statusScreen.updateStatus("Regenerating Intermediate Images...");
+
+					// ALLOW STATUS SCREEN TO REFRESH
+						Thread.sleep(100);
+
+					// QUERY EXPERIENCES IN experience_data BASED ON MAPPINGS IN parameter_experience_data
+						sql = "SELECT * FROM experience_data"
+							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
+							+ "		WHERE parameter_id=" + session.getParameterID() + ");";
+
+					// CREATE STATEMENT FOR EXPERIENCES
+						experienceState = dbc.getStatement();
+
+					// EXECUTE QUERY
+						experienceRS = experienceState.executeQuery(sql);
+
+					// CREATE TMP STATEMENT
+					//	tmpState = dbc.getStatement();
+
+					// RIP FRAMES FOR EACH EXPERIENCE AND PERFORM VISION PROCESSING ON EACH
+					//
+					// FOR EACH EXPERIENCE IN parameter_experience_data WHERE
+					// calc_status_code=0:
+					//   1. SET calc_status_code to 1
+					//   2. DELETE ANY DATA IN frame_analysis_data BASED ON parameter_experience_id
+					//   3. PROCESS FRAMES AND WRITE TO frame_analysis_data
+					//   4. SET calc_status_code to 2
+						while (experienceRS.next()) {
+							// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
+								if (Thread.interrupted()) {
+							    	throw new InterruptedException();
+                				}
+
+							// UPDATE PROGRESS BAR
+								progressBarValue++;
+								statusScreen.updateStatus(progressBarValue);
+								Thread.sleep(100);
+
+							// EXTRACT EXPERIENCE ID
+								experienceID = experienceRS.getLong("experience_id");
+
+							// INCREMENT EXPERINCE INDEX
+								experienceIndex++;
+
+							// EXTRACT PATH TO MOVIE
+								moviePath = experienceRS.getString("video_path");
+
+							// EXTRACT SUBDIRECTORY FOR STORAGE OF INTERMEDIATE IMAGES
+								expTmpPath = experienceRS.getString("tmp_path");
+
+							// BUILD FULL PATH FOR STORAGE OF INTERMEDIATE IMAGES
+								expTmpPath = params.getTmpPath() + expTmpPath;
+
+							// IF PATH/DIRECTORY EXISTS, DELETE ANY FILES - OTHERWISE CREATE IT
+								File expTmpDir = new File(expTmpPath);
+								if (expTmpDir.isDirectory()) {
+									String fileList[] = expTmpDir.list();
+									for (int k=0; k<fileList.length; k++) {
+										File currentFile = new File(expTmpPath + "/" + fileList[k]);
+										currentFile.delete();
+									}
+								} else {
+									expTmpDir.mkdirs();
+								}
+
+							// INITIALIZE frame_analysis_data UPDATE FLAG
+								updateFAD = false;
+
+							// DETERMINE IF frame_analysis_data SHOULD BE MODIFIED FOR CURRENT EXPERIENCE
+// check next line!!!
+								sql = "SELECT parameter_experience_id, calc_status_code, now() as current_timestamp, calc_timestamp as prior_timestamp"
+									+ " FROM parameter_experience_data"
+									+ " WHERE parameter_id=" + session.getParameterID()
+									+ " AND experience_id=" + experienceID + ";";
+
+								tmpRS = tmpState.executeQuery(sql);
+								tmpRS.next();
+
+								parameterExperienceID = tmpRS.getLong("parameter_experience_id");
+								calcStatusCode = tmpRS.getInt("calc_status_code");
+								currentTimeStamp = tmpRS.getDate("current_timestamp");
+								priorTimeStamp = tmpRS.getDate("prior_timestamp");
+								calcElapsedTime = currentTimeStamp.getTime() - priorTimeStamp.getTime();
+
+								tmpRS.close();
+
+								if ((calcStatusCode==0) || ((calcStatusCode==1) && (calcElapsedTime > maxCalcMS))) {
+									// CHANGE frame_analysis_data UPDATE FLAG
+										updateFAD = true;
+
+									// UPDATE DATABASE
+										sql = "UPDATE parameter_experience_data SET calc_status_code=1, calc_timestamp=now()"
+											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+
+										tmpState.executeQuery(sql);
+								}
+
+							// IF UPDATING frame_analysis_data, DELETE ANY EXISTING DATA FOR CURRENT EXPERIENCE
+								if (updateFAD) {
+									sql = "DELETE FROM frame_analysis_data"
+										+ " WHERE parameter_experience_id = " + parameterExperienceID + ";";
+
+									tmpState.executeUpdate(sql);
+								}
+
+							// CREATE A FRAME GRABBER TO EXTRACT IMAGES
+								FrameGrabber fg = new FrameGrabber(moviePath, (expTmpPath + params.getFramePrefix()),
+									statusScreen, session.getDisplayMovie());
+
+							// RIP FRAMES
+								frameCount = fg.ripFrames();
+
+							// DISPOSE OF FRAME GRABBER AND SET TO NULL
+								fg.dispose();
+								fg = null;
+
+							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
+								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
+									expTmpPath, dbc, params, updateFAD, statusScreen);
+
+							// PROCESS FRAMES
+								fp.processFrames();
+
+							// SET FRAME PROCESSOR TO NULL
+								fp = null;
+
+							// IF UPDATING frame_analysis_data, INDICATE THAT CALCS FOR CURRENT EXPERIENCE
+							// HAVE BEEN COMPLETED IN parameter_experience_data
+								if (updateFAD) {
+									sql = "UPDATE parameter_experience_data SET calc_status_code=2"
+										+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+
+									tmpState.executeUpdate(sql);
+								}
+						} // end while (experienceRS.next())
+
+				} // end if (session.getRegenIntImages())
+
+			// PERFORM VISION PROCESSING FOR ALL EXPERIENCES ASSOCIATED WITH
+			// CURRENT PARAMETER SET IF NOT ALREADY DONE
+
+			// UPDATE STATUS SCREEB
+			// SET STATUS SCREEN TEXT
+				statusScreen.updateStatus("Performing Video Analysis for Unprocessed Experiences...");
+				progressBarValue = 0;
+				statusScreen.updateStatus(progressBarValue);
+				Thread.sleep(100);
+
+			// INITIALIZE VISION PROCESSING FLAG
+				visionDone = false;
+
+			// LOOP THROUGH REMAINING UNPROCESSED VIDEOS
+				while (!visionDone) {
+					// QUERY FIRST EXPERIENCE WHERE VISION PROCESSING NEEDS TO BE DONE
+					// BASED ON MAPPINGS AND CALC STATUS IN parameter_experience_data
+						sql = "SELECT * FROM experience_data"
+							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
+							+ "		WHERE parameter_id=" + session.getParameterID()
+// check next line...
+							+ " 	AND calc_status_code=0 or (now()-calc_timestamp)>" + maxCalcMS + " LIMIT 1);";
+
+					// CREATE STATEMENT FOR EXPERIENCES
+						experienceState = dbc.getStatement();
+
+					// EXECUTE QUERY
+						experienceRS = experienceState.executeQuery(sql);
+
+					// CREATE TMP STATEMENT
+					//	tmpState = dbc.getStatement();
+
+					// RIP FRAMES AND PERFORM VISION PROCESSING FOR CURRENT EXPERIENCE (IF ANY)
+					//   1. SET calc_status_code to 1
+					//   2. DELETE ANY DATA IN frame_analysis_data BASED ON parameter_experience_id
+					//   3. PROCESS FRAMES AND WRITE TO frame_analysis_data
+					//   4. SET calc_status_code to 2
+						if (experienceRS.next()) {
+							// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
+								if (Thread.interrupted()) {
+									throw new InterruptedException();
+                				}
+
+							// UPDATE PROGRESS BAR
+								progressBarValue++;
+								statusScreen.updateStatus(progressBarValue);
+								Thread.sleep(100);
+
+							// EXTRACT EXPERIENCE ID
+								experienceID = experienceRS.getLong("experience_id");
+
+							// INCREMENT EXPERINCE INDEX
+								experienceIndex++;
+
+							// EXTRACT PATH TO MOVIE
+								moviePath = experienceRS.getString("video_path");
+
+							// EXTRACT SUBDIRECTORY FOR STORAGE OF INTERMEDIATE IMAGES
+								expTmpPath = experienceRS.getString("tmp_path");
+
+							// BUILD FULL PATH FOR STORAGE OF INTERMEDIATE IMAGES
+								expTmpPath = params.getTmpPath() + expTmpPath;
+
+							// IF PATH/DIRECTORY EXISTS, DELETE ANY FILES - OTHERWISE CREATE IT
+								File expTmpDir = new File(expTmpPath);
+								if (expTmpDir.isDirectory()) {
+									String fileList[] = expTmpDir.list();
+									for (int k=0; k<fileList.length; k++) {
+										File currentFile = new File(expTmpPath + "/" + fileList[k]);
+										currentFile.delete();
+									}
+								} else {
+									expTmpDir.mkdirs();
+								}
+
+							// SET frame_analysis_data UPDATE FLAG
+								updateFAD = true;
+
+							// RETRIEVE parameter_experience_id
+								sql = "SELECT parameter_experience_id FROM parameter_experience_data"
+									+ " WHERE parameter_id = " + session.getParameterID()
+									+ " AND experience_id = " + experienceID + ";";
+
+								tmpRS = tmpState.executeQuery(sql);
+								tmpRS.next();
+								parameterExperienceID = tmpRS.getLong("parameter_experience_id");
+								tmpRS.close();
+
+							// UPDATE CALCULATION STATUS IN parameter_experience_data TABLE
+								sql = "UPDATE parameter_experience_data SET calc_status_code=1, calc_timestamp=now()"
+									+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+
+								tmpState.executeUpdate(sql);
+
+							// DELETE ANY EXISTING DATA FOR CURRENT EXPERIENCE
+								sql = "DELETE FROM frame_analysis_data"
+									+ " WHERE parameter_experience_id = " + parameterExperienceID + ";";
+
+								tmpState.executeUpdate(sql);
+
+							// CREATE A FRAME GRABBER TO EXTRACT IMAGES
+								FrameGrabber fg = new FrameGrabber(moviePath, (expTmpPath + params.getFramePrefix()),
+									statusScreen, session.getDisplayMovie());
+
+							// RIP FRAMES
+								frameCount = fg.ripFrames();
+
+							// DISPOSE OF FRAME GRABBER AND SET TO NULL
+								fg.dispose();
+								fg = null;
+
+							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
+								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
+									expTmpPath, dbc, params, updateFAD, statusScreen);
+
+							// PROCESS FRAMES
+								fp.processFrames();
+
+							// SET FRAME PROCESSOR TO NULL
+								fp = null;
+
+							// INDICATE THAT CALCS FOR CURRENT EXPERIENCE
+							// HAVE BEEN COMPLETED IN parameter_experience_data
+								sql = "UPDATE parameter_experience_data SET calc_status_code=2"
+									+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+
+								tmpState.executeUpdate(sql);
+
+						} else {
+							// VISION PROCESSING IS COMPLETE FOR ALL EXPERIENCES...
+								visionDone = true;
+
+						} // end if (experienceRS.next())
+
+				} // end while (!visionDone)
+
+// may want to add code to warn user of any experience where vision data is still being processes
+// (e.g. by another user)
+
+			// DETERMINE # OF EXPERIENCES THAT WILL BE PROCESSED
+				sql = "SELECT COUNT(*) AS row_count FROM parameter_experience_data"
+					+ " WHERE parameter_id = " + session.getParameterID()
+					+ " AND calc_status_code = 2;";
+				tmpRS = tmpState.executeQuery(sql);
+				tmpRS.next();
+				experienceCount = tmpRS.getInt("row_count");
+				tmpRS.close();
+
+			// RESET LENGTH OF PROGRESS BAR...
+				statusScreen.setBarMax(experienceCount);
+				Thread.sleep(100);
+
+			// INITIALIZE LOG FILES - STAMP NAMES WITH SESSION ID
+				fo1 = new FileWriter("session_" + session.getSessionID() + "_performance.ssv");
 				fo1.write("loopCount;stdDev;runNumber;experienceIndex;totalSec;totalLex;totalUMLex;totalEnt;totalUMEnt\n");
-				FileWriter fo2 = new FileWriter("mappings.ssv");
+				fo2 = new FileWriter("session_" + session.getSessionID() + "_mappings.ssv");
 				fo2.write("loopCount;experienceIndex;resolutionCount\n");
-				FileWriter fo3 = new FileWriter("descriptions.ssv");
+				fo3 = new FileWriter("session_" + session.getSessionID() + "_descriptions.ssv");
 				fo3.write("loopCount;stdDev;experienceIndex;generatedDescription;numCorrect;numWrong;numUnknown;origDescription\n");
 
 			// INITIALIZE COUNTER FOR ALL EXPERINCES PROCESSED
 				loopCount = 0;
 
-			// LOOP THROUGH EXPERIENCES FOR ALL STANDARD DEVIATIONS BETWEEN MIN AND MAX PARAMETER VALUES
-			// USING SPECIFIED STEP SIZE
-			// EVALUATE EACH STANDARD DEVIATION BASED ON SPECIFIED # OF ITERATIONS
-				for (int i=p.getMinStdDevStart(); i<=p.getMinStdDevStop(); i=i+p.getMinStdDevStep()) {
-					for (int j=1;j<=p.getEBLALoopCount(); j++) {
+			// BASED ON SESSION OPTIONS, LOOP THROUGH EXPERIENCES SPECIFIED
+			// NUMBER OF TIMES (session.loopCount), FOR ALL STANDARD DEVIATIONS BETWEEN
+			// MIN (session.minSDStart) AND MAX (session.minSDStop) SESSION VALUES
+			// USING SPECIFIED STEP SIZE (session.minSDStep)
+				for (int i=session.getMinStdDevStart(); i<=session.getMinStdDevStop(); i=i+session.getMinStdDevStep()) {
+					for (int j=1;j<=session.getEBLALoopCount(); j++) {
+						// SET STATUS SCREEN TEXT
+							statusScreen.updateStatus("Extracting Entities and Resolving Lexemes - Min .Std. Dev=" + i + " - Run #" + j);
+
+						// RESET PROGRESS BAR
+							progressBarValue = 0;
+							statusScreen.updateStatus(progressBarValue);
+
+						// ALLOW STATUS SCREEN TO REFRESH
+							Thread.sleep(100);
+
 						// INCREMENT LOOP COUNTER TO TRACK TOTAL EXPERIENCES PROCESSED
 							loopCount++;
+
+						// GET A NEW RUN ID & ADD RUN RECORD
+							// GET NEXT run_id
+								sql = "SELECT nextval('run_data_seq') AS next_index;";
+								tmpRS = tmpState.executeQuery(sql);
+								tmpRS.next();
+								runID = tmpRS.getLong("next_index");
+								tmpRS.close();
+
+							// ADD RUN DATA RECORD
+								sql = "INSERT INTO run_data (run_id, session_id, run_index, min_sd) VALUES ("
+									+ runID + "," + session.getSessionID() + "," + loopCount + "," + i + ");";
+
+								tmpState.executeUpdate(sql);
 
 						// DETERMINE START TIME FOR CURRENT RUN
 							startTime = new java.util.Date();
 
-
-						// BUILD PARAMETER_DATA QUERY STRING
-							if (p.getRandomizeExp()) {
-								sql = "SELECT * FROM experience_data WHERE include_code = " + p.getIncludeCode()
+						// QUERY EXPERIENCES BASED ON parameter_id AND parameter_experience_data
+							if (session.getRandomizeExp()) {
+								sql = "SELECT * FROM parameter_experience_data, experience_data"
+									+ " WHERE parameter_experience_data.parameter_id = " + session.getParameterID()
+									+ " AND parameter_experience_data.experience_id = experience_data.experience_id"
+									+ " AND parameter_experience_data.calc_status_code = 2"
 									+ " ORDER BY random();";
 							} else {
-								sql = "SELECT * FROM experience_data WHERE include_code = " + p.getIncludeCode()
-									+ " ORDER BY experience_id ASC;";
+								sql = "SELECT * FROM parameter_experience_data, experience_data"
+									+ " WHERE parameter_experience_data.parameter_id = " + session.getParameterID()
+									+ " AND parameter_experience_data.experience_id = experience_data.experience_id"
+									+ " AND parameter_experience_data.calc_status_code = 2"
+									+ " ORDER BY experience_data.experience_id ASC;";
 							}
 
 						// CREATE STATEMENT
@@ -265,128 +619,88 @@ public class EBLA {
 							experienceRS = experienceState.executeQuery(sql);
 
 						// CREATE STATEMENT
-							tmpState = dbc.getStatement();
-
-						// DELETE ANY EXISTING ENTITIES
-							sql = "DELETE FROM entity_data;";
-							tmpState.executeUpdate(sql);
-
-						// DELETE ANY EXISTING LEXEMES
-							sql = "DELETE FROM lexeme_data;";
-							tmpState.executeUpdate(sql);
+						//	tmpState = dbc.getStatement();
 
 						// INITIALIZE experienceIndex;
 							experienceIndex = 0;
 
 						// IF A RECORD IS RETURNED, EXTRACT PARAMETERS, OTHERWISE WARN USER
 							while (experienceRS.next()) {
+								// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
+									if (Thread.interrupted()) {
+										throw new InterruptedException();
+									}
+
+								// UPDATE PROGRESS BAR
+									progressBarValue++;
+									statusScreen.updateStatus(progressBarValue);
+									Thread.sleep(100);
+
 								// EXTRACT EXPERIENCE ID
 									experienceID = experienceRS.getLong("experience_id");
+
+								// EXTRACT EXPERIENCE-PARAMETER ID
+									parameterExperienceID = experienceRS.getLong("parameter_experience_id");
 
 								// INCREMENT EXPERINCE INDEX
 									experienceIndex++;
 
-								// SET EXPERIENCE INDEX IN experience_data
-									sql = "UPDATE experience_data SET experience_index = " + experienceIndex
-										+ " WHERE experience_id = " + experienceID + ";";
+								// ADD RECORD TO experience_run_data AND SET experience_index
+									sql = "INSERT INTO experience_run_data (experience_id, run_id,"
+										+ " experience_index) VALUES (" + experienceID + "," + runID
+										+ "," + experienceIndex + ");";
+
 									tmpState.executeUpdate(sql);
 
-								// EXTRACT PATH TO MOVIE
-									moviePath = experienceRS.getString("source_movie");
-
-								// EXTRACT LABEL FOR PROCESSING DIRECTORY
-									experienceLabel = experienceRS.getString("label");
-
-								// BUILD PATH FOR TMP FILES GENERATED WHILE PROCESSING EXPERIENCE
-									experiencePath = p.getTmpPath() + experienceLabel;
-
-								// DELETE EXISTING frame_analysis_data FOR CURRENT FRAME AND RIP AND PRE-PROCESS FRAMES
-									if (p.getProcessVideos()) {
-
-										// DELETE ANY EXISTING DATA FOR CURRENT FRAME IN CURRENT EXPERIENCE
-											sql = "DELETE FROM frame_analysis_data WHERE experience_id = " + experienceID + ";";
-											tmpState.executeUpdate(sql);
-
-										// IF PATH/DIRECTORY EXISTS, DELETE ANY FILES - OTHERWISE CREATE IT
-											File experienceDir = new File(experiencePath);
-											if (experienceDir.isDirectory()) {
-												String fileList[] = experienceDir.list();
-												for (int k=0; k<fileList.length; k++) {
-													File currentFile = new File(experiencePath + "/" + fileList[k]);
-													currentFile.delete();
-												}
-											} else {
-												experienceDir.mkdirs();
-											}
-
-										// CREATE A FRAME GRABBER TO EXTRACT IMAGES
-											FrameGrabber fg = new FrameGrabber(moviePath, (experiencePath + p.getFramePrefix()),
-												p.getDisplayMovie());
-
-										// RIP FRAMES
-											frameCount = fg.ripFrames();
-
-										// DISPOSE OF FRAME GRABBER AND SET TO NULL
-											fg.dispose();
-											fg = null;
-
-										// CREATE A FRAMEP ROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
-											FrameProcessor fp = new FrameProcessor(1, frameCount, experienceID, experiencePath, dbc, p);
-
-										// PROCESS FRAMES
-											fp.processFrames();
-
-										// SET FRAME PROCESSOR TO NULL
-											fp = null;
-									} // end if (processVideos) {
-
 								// PROCESS ENTITIES
-									if (p.getProcessEntities()) {
-										// CREATE AN ENTITY EXTRACTOR TO PERFORM MORE DETAILED ANALYSIS
-										// OF OBJECTS AND RELATIONSHIPS BASED ON BASIC FRAME ANALYSIS
-											EntityExtractor ee = new EntityExtractor(experienceID, dbc, p, ((double)i/100.0));
+									// CREATE AN ENTITY EXTRACTOR TO PERFORM MORE DETAILED ANALYSIS
+									// OF OBJECTS AND RELATIONSHIPS BASED ON BASIC FRAME ANALYSIS
+										EntityExtractor ee = new EntityExtractor(experienceID, parameterExperienceID,
+											runID, dbc, session, params, ((double)i/100.0));
 
-										// EXTRACT ENTITIES & WRITE RESULTS TO DATABASE
-											ee.extractEntities();
-											ee.writeToDB();
+									// EXTRACT ENTITIES & WRITE RESULTS TO DATABASE
+										ee.extractEntities();
+										ee.writeToDB();
 
-										// SET ENTITY EXTRACTOR TO NULL
-											ee = null;
-									} // end if (processEntities) {
+									// SET ENTITY EXTRACTOR TO NULL
+										ee = null;
 
 								// PERFORM LEXICAL RESOLUTION
-									if (p.getProcessLexemes()) {
+									// EXTRACT LEXEMES DESCRIBING CURRENT EXPERIENCE
+										lexemes = experienceRS.getString("experience_lexemes");
 
-										// EXTRACT EXPERIENCE DESCRIPTION
-											lexemes = experienceRS.getString("language_text");
+									// DROP CASE ON ALL LEXEMES IF NOT CASE-SENSITIVE
+										if (! session.getCaseSensitive()) {
+											lexemes = lexemes.toLowerCase();
+										}
 
-										// DROP CASE ON ALL LEXEMES IF NOT CASE-SENSITIVE
-											if (! p.getCaseSensitive()) {
-												lexemes = lexemes.toLowerCase();
-											}
+									// CREATE A LEXEME RESOLVER TO PERFORM LEXICAL RESOLUTION
+									// OR GENENRATE DESCRIPTIONS
+										LexemeResolver lr = new LexemeResolver(lexemes, experienceID,
+											runID, experienceIndex, dbc);
 
-										// CREATE A LEXEME RESOLVER TO PERFORM LEXICAL RESOLUTION
-										// OR GENENRATE DESCRIPTIONS
-											LexemeResolver lr = new LexemeResolver(lexemes, experienceID, experienceIndex, dbc);
+									// RESOLVE LEXEMES OR GENERATE DESCRIPTIONS
+										if (experienceIndex > (experienceCount - session.getDescToGenerate())) {
+											lr.generateDescriptions(fo3, loopCount, i);
+										} else {
+											lr.resolveLexemes();
+										}
 
-										// RESOLVE LEXEMES OR GENERATE DESCRIPTIONS
-											if ((p.getGenerateDesc()) && (experienceIndex > p.getDescThreshold())) {
-												lr.generateDescriptions(fo3, loopCount, i);
-											} else {
-												lr.resolveLexemes();
-											}
-
-										// SET LEXEME RESOLVER TO NULL
-											lr = null;
-									} // end if (processLexemes) {
+									// SET LEXEME RESOLVER TO NULL
+										lr = null;
 
 							} // end while
 
 						// CLOSE RESULTSET
 							experienceRS.close();
 
-						// CLOSE STATEMENTS
-							tmpState.close();
+						// UPDATE ENDING TIMESTAMP FOR CURRENT RUN
+							sql = "UPDATE run_data SET run_stop=now() WHERE run_id=" + runID + ";";
+
+							tmpState.executeUpdate(sql);
+
+						// CLOSE EXPERIENCE STATEMENTS
+						//	tmpState.close();
 							experienceState.close();
 
 						// PRINT START AND STOP TIME
@@ -403,26 +717,34 @@ public class EBLA {
 
 						// WRITE PERFORMANCE LOG INFO
 						// NEED: loopCount, stdDev, experienceIndex, totalSec, totalLex, totalEnt, unmappedLex, unmappedEnt
+						//	tmpState = dbc.getStatement();
 
-							tmpState = dbc.getStatement();
-							ResultSet tmpRS = null;
-
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS lex_count FROM experience_lexeme_data;");
+							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS lex_count FROM experience_run_data, experience_lexeme_data"
+								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id;");
 							tmpRS.next();
 							int totalLex = tmpRS.getInt("lex_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS ent_count FROM experience_entity_data;");
+							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS ent_count FROM experience_run_data, experience_entity_data"
+								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id;");
 							tmpRS.next();
 							int totalEnt = tmpRS.getInt("ent_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_lex_count FROM experience_lexeme_data WHERE resolution_code = 0;");
+							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_lex_count FROM experience_run_data, experience_lexeme_data"
+								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id"
+								  + " AND experience_lexeme_data.resolution_code=0;");
 							tmpRS.next();
 							int totalUMLex = tmpRS.getInt("um_lex_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_ent_count FROM experience_entity_data WHERE resolution_code = 0;");
+							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_ent_count FROM experience_run_data, experience_entity_data"
+								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id"
+								  + " AND experience_entity_data.resolution_code=0;");
 							tmpRS.next();
 							int totalUMEnt = tmpRS.getInt("um_ent_count");
 							tmpRS.close();
@@ -430,29 +752,61 @@ public class EBLA {
 							fo1.write(loopCount + ";" + i + ";" + j + ";" + experienceIndex + ";" + secCopy + ";" + totalLex + ";"
 								+ totalUMLex + ";" + totalEnt + ";" + totalUMEnt + "\n");
 
-
 						// WRITE MAPPING LOG INFO
 						// NEED: loopCount, experienceIndex, (resolutionIndex-experienceIndex)
-							tmpRS = tmpState.executeQuery("SELECT * FROM experience_data, experience_lexeme_data WHERE experience_lexeme_data.resolution_code = 1"
-								+ " AND experience_data.experience_id = experience_lexeme_data.experience_id ORDER BY experience_data.experience_index;");
+							tmpRS = tmpState.executeQuery("SELECT * FROM experience_run_data, experience_lexeme_data"
+								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_run_data.experience_id = experience_lexeme_data.experience_id"
+								  + " AND experience_lexeme_data.resolution_code = 1"
+								  + " ORDER BY experience_run_data.experience_index;");
 
 							while (tmpRS.next()) {
 								int expIndex = tmpRS.getInt("experience_index");
 								int resIndex = tmpRS.getInt("resolution_index");
 								fo2.write(loopCount + ";" + expIndex + ";" + (resIndex-expIndex) + "\n");
 							}
-							tmpRS.close();
 
-							tmpState.close();
+						// CLOSE TMP RESULTSET
+							tmpRS.close();
 
 					} // end j loop
 
 				} // end i loop
 
+			// CLOSE TMP STATEMENT
+				tmpState.close();
+
 			// CLOSE LOG FILES
 				fo3.close();
 				fo2.close();
 				fo1.close();
+
+			// UPDATE STATUS SCREEN
+				statusScreen.updateStatus("EBLA Session Completed!");
+				Thread.sleep(100);
+
+			// UPDATE ENDING TIMESTAMP FOR CURRENT SESSION
+				session.updateSessionStop(dbc);
+
+		} catch (InterruptedException ie) {
+			// UPDATE STATUS
+				statusScreen.updateStatus(0);
+				statusScreen.updateStatus("EBLA Session Interrupted!");
+
+			// CLOSE OPEN FILES/RESULTSETS
+				try {
+					experienceRS.close();
+					tmpRS.close();
+					tmpState.close();
+					fo3.close();
+					fo2.close();
+					fo1.close();
+				} catch (Exception misc) {
+					// do nothing...
+				}
+
+			// RETURN
+            	return;
 
 		} catch (Exception e) {
 			System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
@@ -468,7 +822,7 @@ public class EBLA {
 	 *
 	 * @param _saveChanges	boolean indicating whether or not to save database changes
 	 */
-	public void dispose(boolean _saveChanges) {
+	private void cleanUp(boolean _saveChanges) {
 
 		try {
 
@@ -477,15 +831,11 @@ public class EBLA {
 					dbc.commitChanges();
 				}
 
-			// CLOSE DATABASE CONNECTION
-				dbc.closeConnection();
-
 			// SET OBJECTS THAT ARE NO LONGER NEEDED TO NULL
-				dbc = null;
-				p = null;
+				params = null;
 
 		} catch (Exception e) {
-			System.out.println("\n--- EBLA.dispose() Exception ---\n");
+			System.out.println("\n--- EBLA.cleanUp() Exception ---\n");
 			e.printStackTrace();
 		}
 
@@ -493,40 +843,109 @@ public class EBLA {
 
 
 
+	/**
+	 * Run routine for threaded execution of EBLA's methods.
+	 */
+	public void run() {
+
+		try {
+
+			// PROCESS EXPERIENCES FOR EBLA
+				processExperiences();
+
+		} catch (Exception e) {
+			System.out.println("\n--- EBLA.run() Exception ---\n");
+			e.printStackTrace();
+		}
+
+	} // end run()
+
+
+
+	/**
+	 * Finalize routine to be called when finished threaded execution.
+	 */
+	public void finalize() {
+
+		try {
+
+			// SAVE DATABASE CHANGES AND SET OBJECT NO LONGER NEEDED TO NULL
+				cleanUp(true);
+
+		} catch (Exception e) {
+			System.out.println("\n--- EBLA.finalize() Exception ---\n");
+			e.printStackTrace();
+		}
+
+	} // end finalize()
+
+
+
     /**
      * Main procedure - allows EBLA to be run from the command line.
      *<p>
      * The user can pass a parameter ID from the command line to specify a
-     * set of EBLA parameters in the parameter_data table in the ebla_data
-     * database.  Otherwise EBLA will initialize without a parameter ID and
-     * use the hard-coded default parameters in the Params class.
+     * set of EBLA runtime options to use for a calculation session.
      */
     public static void main(String[] args) {
 
 		// DECLARATIONS
 			EBLA myEBLA = null;		// INSTANCE OF EBLA CLASS
-			long parameterID;		// ID OF parameter_data RECORD IN sensor_data DATABASE
+			Session session = null; // EBLA CALCULATION SESSION
+			DBConnector dbc = null; // DATABASE CONNECTION
+			long parameterID = 0;	// ID OF parameter_data RECORD TO USE FOR CALCULATIONS
+
 
 		try {
 
-			// CHECK TO SEE IF A PARAMETER ID WAS PASSED FROM THE COMMAND LINE
-				if (args.length > 0) {
-					// EXTRACT ID
-						parameterID = Integer.parseInt(args[0]);
-					// INITIALIZE EBLA WITH SPECIFIED PARAMETERS
-						myEBLA = new EBLA(parameterID);
-				} else {
-					// INITIALIZE EBLA WITH SYSTEM DEFAULTS
-						myEBLA = new EBLA();
+			// VERIFY THAT A SINGLE COMMAND LINE ARGUMENT WAS PASSED
+				if (args.length != 1) {
+					printUsage();
+					System.exit(0);
 				}
 
-			// PROCESS MOVIES (EXPERIENCES)
-				myEBLA.processExperiences();
+			// EXTRACT PARAMETER ID
+				parameterID = Integer.parseInt(args[0]);
 
-			// SAVE CHANGES AND CLOSE DB CONNECTION
-				myEBLA.dispose(true);
+			// BUILD SESSION DESCRIPTION
+				java.util.Date quickDate = new java.util.Date();
+				String desc = "Command line session - " + quickDate;
 
-			// SET OBJECT TO NULL
+			// INITIALIZE OTHER SESSION VARIABLES
+				boolean regenerateImages = false;
+				boolean logToFile = true;
+				boolean randomizeExp = true;
+				int descToGenerate = 0;
+				int minSDStart = 5;
+				int minSDStop = 5;
+				int minSDStep = 5;
+				int loopCount = 1;
+				boolean fixedSD = false;
+				boolean displayMovie = true;
+				boolean displayText = false;
+				boolean caseSensitive = false;
+				String notes = "";
+
+			// CREATE A SESSION OBJECT
+				session = new Session(dbc, parameterID, desc, regenerateImages, logToFile,
+					randomizeExp, descToGenerate, minSDStart, minSDStop, minSDStep, loopCount, fixedSD,
+					displayMovie, displayText, caseSensitive, notes);
+
+			// CREATE A DATABASE CONNECTION
+				dbc = new DBConnector("dbSettings", true);
+
+			// CREATE A NEW EBLA OBJECT
+				myEBLA = new EBLA(session, dbc, null);
+
+			// START EBLA THREAD
+				myEBLA.start();
+
+			// CLOSE DATABASE CONNECTION
+				dbc.closeConnection();
+
+			// SET OBJECTS THAT ARE NO LONGER NEEDED TO NULL
+				dbc = null;
+				session = null;
 				myEBLA = null;
 
 			// EXIT
@@ -538,6 +957,25 @@ public class EBLA {
 		}
 
     } // end main()
+
+
+
+	/**
+	 * Display usage info if user trys to run standalone with incorrect parameters
+	 */
+	private static void printUsage() {
+
+		try {
+			// DISPLAY USAGE INSTRUCTIONS
+				System.out.println("Usage: java com.greatmindsworking.EBLA.EBLA <parameter ID>");
+
+	  	} catch (Exception e) {
+			System.out.println("\n--- EBLA.printUsage() Exception ---\n");
+			e.printStackTrace();
+		}
+
+
+	} // end printUsage()
 
 } // end EBLA class
 
@@ -559,6 +997,9 @@ public class EBLA {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.28  2002/12/11 22:49:43  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.27  2002/11/07 19:58:19  bpangburn
  * Fixed internal (j) loop in processExperiences() method.
  *
