@@ -40,14 +40,12 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 import com.greatmindsworking.EBLA.EBLA;
-import com.greatmindsworking.EBLA.Session;
+import com.greatmindsworking.EBLA.SessionData;
 import com.greatmindsworking.EBLA.ImageComponent;
 import java.awt.image.*;
 import java.awt.geom.AffineTransform;
@@ -72,7 +70,7 @@ public class StatusScreen extends JInternalFrame {
 	ImageComponent ic3 = null;
 
 	DBConnector dbc = null;
-	Session session = null;
+	SessionData sd = null;
 	EBLA ebla = null;
 
 	boolean eblaCanceled = false;
@@ -85,12 +83,12 @@ public class StatusScreen extends JInternalFrame {
 
 
 
-	public StatusScreen(Container _desktop, Session _session, DBConnector _dbc){
+	public StatusScreen(Container _desktop, SessionData _sd, DBConnector _dbc){
 		super("EBLA Calculation Status", false,true,true,true);
 		setSize(550,400);
 
 		desktop = _desktop;
-		session = _session;
+		sd = _sd;
 		dbc = _dbc;
 
         //setBorder(BorderFactory.createTitledBorder(
@@ -316,7 +314,7 @@ public class StatusScreen extends JInternalFrame {
 
 
 			try {
-				ebla = new EBLA(session, dbc, this);
+				ebla = new EBLA(sd, dbc, this);
 				ebla.start();
 	//			ebla.finalize();
 			} catch(Exception e) {
@@ -339,6 +337,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
