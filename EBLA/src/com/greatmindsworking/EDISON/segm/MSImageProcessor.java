@@ -89,7 +89,7 @@ public class MSImageProcessor extends MeanShift {
 	/**
 	 * Status Prompt
 	 */
-	private static final boolean PROMPT = true;
+	private static final boolean PROMPT = false;
 
 	/**
 	 * image pruning
@@ -4902,7 +4902,9 @@ public class MSImageProcessor extends MeanShift {
 
 		speedThreshold = speedUpThreshold;
 
-		msSystem.Prompt("Setting speedup threshold to " + speedThreshold + ".\n");
+		if (PROMPT) {
+			msSystem.Prompt("Setting speedup threshold to " + speedThreshold + ".\n");
+		}
 
 	} // end SetSpeedThreshold
 
@@ -4918,6 +4920,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.14  2003/11/24 16:34:41  yoda2
+ * Small JavaDoc fixes to get rid of warnings.
+ *
  * Revision 1.13  2003/11/24 16:20:10  yoda2
  * Updated copyright to 2002-2003.
  *
