@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
@@ -107,7 +108,7 @@ public class ParameterScreen extends JInternalFrame {
 		SelectExperiencesScreen selectExperiencesScreen = null;
 		JButton btnSelectExperiences = new JButton("Select Experiences");
 		SessionScreen sessionScreen = null;
-		JButton btnSetSession = new JButton("Start Session");
+		JButton btnStartSession = new JButton("Start Session");
 
 	// INITIALIZE DATA NAVIGATOR
 		SSDataNavigator dataNavigator = null;
@@ -182,6 +183,15 @@ public class ParameterScreen extends JInternalFrame {
 					}
 					if (selectExperiencesScreen == null) {
 						selectExperiencesScreen = new SelectExperiencesScreen(desktop, parameterID);
+
+						selectExperiencesScreen.addInternalFrameListener(new InternalFrameAdapter() {
+						// FRAME CLOSED
+							public void internalFrameClosed(InternalFrameEvent ife) {
+								selectExperiencesScreen = null;
+							} // end internalFrameClosed()
+
+						});
+
 					} else {
 						selectExperiencesScreen.setParameterID(parameterID);
 					}
@@ -191,13 +201,21 @@ public class ParameterScreen extends JInternalFrame {
 
 
 		// SETUP ACTION LISTENER FOR START SESSION BUTTON
-			btnSetSession.addActionListener(new ActionListener() {
+			btnStartSession.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					long parameterID = -1;
 					parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
 
-					if(sessionScreen == null) {
-						sessionScreen = new SessionScreen(desktop,parameterID);
+					if (sessionScreen == null) {
+						sessionScreen = new SessionScreen(desktop, parameterID);
+
+						sessionScreen.addInternalFrameListener(new InternalFrameAdapter() {
+						// FRAME CLOSED
+							public void internalFrameClosed(InternalFrameEvent ife) {
+								sessionScreen = null;
+							} // end internalFrameClosed()
+
+						});
 					}
 					sessionScreen.showUp(desktop);
 				}
@@ -314,7 +332,7 @@ public class ParameterScreen extends JInternalFrame {
 
 			constraints.gridx = 0;
 			constraints.gridy = 0;
-			buttonPanel.add(btnSetSession,constraints);
+			buttonPanel.add(btnStartSession,constraints);
 
 			constraints.gridx = 1;
 			buttonPanel.add(btnSelectExperiences,constraints);
@@ -397,6 +415,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/29 23:20:27  yoda2
+ * Added close button.
+ *
  * Revision 1.6  2003/12/26 20:30:13  yoda2
  * Removed unnecessary import statements.
  *

@@ -243,18 +243,22 @@ public class EBLAGui extends JFrame {
 		// IF THE CONNECTION OBJECT IS NOT NULL CLOSE THE CONNECTION.
 			if (connector != null) {
 				connector.closeConnection();
+				connector = null;
 			}
 
 		// CLOSE ALL THE OPEN SCREENS
 			try {
 				if (parameterScreen != null) {
 					parameterScreen.setClosed(true);
+					parameterScreen = null;
 				}
 				if (attributeScreen != null) {
 					attributeScreen.setClosed(true);
+					attributeScreen = null;
 				}
 				if (experienceScreen != null) {
 					experienceScreen.setClosed(true);
+					experienceScreen = null;
 				}
 
 			} catch(PropertyVetoException pve) {
@@ -284,6 +288,14 @@ public class EBLAGui extends JFrame {
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP
 			if (parameterScreen == null) {
 				parameterScreen = new ParameterScreen(desktop);
+
+				parameterScreen.addInternalFrameListener(new InternalFrameAdapter() {
+				// FRAME CLOSED
+					public void internalFrameClosed(InternalFrameEvent ife) {
+						parameterScreen = null;
+					} // end internalFrameClosed()
+
+				});
 			}
 
 		// MAKE SCREEN VISIBLE
@@ -306,6 +318,14 @@ public class EBLAGui extends JFrame {
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (attributeScreen == null) {
 				attributeScreen = new AttributeScreen(desktop);
+
+				attributeScreen.addInternalFrameListener(new InternalFrameAdapter() {
+				// FRAME CLOSED
+					public void internalFrameClosed(InternalFrameEvent ife) {
+						attributeScreen = null;
+					} // end internalFrameClosed()
+
+				});
 			}
 
 		// MAKE SCREEN VISIBLE
@@ -327,6 +347,14 @@ public class EBLAGui extends JFrame {
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (experienceScreen == null) {
 				experienceScreen = new ExperienceScreen(desktop);
+
+				experienceScreen.addInternalFrameListener(new InternalFrameAdapter() {
+				// FRAME CLOSED
+					public void internalFrameClosed(InternalFrameEvent ife) {
+						experienceScreen = null;
+					} // end internalFrameClosed()
+
+				});
 			}
 
 		// MAKE SCREEN VISIBLE
@@ -352,6 +380,14 @@ public class EBLAGui extends JFrame {
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (dbSettingsScreen == null) {
 				dbSettingsScreen = new DBSettingsScreen(desktop, file);
+
+				dbSettingsScreen.addInternalFrameListener(new InternalFrameAdapter() {
+				// FRAME CLOSED
+					public void internalFrameClosed(InternalFrameEvent ife) {
+						dbSettingsScreen = null;
+					} // end internalFrameClosed()
+
+				});
 			}
 
 		// MAKE SCREEN VISIBLE
@@ -524,6 +560,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/29 23:20:56  yoda2
+ * Added "About" dialog box.
+ *
  * Revision 1.6  2003/12/26 20:30:13  yoda2
  * Removed unnecessary import statements.
  *

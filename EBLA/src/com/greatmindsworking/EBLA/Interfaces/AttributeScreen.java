@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
@@ -139,8 +140,12 @@ public class AttributeScreen extends JInternalFrame {
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-				// DISPOSE OF SELECT EXPERIENCES WINDOW
-					dispose();
+				// CLOSE WINDOW
+					try {
+						setClosed(true);
+					} catch(PropertyVetoException pve) {
+						pve.printStackTrace();
+					}
 				} // end actionPerformed()
 			});
 
@@ -259,6 +264,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/29 23:20:27  yoda2
+ * Added close button.
+ *
  * Revision 1.3  2003/12/26 22:15:58  yoda2
  * General code cleanup and addition of JavaDoc.
  *

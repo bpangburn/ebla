@@ -179,8 +179,13 @@ public class DBSettingsScreen extends JInternalFrame {
 							ioe.printStackTrace();
 						}
 
-					// DISPOSE OF DATABASE SETTINGS WINDOW
-						dispose();
+					// CLOSE WINDOW
+						try {
+							setClosed(true);
+						} catch(PropertyVetoException pve) {
+							pve.printStackTrace();
+						}
+
 				} // end actionPerformed()
 			});
 
@@ -205,6 +210,7 @@ public class DBSettingsScreen extends JInternalFrame {
 
 			// FRAME CLOSED
 				public void internalFrameClosed(InternalFrameEvent e) {
+				// DISPLAY MESSAGE
 					JOptionPane.showInternalMessageDialog(desktop,"Please try logging in now.",
 					"Attempt Login",JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -309,6 +315,11 @@ public class DBSettingsScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/29 23:19:42  yoda2
+ * Finished JavaDoc and code cleanup.
+ * Simulated modal behavior by retaking focus when lost.
+ * Added close button.
+ *
  * Revision 1.3  2003/12/29 04:22:24  yoda2
  * Code cleanup & JavaDoc.
  *

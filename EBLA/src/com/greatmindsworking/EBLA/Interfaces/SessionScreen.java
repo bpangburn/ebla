@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
@@ -184,8 +185,12 @@ public class SessionScreen extends JInternalFrame {
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-				// DISPOSE OF SELECT EXPERIENCES WINDOW
-					dispose();
+				// CLOSE WINDOW
+					try {
+						setClosed(true);
+					} catch(PropertyVetoException pve) {
+						pve.printStackTrace();
+					}
 				} // end actionPerformed()
 			});
 
@@ -484,6 +489,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/29 23:20:27  yoda2
+ * Added close button.
+ *
  * Revision 1.4  2003/12/26 22:15:19  yoda2
  * Fixed typo on widget label.
  *

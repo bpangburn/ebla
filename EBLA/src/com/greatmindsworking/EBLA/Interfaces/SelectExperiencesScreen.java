@@ -190,8 +190,12 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-				// DISPOSE OF SELECT EXPERIENCES WINDOW
-					dispose();
+				// CLOSE WINDOW
+					try {
+						setClosed(true);
+					} catch(PropertyVetoException pve) {
+						pve.printStackTrace();
+					}
 				} // end actionPerformed()
 			});
 
@@ -451,6 +455,11 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/29 23:19:42  yoda2
+ * Finished JavaDoc and code cleanup.
+ * Simulated modal behavior by retaking focus when lost.
+ * Added close button.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *
