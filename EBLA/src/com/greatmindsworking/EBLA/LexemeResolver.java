@@ -110,8 +110,8 @@ import java.io.*;
  *
  *	  This technique will solve "C" for cases such as:
  *
- *	  		 exp_id   entity
- *           ¯¯¯¯¯¯   ¯¯¯¯¯¯
+ *                           exp_id          entity
+ *                           ======          ======
  *				1		A
  *				1		B
  *				1		C
@@ -1406,6 +1406,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.24  2004/06/26 05:01:28  yoda2
+ * Fixed various typos in comments.
+ *
  * Revision 1.23  2004/06/24 17:24:49  yoda2
  * Fixed bug in generateDescriptions where candidate entities were being filtered by runID, but not by experienceID.
  *
