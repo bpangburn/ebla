@@ -59,112 +59,130 @@ import javax.swing.border.*;
 public class EBLAPanel extends JPanel {
 
 	Dimensions dimensions = new Dimensions();
+
 	SoftBevelBorder  softBevelBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
 
 	public EBLAPanel() {
-		//setPreferredSize(new Dimension(450,300));
+
+		// setPreferredSize(new Dimension(450,300));
+
 	}
 
 	public Component add(JComponent component) {
 
+		if (component instanceof JLabel){
+		// label
+			component.setBorder(softBevelBorder);
+			component.setPreferredSize(dimensions.getMediumLabelDimension());
+			component.setMaximumSize(dimensions.getMediumLabelDimension());
+		} else if (component instanceof JTextField) {
+		// single-line textbox
+			component.setPreferredSize(dimensions.getMediumTextFieldDimension());
+			component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
+		} else if (component instanceof JButton){
+		// button
+			component.setBorder(softBevelBorder);
+			component.setPreferredSize(dimensions.getMediumButtonDimension());
+			component.setMaximumSize  (dimensions.getMediumButtonDimension());
+		} else if (component instanceof JComboBox) {
+		// combobox
+			component.setPreferredSize(dimensions.getMediumTextFieldDimension());
+			component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
+		} else if (component instanceof JTextArea) {
+		// multi-line textbox
+			component.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+			((JTextArea)component).setLineWrap(true);
+			((JTextArea)component).setWrapStyleWord(true);
 
-			if(component instanceof JLabel){
-				component.setBorder(softBevelBorder);
-				component.setPreferredSize(dimensions.getMediumLabelDimension());
-				component.setMaximumSize(dimensions.getMediumLabelDimension());
-			}
-			else if(component instanceof JTextField) {
-				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-				component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
-			}
-			else if(component instanceof JButton){
-				component.setBorder(softBevelBorder);
-				component.setPreferredSize(dimensions.getMediumButtonDimension());
-				component.setMaximumSize  (dimensions.getMediumButtonDimension());
-			}
-			else if(component instanceof JComboBox) {
-				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-				component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
-			}
-			else if(component instanceof JTextArea) {
-				component.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
-				((JTextArea)component).setLineWrap(true);
-				((JTextArea)component).setWrapStyleWord(true);
-				int columns = ((JTextArea)component).getColumns();
-				int rows    = ((JTextArea)component).getRows();
-				JScrollPane scrollPane = new JScrollPane((JTextArea)component);
-				if( columns > 1 && rows >1)
-					scrollPane.setPreferredSize(new Dimension(columns*10, rows*20) );
-				else
-					scrollPane.setPreferredSize(new Dimension(3,15) );
-				scrollPane.setMinimumSize(dimensions.getMediumTextAreaDimension());
+			int columns = ((JTextArea)component).getColumns();
+			int rows = ((JTextArea)component).getRows();
 
-				return super.add(scrollPane);
+			JScrollPane scrollPane = new JScrollPane((JTextArea)component);
 
-			}
+			if ((columns > 1) && (rows > 1))
+				scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
+			else
+				scrollPane.setPreferredSize(new Dimension(3,15));
 
-			if (! (component instanceof JTextArea) )
-				return super.add((Component)component);
-			// This statement is not required but the return statement is required by the compiler
-			return component;
-	}
+			scrollPane.setMinimumSize(dimensions.getMediumTextAreaDimension());
+
+			return super.add(scrollPane);
+		}
+
+		if (! (component instanceof JTextArea)) {
+			return super.add((Component)component);
+		}
+
+		// This statement is not required but the return statement is required by the compiler
+		return component;
+
+	} // end public Component add
+
 
 	public void add(JComponent component, java.lang.Object constraints, boolean setDefaults) {
-		if( setDefaults == false){
+
+		if ( setDefaults == false) {
 			super.add((Component)component, constraints);
-		}
-		else{
+		} else {
 			add(component, constraints);
 		}
-	}
+	} // end public void add
+
 
 	public void add(JComponent component, java.lang.Object constraints) {
 
-
-			if(component instanceof JLabel){
+			if (component instanceof JLabel) {
+			// label
 				component.setBorder(softBevelBorder);
 				component.setPreferredSize(dimensions.getMediumLabelDimension());
 				component.setMaximumSize(dimensions.getMediumLabelDimension());
 				component.setMinimumSize(dimensions.getMediumLabelDimension());
-			}
-			else if(component instanceof JTextField) {
+			} else if (component instanceof JTextField) {
+			// single-line textbox
 				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
 				component.setMaximumSize(dimensions.getMediumTextFieldDimension());
 				component.setMinimumSize(dimensions.getMediumTextFieldDimension());
-			}
-			else if(component instanceof JButton){
+			} else if (component instanceof JButton) {
+			// button
 				component.setBorder(softBevelBorder);
 				component.setPreferredSize(dimensions.getMediumButtonDimension());
 				component.setMaximumSize(dimensions.getMediumButtonDimension());
 				component.setMinimumSize(dimensions.getMediumButtonDimension());
-			}
-			else if(component instanceof JComboBox) {
+			} else if (component instanceof JComboBox) {
+			// combobox
 				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
 				component.setMaximumSize(dimensions.getMediumTextFieldDimension());
 				component.setMinimumSize(dimensions.getMediumTextFieldDimension());
-			}
-			else if(component instanceof JTextArea) {
+			} else if (component instanceof JTextArea) {
+			// multi-line textbox
 				component.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+
 				((JTextArea)component).setLineWrap(true);
 				((JTextArea)component).setWrapStyleWord(true);
+
 				JScrollPane scrollPane = new JScrollPane((JTextArea)component);
+
 				scrollPane.setPreferredSize(dimensions.getMediumTextAreaDimension());
 				scrollPane.setMinimumSize(dimensions.getMediumTextAreaDimension());
+
 				super.add(scrollPane, constraints);
 			}
 
-			if (! (component instanceof JTextArea) )
+			if (! (component instanceof JTextArea)) {
 				super.add((Component)component, constraints);
+			}
 
 			//return component;
-	}
 
-} // end of EBLAPanel class
+	} // end public void add
+
+} // end EBLAPanel class
 
 
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */
-
-
