@@ -651,6 +651,8 @@ public class EntityExtractor {
 
 			double score = 0.0;
 
+			double tmpSD = 0.0;
+
 
 		try {
 			// CREATE STATEMENTS
@@ -682,16 +684,23 @@ public class EntityExtractor {
 							// EXTRACT ATTRIBUTE VALUES
 								Attribute tmpAtt = (Attribute)attributeAL.get(i);
 
+							// SET MINIMUM STD DEV (FORCE 2.5% FOR ANY VERB ATTRIBUTES)
+								if (tmpAtt.attributeListID < 6) {
+									tmpSD = minSD;
+								} else {
+									tmpSD = 0.05;
+								}
+
 							// CALC RANGE
 								if (sd.getFixedStdDev()) {
 									if (tmpAtt.avgValue >= 0) {
 									// NON-NEGATIVE
-										max = tmpAtt.avgValue * (1.0 + minSD);
-										min = tmpAtt.avgValue * (1.0 - minSD);
+										max = tmpAtt.avgValue * (1.0 + tmpSD);
+										min = tmpAtt.avgValue * (1.0 - tmpSD);
 									} else {
 									// NEGATIVE
-										max = tmpAtt.avgValue * (1.0 - minSD);
-										min = tmpAtt.avgValue * (1.0 + minSD);
+										max = tmpAtt.avgValue * (1.0 - tmpSD);
+										min = tmpAtt.avgValue * (1.0 + tmpSD);
 									}
 
 								} else {
@@ -699,22 +708,22 @@ public class EntityExtractor {
 									min = tmpAtt.avgValue - tmpAtt.stdDeviation;
 									max = tmpAtt.avgValue + tmpAtt.stdDeviation;
 
-								// MAKE SURE ADJUSTMENT WAS AT LEAST 5% (gave same results as 10% on initial test set 4-24-2002)
+								// MAKE SURE ADJUSTMENT WAS AT LEAST MINIMUM STD DEV
 									if (tmpAtt.avgValue >= 0) {
 									// NON-NEGATIVE
-										if (max < (tmpAtt.avgValue * (1.0 + minSD))) {
-											max = tmpAtt.avgValue * (1.0 + minSD);
+										if (max < (tmpAtt.avgValue * (1.0 + tmpSD))) {
+											max = tmpAtt.avgValue * (1.0 + tmpSD);
 										}
-										if (min > (tmpAtt.avgValue * (1.0 - minSD))) {
-											min = tmpAtt.avgValue * (1.0 - minSD);
+										if (min > (tmpAtt.avgValue * (1.0 - tmpSD))) {
+											min = tmpAtt.avgValue * (1.0 - tmpSD);
 										}
 									} else {
 									// NEGATIVE
-										if (max < (tmpAtt.avgValue * (1.0 - minSD))) {
-											max = tmpAtt.avgValue * (1.0 - minSD);
+										if (max < (tmpAtt.avgValue * (1.0 - tmpSD))) {
+											max = tmpAtt.avgValue * (1.0 - tmpSD);
 										}
-										if (min > (tmpAtt.avgValue * (1.0 + minSD))) {
-											min = tmpAtt.avgValue * (1.0 + minSD);
+										if (min > (tmpAtt.avgValue * (1.0 + tmpSD))) {
+											min = tmpAtt.avgValue * (1.0 + tmpSD);
 										}
 									}
 								}
@@ -776,7 +785,8 @@ public class EntityExtractor {
 										double newAvg = Math.abs(tmpAtt.avgValue);
 
 										if (newAvg > oldAvg) {
-											score += (newAvg-oldAvg)/newAvg;
+											//score += (newAvg-oldAvg)/newAvg;
+											score += (newAvg-oldAvg)/oldAvg;
 										} else {
 											score += (oldAvg-newAvg)/oldAvg;
 										}
@@ -912,6 +922,9 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.24  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.23  2003/12/26 20:25:52  yoda2
  * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
  *
