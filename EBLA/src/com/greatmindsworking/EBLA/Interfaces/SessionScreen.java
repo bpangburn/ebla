@@ -232,7 +232,7 @@ public class SessionScreen extends JInternalFrame {
 					generalPanel.addRow(txtDescription, currentRow++, "Description");
 					generalPanel.addRow(cmbLogToFileCode.getComboBox(), currentRow++, "Log To File?");
 					generalPanel.addRow(cmbRandomizeExpCode.getComboBox(), currentRow++, "Randomize Experiences?");
-					generalPanel.addRow(cmbRegenerateImages.getComboBox(), currentRow++, "Regenerate Imagess?");
+					generalPanel.addRow(cmbRegenerateImages.getComboBox(), currentRow++, "Regenerate Images?");
 					generalPanel.addRow(cmbDisplayVideosCode.getComboBox(), currentRow++, "Display Videos When Ripping?");
 					generalPanel.addRow(cmbDisplayMessages.getComboBox(), currentRow++, "Display Detailed Messages?");
 
@@ -467,6 +467,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/26 20:31:31  yoda2
+ * General code cleanup and addition of JavaDoc.  Reflected renaming of Session.java to SessionData.java.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *
