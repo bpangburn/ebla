@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -110,7 +111,9 @@ public class SessionScreen extends JInternalFrame {
 
 	// INITIALIZE SCREENS CALLED FROM SESSION SCREEN AND CORRESPONDING BUTTONS
 		StatusScreen statusScreen = null;
-		JButton btnStartEBLA  = new JButton("Start EBLA");
+		JButton btnStartEBLA = new JButton("Start EBLA");
+		JButton btnClose = new JButton("Close");
+
 
 	// INITIALIZE DATA NAVIGATOR
 		SSDataNavigator dataNavigator = null;
@@ -178,6 +181,15 @@ public class SessionScreen extends JInternalFrame {
 			btnStartEBLA.addActionListener(new StartEBLAListener());
 
 
+		// ADD ACTION LISTENER TO "CLOSE" BUTTON
+			btnClose.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				// DISPOSE OF SELECT EXPERIENCES WINDOW
+					dispose();
+				} // end actionPerformed()
+			});
+
+
 		// SET COMBOBOX ITEMS AND VARIOUS DEFAULTS FOR EACH PANEL
 			// "GENERAL" TAB
 				cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
@@ -220,6 +232,7 @@ public class SessionScreen extends JInternalFrame {
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			int currentRow = 0;
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 		// LAYOUT EACH TAB
 			// "GENERAL" TAB
@@ -278,14 +291,18 @@ public class SessionScreen extends JInternalFrame {
 			tabbedPane.addTab("Lexeme Generation", lexemesPanel);
 			tabbedPane.addTab("Misc", miscPanel);
 
-		// CREATE PANEL FOR BUTTON
-			EBLAPanel btnPanel = new EBLAPanel();
-			//btnPanel.setLayout(new GridBagLayout());
 
-			//constraints.gridx = 0;
-			//constraints.gridy = 0;
-			//btnPanel.add(btnStartEBLA,constraints);
-			btnPanel.add(btnStartEBLA);
+		// CREATE PANEL FOR BUTTON
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			buttonPanel.add(btnStartEBLA, constraints);
+
+			constraints.gridx = 1;
+			buttonPanel.add(btnClose, constraints);
+
 
 		// ADD TABBED PANE AND BUTTON PANE TO SESSION SCREEN
 			Container contentPane = getContentPane();
@@ -296,7 +313,7 @@ public class SessionScreen extends JInternalFrame {
 			contentPane.add(tabbedPane,constraints);
 
 			constraints.gridy = 1;
-			contentPane.add(btnPanel,constraints);
+			contentPane.add(buttonPanel,constraints);
 
 	} // end of SessionScreen constructor
 
@@ -467,6 +484,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/26 22:15:19  yoda2
+ * Fixed typo on widget label.
+ *
  * Revision 1.3  2003/12/26 20:31:31  yoda2
  * General code cleanup and addition of JavaDoc.  Reflected renaming of Session.java to SessionData.java.
  *

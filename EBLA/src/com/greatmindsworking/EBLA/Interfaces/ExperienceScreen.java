@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -74,6 +75,8 @@ public class ExperienceScreen extends JInternalFrame {
 		JTextField txtTmpPath 			= new JTextField();
 		JTextField txtExperienceLexemes = new JTextField();
 		JTextArea txtNotes 				= new JTextArea(20,10);
+
+		JButton btnClose				= new JButton("Close");
 
 	// INITIALIZE DATA NAVIGATOR
 		SSDataNavigator dataNavigator = null;
@@ -132,6 +135,15 @@ public class ExperienceScreen extends JInternalFrame {
 			}
 
 
+		// ADD ACTION LISTENER TO "CLOSE" BUTTON
+			btnClose.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				// DISPOSE OF SELECT EXPERIENCES WINDOW
+					dispose();
+				} // end actionPerformed()
+			});
+
+
 		// SET DATABASE COLUMNS FOR EACH WIDGET
 			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
@@ -147,6 +159,7 @@ public class ExperienceScreen extends JInternalFrame {
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			int currentRow = 0;
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 
 		// CREATE/LAYOUT PANEL FOR WIDGETS
@@ -170,6 +183,13 @@ public class ExperienceScreen extends JInternalFrame {
 
 			constraints.gridy = 1;
 			contentPane.add(dataNavigator,constraints);
+
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+			buttonPanel.add(btnClose);
+
+			constraints.gridy = 2;
+			contentPane.add(buttonPanel, constraints);
 
 	} // end of ExperienceScreen constructor
 
@@ -235,6 +255,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/26 20:29:44  yoda2
+ * General code cleanup and addition of JavaDoc.  Reflected renaming of Session.java to SessionData.java.
+ *
  * Revision 1.3  2003/12/24 19:15:52  yoda2
  * General clean up.  Added JavaDoc and removed explicit coding of labels in favor of automatic labels via EBLAPanel.addRow().
  *

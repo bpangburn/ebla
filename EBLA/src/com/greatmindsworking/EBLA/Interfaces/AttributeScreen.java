@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -75,6 +76,8 @@ public class AttributeScreen extends JInternalFrame {
 		JTextField txtTypeCode 		= new JTextField();
 		JTextField txtClassName 	= new JTextField();
 		JTextArea txtNotes 			= new JTextArea(20,10);
+
+		JButton btnClose			= new JButton("Close");
 
 	// INITIALIZE DATA NAVIGATOR
 		SSDataNavigator dataNavigator = null;
@@ -133,6 +136,15 @@ public class AttributeScreen extends JInternalFrame {
 			}
 
 
+		// ADD ACTION LISTENER TO "CLOSE" BUTTON
+			btnClose.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				// DISPOSE OF SELECT EXPERIENCES WINDOW
+					dispose();
+				} // end actionPerformed()
+			});
+
+
 		// SET DATABASE COLUMNS FOR EACH WIDGET
 			txtAttributeID.setDocument(new SSTextDocument(rowset,"attribute_list_id"));
 
@@ -150,6 +162,7 @@ public class AttributeScreen extends JInternalFrame {
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			int currentRow = 0;
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 
 		// CREATE/LAYOUT PANEL FOR WIDGETS
@@ -174,6 +187,13 @@ public class AttributeScreen extends JInternalFrame {
 
 			constraints.gridy = 1;
 			contentPane.add(dataNavigator,constraints);
+
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+			buttonPanel.add(btnClose);
+
+			constraints.gridy = 2;
+			contentPane.add(buttonPanel, constraints);
 
 	} // end of AttributeScreen constructor
 
@@ -239,6 +259,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/26 22:15:58  yoda2
+ * General code cleanup and addition of JavaDoc.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *

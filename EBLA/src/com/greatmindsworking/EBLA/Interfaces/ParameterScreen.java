@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -104,7 +105,7 @@ public class ParameterScreen extends JInternalFrame {
 
 	// INITIALIZE SCREENS CALLED FROM PARAMETER SCREEN AND CORRESPONDING BUTTONS
 		SelectExperiencesScreen selectExperiencesScreen = null;
-		JButton btnSelectExperiences = new JButton("Select\nExperiences");
+		JButton btnSelectExperiences = new JButton("Select Experiences");
 		SessionScreen sessionScreen = null;
 		JButton btnSetSession = new JButton("Start Session");
 
@@ -165,6 +166,7 @@ public class ParameterScreen extends JInternalFrame {
 				e.printStackTrace();
 			}
 
+
 		// SETUP ACTION LISTENER FOR SELECT EXPERIENCES BUTTON
 			btnSelectExperiences.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
@@ -172,20 +174,21 @@ public class ParameterScreen extends JInternalFrame {
 					if (! txtParameterID.getText().trim().equals("")) {
 						try {
 							parameterID = Long.parseLong(txtParameterID.getText());
-						} catch(NumberFormatException nfe){
+						} catch(NumberFormatException nfe) {
 							nfe.printStackTrace();
-						} catch(Exception e){
+						} catch(Exception e) {
 							e.printStackTrace();
 						}
 					}
 					if (selectExperiencesScreen == null) {
-						selectExperiencesScreen = new SelectExperiencesScreen(parameterID);
+						selectExperiencesScreen = new SelectExperiencesScreen(desktop, parameterID);
 					} else {
 						selectExperiencesScreen.setParameterID(parameterID);
 					}
 					selectExperiencesScreen.showUp(desktop);
 				}
 			});
+
 
 		// SETUP ACTION LISTENER FOR START SESSION BUTTON
 			btnSetSession.addActionListener(new ActionListener() {
@@ -243,6 +246,7 @@ public class ParameterScreen extends JInternalFrame {
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			int currentRow = 0;
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 
 		// LAYOUT EACH TAB
@@ -304,15 +308,16 @@ public class ParameterScreen extends JInternalFrame {
 			tabbedPane.addTab("Misc", miscPanel);
 
 		// CREATE PANEL FOR BUTTONS
-			EBLAPanel btnPanel = new EBLAPanel();
-			btnPanel.setLayout(new GridBagLayout());
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+			//buttonPanel.setLayout(new GridBagLayout());
 
 			constraints.gridx = 0;
 			constraints.gridy = 0;
-			btnPanel.add(btnSetSession,constraints);
+			buttonPanel.add(btnSetSession,constraints);
 
 			constraints.gridx = 1;
-			btnPanel.add(btnSelectExperiences,constraints);
+			buttonPanel.add(btnSelectExperiences,constraints);
 
 		// ADD TABBED PANE, DATA NAVIGATOR AND BUTTON PANE TO PARAMETER SCREEN
 			Container contentPane = getContentPane();
@@ -326,7 +331,7 @@ public class ParameterScreen extends JInternalFrame {
 			contentPane.add(dataNavigator,constraints);
 
 			constraints.gridy = 2;
-			contentPane.add(btnPanel,constraints);
+			contentPane.add(buttonPanel,constraints);
 
 	} // end of ParameterScreen constructor
 
@@ -339,7 +344,7 @@ public class ParameterScreen extends JInternalFrame {
 	 * @param the x co-ordinate of the position where the screen has to showup.
 	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
-	public void showUp(Container container,double positionX, double positionY){
+	public void showUp(Container container,double positionX, double positionY) {
 
 		// SET THE POSITION OF THE SCREEN.
 			this.setLocation((int)positionX, (int)positionY);
@@ -347,15 +352,15 @@ public class ParameterScreen extends JInternalFrame {
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
 			Component[] components = container.getComponents();
 			int i=0;
-			for(i=0; i< components.length;i++){
-				if(components[i] instanceof ParameterScreen ) {
+			for (i=0; i< components.length;i++) {
+				if (components[i] instanceof ParameterScreen ) {
 					System.out.println("Already on desktop");
 					break;
 				}
 			}
 
 		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
-			if(i == components.length) {
+			if (i == components.length) {
 				container.add(this);
 			}
 
@@ -365,7 +370,7 @@ public class ParameterScreen extends JInternalFrame {
 			this.requestFocus();
 
 		// MAKE THE SCREEN SELECTED SCREEN
-			try{
+			try {
 				this.setClosed(false);
 				this.setSelected(true);
 			} catch(PropertyVetoException pve) {
@@ -392,6 +397,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/26 20:30:13  yoda2
+ * Removed unnecessary import statements.
+ *
  * Revision 1.5  2003/12/24 19:15:52  yoda2
  * General clean up.  Added JavaDoc and removed explicit coding of labels in favor of automatic labels via EBLAPanel.addRow().
  *
