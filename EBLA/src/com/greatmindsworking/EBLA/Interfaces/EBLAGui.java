@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.*;
 import javax.swing.event.*;
 import java.beans.PropertyVetoException;
 import com.nqadmin.Utils.DBConnector;
@@ -398,6 +399,29 @@ public class EBLAGui extends JFrame {
 
 
 	/**
+	 *	displays information about EBLA reports
+	 */
+	private void showReports() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show Reports Screen");
+			}
+
+		// GENERATE REPORTS DIALOG
+			JOptionPane.showInternalMessageDialog(desktop,"Reporting has not yet been integrated into EBLA."
+				+ "\n\nAll of the calculation results can be found in the following files in the EBLA installation directory:"
+				+ "\n   'session_###_performance.ssv'"
+				+ "\n   'session_###_mappings.ssv'"
+				+ "\n   'session_###_descriptions.ssv'"
+				+ "\nSee the EBLA ReadMe for additional details.",
+				"Experience Based Language Acquisition",JOptionPane.INFORMATION_MESSAGE);
+
+	} // end showReports()
+
+
+
+	/**
 	 *	displays the EBLA about screen.
 	 */
 	private void showAboutScreen() {
@@ -414,6 +438,43 @@ public class EBLAGui extends JFrame {
 					"Experience Based Language Acquisition",JOptionPane.INFORMATION_MESSAGE);
 
 	} // end showAboutScreen()
+
+
+
+	/**
+	 *	displays the EBLA ReadMe file.
+	 */
+	private void showReadMe() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show EBLA ReadMe File");
+			}
+
+		// LOAD EBLA README INTO A NEW JINTERNALFRAME
+			JInternalFrame readme = new JInternalFrame("EBLA - ReadMe File",false,true,true,true);
+			readme.setSize(640, 480);
+
+			JTextComponent textpane = new JTextArea();
+			JScrollPane pane = new JScrollPane(textpane);
+			pane.setPreferredSize(new Dimension(600, 400));
+
+			try {
+				FileReader fr = new FileReader("readme.txt");
+				textpane.read(fr, null);
+				fr.close();
+			}
+			catch (IOException e) {
+				System.out.println(e);
+			}
+
+			readme.getContentPane().add(pane);
+            desktop.add(readme);
+            readme.setVisible(true);
+			readme.moveToFront();
+			readme.requestFocus();
+
+	} // end showReadMe()
 
 
 
@@ -437,7 +498,9 @@ public class EBLAGui extends JFrame {
 			JMenuItem menuEditAttributes = null;
 			JMenuItem menuEditParameters = null;
 			JMenuItem menuUtilitiesDBSettings = null;
+			JMenuItem menuReportsDataFiles = null;
 			JMenuItem menuHelpAbout = null;
+			JMenuItem menuHelpReadMe = null;
 
 		// INSTANCE OF THE LISTENER FOR THE EBLA MENU ITEMS
 			EBLAMenuListener menuListener = new EBLAMenuListener();
@@ -485,7 +548,10 @@ public class EBLAGui extends JFrame {
 
 					menuUtilitiesDBSettings = menuUtilities.add("Database Settings");
 
+					menuReportsDataFiles = menuReports.add("Data Files");
+
 					menuHelpAbout = menuHelp.add("About");
+					menuHelpReadMe = menuHelp.add("ReadMe");
 
 				// ADD LISTENERS  FOR THE MENU ITEMS
 					menuFileLogin.addActionListener(menuListener);
@@ -495,7 +561,9 @@ public class EBLAGui extends JFrame {
 					menuEditParameters.addActionListener(menuListener);
 					menuEditAttributes.addActionListener(menuListener);
 					menuUtilitiesDBSettings.addActionListener(menuListener);
+					menuReportsDataFiles.addActionListener(menuListener);
 					menuHelpAbout.addActionListener(menuListener);
+					menuHelpReadMe.addActionListener(menuListener);
 
 			} // end EBLAMenuBar constructor
 
@@ -529,8 +597,12 @@ public class EBLAGui extends JFrame {
 							showAttributesScreen();
 						} else if (menuItem.equals(menuUtilitiesDBSettings)) {
 							showDBSettings();
+						} else if (menuItem.equals(menuReportsDataFiles)) {
+							showReports();
 						} else if (menuItem.equals(menuHelpAbout)) {
 							showAboutScreen();
+						} else if (menuItem.equals(menuHelpReadMe)) {
+							showReadMe();
 						}
 
 				} // end actionPerformed()
@@ -560,6 +632,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2003/12/30 23:21:20  yoda2
+ * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
+ *
  * Revision 1.7  2003/12/29 23:20:56  yoda2
  * Added "About" dialog box.
  *
