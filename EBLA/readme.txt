@@ -82,6 +82,61 @@ Prasanth R. Pasala.
 
 
 ==============================================================================
+CODE EXECUTION, DOCUMENTATION, & COMPILATION
+==============================================================================
+
+This code has been tested on both Windows and Linux platforms using
+the Java 2 SDK 1.4 available from http://java.sun.com/j2se/1.4/
+
+Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
+early versions of Sun's ImageIO class.
+
+EBLA uses the following JAR files: which have been included in the /jars
+subdirectory:
+ jmf.jar	Java Media Framework
+                http://java.sun.com/products/java-media/jmf/
+ pg73jdbc3.jar  PostgreSQL JDBC driver
+                http://jdbc.postgresql.org
+ rowset.jar     Sun's JDBC RowSet implementation
+                http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
+ swingUtils.jar The Pangburn Company's database Swing utilities
+                http://swingset.sourceforge.net
+ utils.jar	The Pangburn Company's misc Java utilities
+                (no URL available)
+  
+All of these files EXCEPT rowset.jar have been included in the EBLA
+SourceForge release file.  To install EBLA, simply download the release file
+to the desired folder/directory and type:
+  jar -xf ebla-0.6.0-alpha.jar
+  
+This will create an "EBLA" folder/directory containing the entire EBLA system.
+
+Sun's JDBC Rowset Implementation is available from (registration required):
+http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
+
+It should be placed in the ./jars/ subdirectory of the EBLA installation
+directory.
+  
+To run EBLA:
+  1. change to the directory containing this file (./EBLA/ by default)
+  2. type "linrun" (Linux platforms)
+     OR
+     type "winrun" (Windows platforms)
+  
+To generate the JavaDoc documentation for EBLA:
+  1. change to the directory containing this file (./EBLA/ by default)
+  2. type "lindocs" (Linux platforms)
+     OR
+     type "windocs" (Windows platforms)
+     
+To recompile EBLA:
+  1. change to the directory containing this file (./EBLA/ by default)
+  2. type "lincompile" (Linux platforms)
+     OR
+     type "wincompile" (Windows platforms)     
+
+
+==============================================================================
 DATABASE INSTALLATION
 ==============================================================================
 
@@ -94,7 +149,7 @@ PostgreSQL, a "demo" database with limited functionality is available at
 pgserver.greatmindsworking.com.  The "demo" database allows users to 
 process several sets of videos, but restricts access to several top-level
 tables to read-only.  For instructions on connecting to the demo server,
-see the section on "Database Configuration" under "EBLA INTERFACE" below.
+see the user's manual "manual.pdf" in the EBLA installation directory.
 
 To fully customize EBLA, its parameters, and the video dataset requires access
 to a PostgreSQL database server.  Instructions on creating and populating the
@@ -170,6 +225,12 @@ evaluate EBLA is just over 150MB (compressed JAR file).  It is available
 in the downloads section of the EBLA SourceForge site:
 http://sourceforge.net/projects/ebla/
 
+To install the full test set, simply download the release file
+ebla_experiences.jar to the EBLA installation directory and type:
+  jar -xf ebla_experiences.jar
+  
+The full set of videos will be extracted to the  ./experiences/ subdirectory.    
+
 Because the vision processing, entity extraction, and lexical resolution
 stages of EBLA can be run separately, the entity extraction and lexical
 resolution features can be evaluated without the full set of real videos.
@@ -182,18 +243,9 @@ from the vision processing stage.
 EBLA INTERFACE
 ==============================================================================
 
-Description:
-
-Database Configuration:
-
-Parameters:
-
-Experiences:
-
-Sessions:
-
-Status:
-
+Starting with version 0.6.0-alpha, EBLA is run via a graphical user interface
+(GUI) developed using Java Swing.  For more information see the user's manual,
+"manual.pdf" in the EBLA installation directory.
 
 
 ==============================================================================
@@ -321,8 +373,6 @@ case_sensitive_code   0    0 = lexemes are not case-sensitive
 notes	           (blank) notes about current set of runtime parameters
 
 
-
-
 ==============================================================================
 RESULTS
 ==============================================================================
@@ -393,53 +443,6 @@ The three text files are delimited using semicolons and are described below:
       
 Note that descriptions.ssv is only generated when EBLA is run in description
 mode (e.g. generate_desc_code = 1).
-
-
-==============================================================================
-CODE COMPILATION, DOCUMENTATION, & EXECUTION
-==============================================================================
-
-This code has been tested on both Windows and Linux platforms using
-the Java 2 SDK 1.4 available from http://java.sun.com/j2se/1.4/
-
-Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
-early versions of Sun's ImageIO class.
-
-EBLA uses the following JAR files: which have been included in the /jars
-subdirectory:
- jmf.jar	Java Media Framework
-                http://java.sun.com/products/java-media/jmf/
- pg73jdbc3.jar  PostgreSQL JDBC driver
-                http://jdbc.postgresql.org
- rowset.jar     Sun's JDBC RowSet implementation
-                http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
- swingUtils.jar The Pangburn Company's database Swing utilities
-                http://swingset.sourceforge.net
- utils.jar	The Pangburn Company's misc Java utilities
-                (no URL available)
-  
-All of these files EXCEPT rowset.jar have been included in the EBLA
-SourceForge release file.  To install EBLA, simply download the release file
-to the desired folder/directory and type:
-  jar -xf ebla-0.6.0-alpha.jar
-  
-This will create an "EBLA" folder/directory containing the entire EBLA system.
-
-Sun's JDBC Rowset Implementation is available from (registration required):
-http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
-
-It should be placed in the /jars subdirectory of the EBLA installation
-directory.
-  
-To run EBLA, either double-click the ebla.jar file in the EBLA folder/
-directory or type:
-  java -jar ebla.jar
-  
-To generate the JavaDoc documentation for EBLA:
-  1. change to the directory containing this file (/EBLA/ by default)
-  2. type "lindocs" (Linux platforms)
-     OR
-     type "windocs" (Windows platforms)
 
 
 ==============================================================================
