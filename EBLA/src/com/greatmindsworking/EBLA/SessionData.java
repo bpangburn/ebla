@@ -38,7 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.sql.*;
 import com.nqadmin.Utils.DBConnector;
-
+import java.net.InetAddress;
 
 
 
@@ -139,6 +139,11 @@ public class SessionData {
 	 */
 	private String notes = "";
 
+	/**
+	 * string containing localhost IP address
+	 */
+	private String ipAddress = "";
+
 
 
 	/**
@@ -170,6 +175,10 @@ public class SessionData {
 				displayText = _displayText;
 				caseSensitive = _caseSensitive;
 				notes = _notes;
+
+			// DETERMINE IP ADDRESS
+				InetAddress addr = InetAddress.getLocalHost();
+				ipAddress = addr.toString();
 
 			// WRITE DATA MEMBERS TO DATABASE
 				writeToDB(_dbc);
@@ -252,7 +261,7 @@ public class SessionData {
 					+ " regen_int_images_code, log_to_file_code, randomize_exp_code,"
 					+ " desc_to_generate, min_sd_start, min_sd_stop, min_sd_step, loop_count,"
 					+ " fixed_sd_code, display_movie_code, display_text_code,"
-					+ " case_sensitive_code, notes)"
+					+ " case_sensitive_code, notes, session_ip)"
 					+ " VALUES (" + sessionID + ","
 					+ parameterID + ","
 					+ addQuotes(description) + ","
@@ -268,7 +277,8 @@ public class SessionData {
 					+ boolInt(displayMovie) + ","
 					+ boolInt(displayText) + ","
 					+ boolInt(caseSensitive) + ","
-					+ addQuotes(notes) + ");";
+					+ addQuotes(notes) + ","
+					+ addQuotes(ipAddress) + ");";
 
 			// EXECUTE QUERY
 				tmpState.executeUpdate(sql);
@@ -523,6 +533,9 @@ public class SessionData {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/26 20:27:08  yoda2
+ * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
+ *
  * Revision 1.2  2003/12/26 19:53:23  yoda2
  * Renamed Session.java to SessionData.java
  *
