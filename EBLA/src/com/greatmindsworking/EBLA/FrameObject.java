@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -155,11 +155,11 @@ public class FrameObject {
 	 * Public method to write data members to the database
 	 *
 	 * @param _tmpState		database statement for execution of any SQL commands
-	 * @param _expID		ID of parent experience record
+	 * @param _paramExpID	ID of parent parameter_experience_data record
 	 *
 	 * @return boolean indicating success (true) or failure (false)
 	 */
-	public boolean writeToDB(Statement _tmpState, long _expID) {
+	public boolean writeToDB(Statement _tmpState, long _paramExpID) {
 
 		// DECLARATIONS
 			boolean result = true;		// ASSUME DB WRITE IS OK UNTIL ERROR IS ENCOUNTERED
@@ -185,10 +185,10 @@ public class FrameObject {
 					+ boundRect.width + "," + boundRect.height + "'";
 
 			// BUILD INSERT QUERY
-				sql = "INSERT INTO frame_analysis_data (experience_id, frame_number, object_number,"
+				sql = "INSERT INTO frame_analysis_data (parameter_experience_id, frame_number, object_number,"
 					+ " polygon_point_count, polygon_point_list, rgb_color, bound_rect_points, centroid_x,"
 					+ " centroid_y, area)"
-					+ " VALUES (" + _expID + "," + frameIndex + "," + correlationIndex + "," + numPoints
+					+ " VALUES (" + _paramExpID + "," + frameIndex + "," + correlationIndex + "," + numPoints
 					+ "," + polyPoints + "," + rgb + "," + boundPoints + "," + cg.x + "," + cg.y
 					+ "," + area + ");";
 
@@ -212,6 +212,9 @@ public class FrameObject {
 
 /*
  * $Log$
+ * Revision 1.7  2002/12/11 22:52:10  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.6  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
