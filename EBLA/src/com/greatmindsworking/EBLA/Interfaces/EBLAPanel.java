@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -344,6 +344,10 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/24 19:15:02  yoda2
+ * Added code to set TextField and TextArea focus when the mouse passes over the corresponding labels.
+ * Added code to set Minimum and Preferred size for all widgets.
+ *
  * Revision 1.5  2003/12/23 23:18:47  yoda2
  * Continued code cleanup.
  * Discovered that both PreferredSize and MinimumSize must be set to generate consistent widget widths across all tabs on a given screen.

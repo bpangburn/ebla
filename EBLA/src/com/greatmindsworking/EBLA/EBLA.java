@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1065,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.38  2004/02/25 21:24:45  yoda2
+ * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
+ *
  * Revision 1.37  2004/02/06 19:42:12  yoda2
  * Fixed glitch with "Querying Experiences" displaying at top of status screen during entire video processing stage.
  *

@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1401,6 +1401,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.21  2003/08/08 13:32:53  yoda2
+ * Rewritten for use with new database structure (e.g. run_data).
+ *
  * Revision 1.20  2002/12/11 22:54:34  yoda2
  * Initial migration to SourceForge.
  *

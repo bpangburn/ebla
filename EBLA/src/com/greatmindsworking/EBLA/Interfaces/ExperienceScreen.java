@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -260,6 +260,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2004/01/09 18:56:35  yoda2
+ * Small eyewash changes to labels/tabs.
+ *
  * Revision 1.9  2004/01/09 14:22:31  yoda2
  * Modified screens to use a single database connection.
  *

@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -679,6 +679,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.34  2004/02/25 21:24:45  yoda2
+ * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
+ *
  * Revision 1.33  2004/01/13 17:11:44  yoda2
  * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
  *

@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -149,6 +149,9 @@ public class ImageComponent extends JComponent {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.5  2002/12/11 22:53:24  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.4  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *

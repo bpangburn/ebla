@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -455,6 +455,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.13  2004/01/10 04:08:54  yoda2
+ * Renamed the "Lexeme Generation" tab "Lexical Analysis and Generation"
+ *
  * Revision 1.12  2004/01/09 18:56:35  yoda2
  * Small eyewash changes to labels/tabs.
  *

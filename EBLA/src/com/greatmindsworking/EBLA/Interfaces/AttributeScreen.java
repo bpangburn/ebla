@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -268,6 +268,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.8  2004/01/07 21:33:00  yoda2
  * Updated labels, changed fields for include_code and type_code to SSComboBoxes, and disabled Attribute Type and Attribute Calculation Class fields (not currently used).
  *

@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2004, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -4949,6 +4949,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.16  2004/02/25 21:25:17  yoda2
+ * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
+ *
  * Revision 1.15  2004/01/21 19:31:46  yoda2
  * Turned off printing of intermediate segmentation results and placed printout of speedup factor inside print flag.
  *

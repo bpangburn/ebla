@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -912,6 +912,9 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.23  2003/12/26 20:25:52  yoda2
+ * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
+ *
  * Revision 1.22  2003/08/08 13:29:14  yoda2
  * Rewritten for use with new database structure (e.g. session_data & parameter_experience_data).
  * Also removed main() method for standalone testing - no longer applicable.

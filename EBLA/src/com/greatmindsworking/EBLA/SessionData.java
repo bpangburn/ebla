@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -533,6 +533,9 @@ public class SessionData {
 
 /*
  * $Log$
+ * Revision 1.4  2004/01/13 17:11:03  yoda2
+ * Added code to store local hostname & IP.
+ *
  * Revision 1.3  2003/12/26 20:27:08  yoda2
  * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
  *

@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -510,6 +510,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.15  2004/01/13 21:36:16  yoda2
+ * Improved behavior of FrameGrabber when an experience is not found.
+ *
  * Revision 1.14  2004/01/13 21:26:32  yoda2
  * Updated code to kill application when an experience is not found.
  *

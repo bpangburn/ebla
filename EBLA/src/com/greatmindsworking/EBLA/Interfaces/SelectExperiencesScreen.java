@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -459,6 +459,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.5  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.4  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *

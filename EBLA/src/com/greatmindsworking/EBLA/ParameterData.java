@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -548,6 +548,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.19  2004/02/25 21:24:45  yoda2
+ * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
+ *
  * Revision 1.18  2003/12/31 15:45:51  yoda2
  * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
  *

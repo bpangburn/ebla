@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2004, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,6 +93,9 @@ public class Attribute {
 
 /*
  * $Log$
+ * Revision 1.5  2003/05/20 13:27:01  yoda2
+ * Removed import of unused packages.
+ *
  * Revision 1.4  2002/12/11 22:47:55  yoda2
  * Initial migration to SourceForge.
  *

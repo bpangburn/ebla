@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -436,6 +436,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.16  2004/02/25 21:26:07  yoda2
+ * Added option for chosing which EDISON port to use.
+ *
  * Revision 1.15  2004/01/09 18:56:35  yoda2
  * Small eyewash changes to labels/tabs.
  *

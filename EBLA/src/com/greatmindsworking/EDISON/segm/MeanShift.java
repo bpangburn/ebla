@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2004, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -2983,6 +2983,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.17  2004/02/25 21:25:14  yoda2
+ * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
+ *
  * Revision 1.16  2003/11/24 16:34:41  yoda2
  * Small JavaDoc fixes to get rid of warnings.
  *
