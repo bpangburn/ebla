@@ -93,16 +93,16 @@ early versions of Sun's ImageIO class.
 
 EBLA uses the following JAR files: which have been included in the /jars
 subdirectory:
- jmf.jar	Java Media Framework
-                http://java.sun.com/products/java-media/jmf/
- pg73jdbc3.jar  PostgreSQL JDBC driver
-                http://jdbc.postgresql.org
- rowset.jar     Sun's JDBC RowSet implementation
-                http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
- swingUtils.jar The Pangburn Company's database Swing utilities
-                http://swingset.sourceforge.net
- utils.jar	The Pangburn Company's misc Java utilities
-                (no URL available)
+ jmf.jar	  Java Media Framework
+                  http://java.sun.com/products/java-media/jmf/
+ pg74.1jdbc3.jar  PostgreSQL JDBC driver
+                  http://jdbc.postgresql.org
+ rowset.jar       Sun's JDBC RowSet implementation
+                  http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
+ swingUtils.jar   The Pangburn Company's database Swing utilities
+                  http://swingset.sourceforge.net
+ utils.jar	  The Pangburn Company's misc Java utilities
+                  (no URL available)
   
 All of these files EXCEPT rowset.jar have been included in the EBLA
 SourceForge release file.  To install EBLA, simply download the release file
@@ -164,9 +164,8 @@ installation directory.
 
 The database, ebla_data, can be installed in two ways:
   1. table structure only (no sample dataset)
-  2. table structure and dataset (includes sample data for parameters,
-     experiences, and intermediate results - this allows EBLA to be run
-     without the processor-intensive vision processing stage
+  2. table structure along with parameters, experiences, and attributes for
+     evaluating EBLA with the video dataset (see next section).
      
 Method 1 (from a command prompt on the database server type):
   1. createdb ebla_data (creates database)
@@ -179,15 +178,14 @@ Method 1 (from a command prompt on the database server type):
   
 Method 2 (from a command prompt on the database server type):
   1. createdb ebla_data    (creates database)
-  2. gunzip -c ebla_data_full.gz | psql ebla_data (loads SQL and data)
-     *** Note that the file, ebla_data_full.gz, is 4.5MB zipped and 23,000MB
-         unzipped.  It is not included in the main distribution file for
-         EBLA and must be downloaded separately from
-         http://www.greatmindsworking.com/downloads/ebla_data_full.gz ***
+  2. gunzip -c ebla_data.sql.gz | psql ebla_data (loads SQL and data)
+     *** note that the file, ebla_data.sql, from the ./data/ subdirectory of
+         the EBLA installation directory must be on the machine running
+         the database server ***
          
 Until you are comfortable with how EBLA operates and are ready to create your
 own experiences, it is recommended that you setup the database WITH the sample
-dataset (method 2).
+parameters, experiences, & attributes (method 2).
 
 Note that as you use EBLA, a lot of data is temporarily written to and
 deleted from the database.  Over time, this can severely impair performance.
@@ -222,21 +220,14 @@ the files were delivered to EBLA as AVI files.
 The set of animations are contained in ./experiences/ subdirectory of
 the installation directory.  The full set of real videos used to
 evaluate EBLA is just over 150MB (compressed JAR file).  It is available 
-in the downloads section of the EBLA SourceForge site:
-http://sourceforge.net/projects/ebla/
+from the following link:
+http://prdownloads.sourceforge.net/ebla/ebla_experiences.jar?download
 
 To install the full test set, simply download the release file
 ebla_experiences.jar to the EBLA installation directory and type:
   jar -xf ebla_experiences.jar
   
 The full set of videos will be extracted to the  ./experiences/ subdirectory.    
-
-Because the vision processing, entity extraction, and lexical resolution
-stages of EBLA can be run separately, the entity extraction and lexical
-resolution features can be evaluated without the full set of real videos.
-Follow the steps outlined in "Method 2" under "DATABASE INSTALLATION" above
-to install the ebla_data database with all of the intermediate results
-from the vision processing stage.
 
 
 ==============================================================================
