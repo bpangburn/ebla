@@ -9,4 +9,4 @@
 rm ./com/greatmindsworking/EBLA/*.class
 rm ./com/greatmindsworking/EBLA/Interfaces/*.class
 rm ./com/greatmindsworking/EDISON/segm/*.class
-javac -classpath .:./jars/pg74.1jdbc3.jar:./jars/jmf.jar:./jars/swingset-bin_0.7.0_beta.jar:./jars/utils.jar com/greatmindsworking/EBLA/Interfaces/EBLAGui.java
+javac -source 1.4 -target 1.4 -Xlint:deprecation -Xlint:unchecked -classpath .:./jars/pg74.1jdbc3.jar:./jars/jmf.jar:./jars/swingset-bin_0.7.0_beta.jar:./jars/utils.jar com/greatmindsworking/EBLA/Interfaces/EBLAGui.java
