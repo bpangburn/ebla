@@ -100,6 +100,13 @@ public class ParameterData {
 	private int segSpeedUp = 1;
 
 	/**
+	 * float containing the speed-up level factor for high speed up segmentation
+	 *
+	 * 0.0 = highest quality, 1.0 = highest speedup
+	 */
+	private float segSpeedUpFactor = (float)0.5;
+
+	/**
 	 * string containing file prefix for temp frames extracted from each movie/experience
 	 */
 	private String framePrefix = "/frame";
@@ -213,8 +220,14 @@ public class ParameterData {
 						segSpatialRadius = paramRS.getInt("seg_spatial_radius");
 						segMinRegion = paramRS.getInt("seg_min_region");
 						segSpeedUp = paramRS.getInt("seg_speed_up_code");
+						segSpeedUpFactor = paramRS.getFloat("seg_speed_up_factor");
+						if (segSpeedUpFactor < 0.0) {
+							segSpeedUpFactor = (float)0.0;
+						} else if (segSpeedUpFactor > 1.0) {
+							segSpeedUpFactor = (float)1.0;
+						}
 
-					// EXTRACT SEGMENTATINO FRAME IMAGE FILE PREFIXES
+					// EXTRACT SEGMENTATION FRAME IMAGE FILE PREFIXES
 						tmpString = paramRS.getString("frame_prefix");
 						if (tmpString != "") {
 							framePrefix = tmpString;
@@ -357,6 +370,17 @@ public class ParameterData {
 			return SpeedUpLevel.HIGH_SPEEDUP;
 		}
 	} // end getSegSpeedUp()
+
+
+
+	/**
+	 * Returns the speedup factor to use for mean-shift analysis image segmentation.
+	 *
+	 * @return speedup factor for high speedup option of mean-shift analysis image segmentation
+	 */
+	public float getSegSpeedUpFactor() {
+		return segSpeedUpFactor;
+	} // end getSegSpeedUpFactor()
 
 
 
@@ -507,6 +531,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.17  2003/12/26 20:27:08  yoda2
+ * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
+ *
  * Revision 1.16  2003/12/26 19:51:42  yoda2
  * Renamed Params.java to ParameterData.java
  *

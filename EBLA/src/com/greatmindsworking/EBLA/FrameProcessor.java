@@ -309,6 +309,11 @@ public class FrameProcessor {
 						// SET IMAGE
 							mySegm.DefineImage(framePixels, ImageType.COLOR, height, width);
 
+						// SET SPEEDUP FACTOR FOR HIGH SPEEDUP OPTION
+							if (pd.getSegSpeedUp() == SpeedUpLevel.HIGH_SPEEDUP) {
+								mySegm.SetSpeedThreshold(pd.getSegSpeedUpFactor());
+							}
+
 						// SEGMENT IMAGE
 						// (NO_SPEEDUP, MED_SPEEDUP, HIGH_SPEEDUP)
 							mySegm.Segment(pd.getSegSpatialRadius(), pd.getSegColorRadius(), pd.getSegMinRegion(), pd.getSegSpeedUp());
@@ -650,6 +655,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.30  2003/12/30 23:19:41  yoda2
+ * Modified for more detailed updating of EBLA Status Screen.
+ *
  * Revision 1.29  2003/12/26 20:25:53  yoda2
  * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
  *
