@@ -358,10 +358,10 @@ public class ParameterScreen extends JInternalFrame {
 
 			constraints.gridx = 0;
 			constraints.gridy = 0;
-			buttonPanel.add(btnStartSession,constraints);
+			buttonPanel.add(btnSelectExperiences,constraints);
 
 			constraints.gridx = 1;
-			buttonPanel.add(btnSelectExperiences,constraints);
+			buttonPanel.add(btnStartSession,constraints);
 
 		// ADD TABBED PANE, DATA NAVIGATOR AND BUTTON PANE TO PARAMETER SCREEN
 			Container contentPane = getContentPane();
@@ -444,6 +444,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.11  2004/01/07 19:44:21  yoda2
+ * Verified that primary key is displayed on each screen and is disabled.
+ *
  * Revision 1.10  2003/12/31 19:44:26  yoda2
  * Added logic to set a default session description based on the parameter description and current date/time.
  *
