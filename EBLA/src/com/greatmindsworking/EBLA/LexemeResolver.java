@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.util.*;
 import java.sql.*;
+import com.nqadmin.Utils.DBConnector;
 import java.io.*;
 
 
@@ -151,10 +152,14 @@ public class LexemeResolver {
 	private long expID = -1;
 
 	/**
+	 * long containing the database record ID for the current calculation run
+	 */
+	private long runID = -1;
+
+	/**
 	 * long containing the order that the current experience is being processed
 	 */
 	private long expIndex = 1;
-
 
 	/**
 	 * ArrayList of all lexemes for the current experience
@@ -172,12 +177,14 @@ public class LexemeResolver {
 	 * Class constructor that tokenizes description associated with each experience
 	 * and sets the necessary parameters.
 	 *
-	 * @param _lexemes	comma separated list of lexemes describing an experience
-	 * @param _expID	unique id of experience for which entities are being extracted
-	 * @param _expIndex order that experience is being processed
-	 * @param _dbc		connection to EBLA database
+	 * @param _lexemes		comma separated list of lexemes describing an experience
+	 * @param _expID		unique id of experience for which entities are being extracted
+	 * @param _runID		unique id of current calculation run
+	 * @param _expIndex 	order that experience is being processed
+	 * @param _dbc			connection to EBLA database
 	 */
-    public LexemeResolver(String _lexemes, long _expID, long _expIndex, DBConnector _dbc) {
+    public LexemeResolver(String _lexemes, long _expID, long _runID, long _expIndex,
+    	DBConnector _dbc) {
 
 		try {
 
@@ -197,6 +204,9 @@ public class LexemeResolver {
 
 			// SET EXPERIENCE ID
 				expID = _expID;
+
+			// SET RUN ID
+				runID = _runID;
 
 			// SET EXPERIENCE INDEX
 				expIndex = _expIndex;
@@ -251,7 +261,7 @@ public class LexemeResolver {
 				tmpState2 = dbc.getStatement();
 
 			// FILL CURRENT ENTITY SET
-				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID + ";";
+				sql = "SELECT entity_id FROM experience_entity_data WHERE run_id = " + runID + ";";
 
 			// EXECUTE QUERY
 				eedRS = tmpState.executeQuery(sql);
@@ -345,7 +355,9 @@ public class LexemeResolver {
 							// SET resolution_code TO 1 IN experience_entity_data AND experience_lexeme_data
 							// UPDATE resolution_index IN experience_lexeme_data
 								sql = "UPDATE experience_entity_data SET resolution_code = 1"
-									+ " WHERE experience_id = " + expID + " AND entity_id = " + entityID + ";";
+									+ " WHERE experience_id = " + expID
+									+ " AND run_id = " + runID
+									+ " AND entity_id = " + entityID + ";";
 								tmpState2.executeUpdate(sql);
 
 						}
@@ -362,8 +374,9 @@ public class LexemeResolver {
 				fw.write(loopCount + ";" + stdDev + ";" + expIndex + ";" + description + ";" + lexemes + "\n");
 
 			// WRITE DESCRIPTION TO DATABASE
-				sql = "UPDATE experience_data SET description = '" + description + "'"
-					+ " WHERE experience_id = " + expID + ";";
+				sql = "UPDATE experience_run_data SET experience_description = '" + description + "'"
+					+ " WHERE experience_id = " + expID
+					+ " AND run_id = " + runID + ";";
 				tmpState.executeUpdate(sql);
 
 			// CLOSE STATEMENTS
@@ -444,7 +457,8 @@ public class LexemeResolver {
 				curEnt = new ArrayList();
 
 			// FILL CURRENT ENTITY SET
-				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID + ";";
+				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID
+					+ " AND run_id = " + runID + ";";
 
 			// EXECUTE QUERY
 				eedRS = tmpState.executeQuery(sql);
@@ -453,7 +467,8 @@ public class LexemeResolver {
 				while (eedRS.next()) {
 					tmpID = new Long(eedRS.getLong("entity_ID"));
 					if (curEnt.contains(tmpID)) {
-						System.out.println("THE SAME ENTITY EXISTS TWICE IN EXPERIENCE #" + expID + "!!!");
+						System.out.println("THE SAME ENTITY EXISTS TWICE FOR EXPERIENCE ID# " + expID
+							+ " -- RUN ID# " + runID + "!!!");
 					} else {
 						curEnt.add(tmpID);
 					}
@@ -480,7 +495,9 @@ public class LexemeResolver {
 						String tmpLex = (String)itt.next();
 
 					// QUERY lexeme_data FOR CURRENT LEXEME
-						sql = "SELECT * FROM lexeme_data WHERE lexeme = '" + tmpLex + "';";
+						sql = "SELECT * FROM lexeme_data"
+							+ " WHERE run_id = " + runID
+							+ " AND lexeme = '" + tmpLex + "';";
 
 					// EXECUTE QUERY
 						lexemeRS = tmpState.executeQuery(sql);
@@ -523,15 +540,15 @@ public class LexemeResolver {
 								lexemeRS.close();
 
 							// ADD LEXEME DATA RECORD
-								sql = "INSERT INTO lexeme_data (lexeme_id, lexeme, occurance_count) VALUES ("
-									+ lexemeID + ", '" + tmpLex + "', 1);";
+								sql = "INSERT INTO lexeme_data (lexeme_id, run_id, lexeme, occurance_count) VALUES ("
+									+ lexemeID + "," + runID + ", '" + tmpLex + "', 1);";
 								tmpState.executeUpdate(sql);
 
 						} // end if (lexemeExists)...
 
 					// ADD EXPERIENCE LEXEME RECORD
-						sql = "INSERT INTO experience_lexeme_data (experience_id, lexeme_id, resolution_code) VALUES ("
-							+ expID + ", " + lexemeID + ", 0);";
+						sql = "INSERT INTO experience_lexeme_data (experience_id, run_id, lexeme_id, resolution_code) VALUES ("
+							+ expID + "," + runID + "," + lexemeID + ", 0);";
 						tmpState.executeUpdate(sql);
 
 					// ADD LEXEME ID TO ARRAYLIST
@@ -665,7 +682,9 @@ public class LexemeResolver {
 					// BUILD QUERIES
 						eedSQL = "(SELECT eed1.experience_id AS id1, eed2.experience_id AS id2, COUNT(*)"
 							   + " FROM experience_entity_data eed1, experience_entity_data eed2"
-							   + " WHERE (eed1.resolution_code = 0)"
+							   + " WHERE (eed1.run_id = " + runID + ")"
+							   + " AND (eed1.resolution_code = 0)"
+							   + " AND (eed2.run_id = " + runID + ")"
 							   + " AND (eed2.resolution_code = 0)"
 							   + " AND (eed1.entity_id = eed2.entity_id)"
 							   + " AND (eed1.experience_id < eed2.experience_id)"
@@ -674,7 +693,9 @@ public class LexemeResolver {
 
 						eldSQL = "(SELECT eld1.experience_id AS id1, eld2.experience_id AS id2, COUNT(*)"
 							   + " FROM experience_lexeme_data eld1, experience_lexeme_data eld2"
-							   + " WHERE (eld1.resolution_code = 0)"
+							   + " WHERE (eld1.run_id = " + runID + ")"
+							   + " AND (eld1.resolution_code = 0)"
+							   + " AND (eld2.run_id = " + runID + ")"
 							   + " AND (eld2.resolution_code = 0)"
 							   + " AND (eld1.lexeme_id = eld2.lexeme_id)"
 							   + " AND (eld1.experience_id < eld2.experience_id)"
@@ -708,10 +729,12 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eedSQL = "SELECT entity_id FROM experience_entity_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " AND entity_id IN ("
 									   + " 		SELECT entity_id FROM experience_entity_data"
 									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
 									   + "		AND resolution_code = 0"
 									   + "		);";
 
@@ -735,10 +758,12 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eldSQL = "SELECT lexeme_id FROM experience_lexeme_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " AND lexeme_id IN ("
 									   + " 		SELECT lexeme_id FROM experience_lexeme_data"
 									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
 									   + "		AND resolution_code = 0"
 									   + "		);";
 
@@ -788,23 +813,31 @@ public class LexemeResolver {
 					// BUILD QUERIES
 						eedSQL = "(SELECT eed1.experience_id AS id1, eed2.experience_id AS id2, COUNT(*) as ecnt"
 							   + " FROM experience_entity_data eed1, "
-							   + " (SELECT DISTINCT experience_id, entity_id FROM experience_entity_data WHERE resolution_code=0) eed2"
+							   + " (SELECT DISTINCT experience_id, entity_id"
+							   + "		FROM experience_entity_data WHERE resolution_code=0"
+							   + " 		AND run_id = " + runID + ") eed2"
 							   + " WHERE (eed1.resolution_code = 0)"
+							   + " AND (eed1.run_id = " + runID + ")"
 							   + " AND (eed1.entity_id = eed2.entity_id)"
 							   + " AND (eed1.experience_id < eed2.experience_id)"
 							   + " GROUP BY eed1.experience_id, eed2.experience_id"
 							   + " HAVING COUNT(*) = ((SELECT COUNT(*) FROM experience_entity_data"
-							   + " 	WHERE experience_id = eed1.experience_id AND resolution_code=0) - 1))";
+							   + " 		WHERE experience_id = eed1.experience_id"
+							   + " 		AND run_id = " + runID + " AND resolution_code=0) - 1))";
 
 						eldSQL = "(SELECT eld1.experience_id AS id1, eld2.experience_id AS id2, COUNT(*) as lcnt"
 							   + " FROM experience_lexeme_data eld1, "
-							   + " (SELECT DISTINCT experience_id, lexeme_id FROM experience_lexeme_data WHERE resolution_code=0) eld2"
+							   + " (SELECT DISTINCT experience_id, lexeme_id"
+							   + "		FROM experience_lexeme_data WHERE resolution_code=0"
+							   + " 		AND run_id = " + runID + ") eld2"
 							   + " WHERE (eld1.resolution_code = 0)"
+							   + " AND (eld1.run_id = " + runID + ")"
 							   + " AND (eld1.lexeme_id = eld2.lexeme_id)"
 							   + " AND (eld1.experience_id < eld2.experience_id)"
 							   + " GROUP BY eld1.experience_id, eld2.experience_id"
 							   + " HAVING COUNT(*) = ((SELECT COUNT(*) FROM experience_lexeme_data"
-							   + " 	WHERE experience_id = eld1.experience_id AND resolution_code=0) - 1))";
+							   + " 		WHERE experience_id = eld1.experience_id"
+							   + " 		AND run_id = " + runID + " AND resolution_code=0) - 1))";
 
 						sql = "SELECT * FROM " + eedSQL + " e, " + eldSQL + " l"
 							+ " WHERE e.id1 = l.id1"
@@ -833,11 +866,13 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eedSQL = "SELECT entity_id FROM experience_entity_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " EXCEPT"
-									   + " SELECT entity_id FROM experience_entity_data"
-									   + " WHERE experience_id = " + exp2
-									   + " AND resolution_code = 0;";
+									   + " 		SELECT entity_id FROM experience_entity_data"
+									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
+									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
 								entityRS = tmpState.executeQuery(eedSQL);
@@ -859,11 +894,13 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eldSQL = "SELECT lexeme_id FROM experience_lexeme_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " EXCEPT"
-									   + " SELECT lexeme_id FROM experience_lexeme_data"
-									   + " WHERE experience_id = " + exp2
-									   + " AND resolution_code = 0;";
+									   + " 		SELECT lexeme_id FROM experience_lexeme_data"
+									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
+									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
 								lexemeRS = tmpState.executeQuery(eldSQL);
@@ -877,7 +914,6 @@ public class LexemeResolver {
 									System.out.println("ERROR - LEX QUERY #2 - MULTIPLE LEXEMES (" + exp1 + "-" + exp2 + ")");
 									System.exit(0);
 								}
-
 
 							// CLOSE RESULTSET
 								lexemeRS.close();
@@ -907,23 +943,31 @@ public class LexemeResolver {
 					// BUILD QUERIES
 						eedSQL = "(SELECT eed1.experience_id AS id1, eed2.experience_id AS id2, COUNT(*)"
 							   + " FROM experience_entity_data eed1, "
-							   + " (SELECT DISTINCT experience_id, entity_id FROM experience_entity_data WHERE resolution_code=0) eed2"
+							   + " (SELECT DISTINCT experience_id, entity_id"
+							   + "		FROM experience_entity_data WHERE resolution_code=0"
+							   + " 		AND run_id = " + runID + ") eed2"
 							   + " WHERE (eed1.resolution_code = 0)"
+							   + " AND (eed1.run_id = " + runID + ")"
 							   + " AND (eed1.entity_id = eed2.entity_id)"
 							   + " AND (eed1.experience_id > eed2.experience_id)"
 							   + " GROUP BY eed1.experience_id, eed2.experience_id"
 							   + " HAVING COUNT(*) = ((SELECT COUNT(*) FROM experience_entity_data"
-							   + " 	WHERE experience_id = eed1.experience_id AND resolution_code=0) - 1))";
+							   + "		WHERE experience_id = eed1.experience_id"
+							   + " 		AND run_id = " + runID + " AND resolution_code=0) - 1))";
 
 						eldSQL = "(SELECT eld1.experience_id AS id1, eld2.experience_id AS id2, COUNT(*)"
 							   + " FROM experience_lexeme_data eld1, "
-							   + " (SELECT DISTINCT experience_id, lexeme_id FROM experience_lexeme_data WHERE resolution_code=0) eld2"
+							   + " (SELECT DISTINCT experience_id, lexeme_id"
+							   + "		FROM experience_lexeme_data WHERE resolution_code=0"
+							   + " 		AND run_id = " + runID + ") eld2"
 							   + " WHERE (eld1.resolution_code = 0)"
+							   + " AND (eld1.run_id = " + runID + ")"
 							   + " AND (eld1.lexeme_id = eld2.lexeme_id)"
 							   + " AND (eld1.experience_id > eld2.experience_id)"
 							   + " GROUP BY eld1.experience_id, eld2.experience_id"
 							   + " HAVING COUNT(*) = ((SELECT COUNT(*) FROM experience_lexeme_data"
-							   + " 	WHERE experience_id = eld1.experience_id AND resolution_code=0) - 1))";
+							   + " 		WHERE experience_id = eld1.experience_id"
+							   + " 		AND run_id = " + runID + " AND resolution_code=0) - 1))";
 
 						sql = "SELECT * FROM " + eedSQL + " e, " + eldSQL + " l"
 							+ " WHERE e.id1 = l.id1"
@@ -952,11 +996,13 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eedSQL = "SELECT entity_id FROM experience_entity_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " EXCEPT"
-									   + " SELECT entity_id FROM experience_entity_data"
-									   + " WHERE experience_id = " + exp2
-									   + " AND resolution_code = 0;";
+									   + " 		SELECT entity_id FROM experience_entity_data"
+									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
+									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
 								entityRS = tmpState.executeQuery(eedSQL);
@@ -978,11 +1024,13 @@ public class LexemeResolver {
 							// BUILD QUERY
 								eldSQL = "SELECT lexeme_id FROM experience_lexeme_data"
 									   + " WHERE experience_id = " + exp1
+									   + " AND run_id = " + runID
 									   + " AND resolution_code = 0"
 									   + " EXCEPT"
-									   + " SELECT lexeme_id FROM experience_lexeme_data"
-									   + " WHERE experience_id = " + exp2
-									   + " AND resolution_code = 0;";
+									   + " 		SELECT lexeme_id FROM experience_lexeme_data"
+									   + " 		WHERE experience_id = " + exp2
+									   + " 		AND run_id = " + runID
+									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
 								lexemeRS = tmpState.executeQuery(eldSQL);
@@ -1047,7 +1095,8 @@ public class LexemeResolver {
 	 *
 	 * @return number of entities/lexemes updated
 	 */
-	private int updateExpResolutions(long _expID, long _entityID, long _lexemeID, long _expIndex) {
+	private int updateExpResolutions(long _expID, long _entityID,
+		long _lexemeID, long _expIndex) {
 
 		// DECLARATIONS
 			String sql = "";				// STRING USED FOR QUERY CONSTRUCTION
@@ -1068,7 +1117,9 @@ public class LexemeResolver {
 				ArrayList tmpELD = new ArrayList();
 
 				sql = "SELECT * FROM experience_entity_data"
-					+ " WHERE experience_id = " + _expID + " AND entity_id = " + _entityID
+					+ " WHERE experience_id = " + _expID
+					+ " AND run_id = " + runID
+					+ " AND entity_id = " + _entityID
 					+ " AND resolution_code = 0;";
 
 				tmpRS = tmpState.executeQuery(sql);
@@ -1079,7 +1130,9 @@ public class LexemeResolver {
 				tmpRS.close();
 
 				sql = "SELECT * FROM experience_lexeme_data"
-					+ " WHERE experience_id = " + _expID + " AND lexeme_id = " + _lexemeID
+					+ " WHERE experience_id = " + _expID
+					+ " AND run_id = " + runID
+					+ " AND lexeme_id = " + _lexemeID
 					+ " AND resolution_code = 0;";
 
 				tmpRS = tmpState.executeQuery(sql);
@@ -1253,7 +1306,9 @@ public class LexemeResolver {
 					// QUERY experience_entity_data AND experience_lexeme_data FOR EXPERIENCES WITH ONLY A SINGLE
 					// UNRESOLVED entity-lexeme PAIR -- ONLY RETURN FIRST RESULT
 						sql = "SELECT eed.experience_id, COUNT(*) FROM experience_entity_data eed, experience_lexeme_data eld"
-							+ " WHERE eed.experience_id = eld.experience_id"
+							+ " WHERE eed.run_id = " + runID
+							+ " AND eld.run_id = " + runID
+							+ " AND eed.experience_id = eld.experience_id"
 							+ " AND eed.resolution_code = 0"
 							+ " AND eld.resolution_code = 0"
 							+ " GROUP BY eed.experience_id"
@@ -1280,7 +1335,9 @@ public class LexemeResolver {
 						if (foundPair) {
 							// QUERY PAIR FROM experience_entity_data AND experience_lexeme_data
 								sql = "SELECT entity_id, lexeme_id FROM experience_entity_data eed, experience_lexeme_data eld"
-									+ " WHERE eed.experience_id = " + expID
+									+ " WHERE eed.run_id = " + runID
+									+ " AND eld.run_id = " + runID
+									+ " AND eed.experience_id = " + expID
 									+ " AND eld.experience_id = " + expID
 									+ " AND eed.resolution_code = 0"
 									+ " AND eld.resolution_code = 0;";
@@ -1303,12 +1360,16 @@ public class LexemeResolver {
 
 							// UPDATE resolution_code IN experience_entity_data
 								sql = "UPDATE experience_entity_data SET resolution_code = 1"
-									+ " WHERE experience_id = " + expID + " AND entity_id = " + entityID + ";";
+									+ " WHERE experience_id = " + expID
+									+ " AND run_id = " + runID
+									+ " AND entity_id = " + entityID + ";";
 								tmpState.executeUpdate(sql);
 
 							// UPDATE resolution_code AND resolution_index IN experience_lexeme_data
 								sql = "UPDATE experience_lexeme_data SET resolution_code = 1, resolution_index = " + expIndex
-									+ " WHERE experience_id = " + expID + " AND lexeme_id = " + lexemeID + ";";
+									+ " WHERE experience_id = " + expID
+									+ " AND run_id = " + runID
+									+ " AND lexeme_id = " + lexemeID + ";";
 								tmpState.executeUpdate(sql);
 
 							// RESOLVE OTHER INSTANCES OF NEW MAPPING
@@ -1340,6 +1401,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.20  2002/12/11 22:54:34  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.19  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
