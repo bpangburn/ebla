@@ -63,144 +63,133 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class ExperienceScreen extends JInternalFrame {
 
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR PARAMETER SCREEN
+		Container desktop = null;
 
-	JLabel lblDescription = new JLabel("Description");
-	//JLabel lblMatchingCode = new JLabel("Matching Code");
-	JLabel lblVideoPath = new JLabel("Video Path");
-	JLabel lblTmpPath = new JLabel("Tmp Path");
-	JLabel lblExperienceLexemes = new JLabel("Experience Lexemes");
-	JLabel lblNotes = new JLabel("Notes");
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
+		DBConnector connector = null;
+		JdbcRowSetImpl rowset = null;
 
-	JTextField txtDescription = new JTextField();
-	JTextField txtVideoPath = new JTextField();
-	JTextField txtTmpPath = new JTextField();
-	JTextField txtExperienceLexemes = new JTextField();
-	//JTextField txtMatchingCode = new JTextField();
-	JTextArea txtNotes = new JTextArea(20,10);
+	// INITIALIZE EXPERIENCE SCREEN WIDGETS
+		JTextField txtDescription 		= new JTextField();
+		JTextField txtVideoPath 		= new JTextField();
+		JTextField txtTmpPath 			= new JTextField();
+		JTextField txtExperienceLexemes = new JTextField();
+		JTextArea txtNotes 				= new JTextArea(20,10);
 
-	DBConnector connector       = null;
-	SSDataNavigator dataNavigator = null;
-	JdbcRowSetImpl rowset           = null;
+	// INITIALIZE DATA NAVIGATOR
+		SSDataNavigator dataNavigator = null;
 
-	int includeCode =-1;
-	Container desktop = null;
-
-	public void setIncludeCode(int _includeCode){
-		if(includeCode != _includeCode){
-			includeCode = _includeCode;
-			try{
-				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
-				dataNavigator.setRowSet(rowset);
-			}catch(SQLException se){
-				se.printStackTrace();
-			}
-		}
-	}
-
-	public ExperienceScreen(Container _desktop){
-
-		super("Experience Form",false,true,true,true);
-		setSize(550,400);
-
-		//includeCode = _includeCode;
-		desktop = _desktop;
-
-		try{
-			connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-			String url = bufRead.readLine();
-			if (url == null) {
-				url = "";
-			}
-
-			String username = bufRead.readLine();
-			if (username == null) {
-				username = "";
-			}
-
-			String password = bufRead.readLine();
-			if (password == null) {
-				password = "";
-			}
-
-			rowset = new JdbcRowSetImpl(url, username, password);
-
-			rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
-			dataNavigator = new SSDataNavigator(rowset);
-			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
-		}catch(SQLException se){
-			se.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
-		txtVideoPath.setDocument(new SSTextDocument(rowset,"video_path"));
-		txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
-		txtExperienceLexemes.setDocument(new SSTextDocument(rowset,"experience_lexemes"));
-		//txtMatchingCode.setDocument(new SSTextDocument(rowset,"include_code"));
-		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
-
-		EBLAPanel panel  = new EBLAPanel();
-		panel.setLayout(new GridBagLayout());
-
-		GridBagConstraints constraints = new GridBagConstraints();
-
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		panel.add(lblDescription,constraints);
-		constraints.gridy = 1;
-		//panel.add(lblMatchingCode,constraints);
-		constraints.gridy = 2;
-		panel.add(lblVideoPath,constraints);
-		constraints.gridy = 3;
-		panel.add(lblTmpPath,constraints);
-		constraints.gridy = 4;
-		panel.add(lblExperienceLexemes,constraints);
-		constraints.gridy = 5;
-		panel.add(lblNotes,constraints);
-
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		panel.add(txtDescription,constraints);
-		constraints.gridy = 1;
-	//	panel.add(txtMatchingCode,constraints);
-		constraints.gridy = 2;
-		panel.add(txtVideoPath,constraints);
-		constraints.gridy = 3;
-		panel.add(txtTmpPath,constraints);
-		constraints.gridy = 4;
-		panel.add(txtExperienceLexemes,constraints);
-		constraints.gridy = 5;
-		panel.add(txtNotes,constraints);
-
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new GridBagLayout());
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		contentPane.add(panel,constraints);
-		constraints.gridy = 1;
-		contentPane.add(dataNavigator,constraints);
-	}
 
 	/**
-	 *	adds the census screen to the specified container at the specified position.
-	 *@param container the container in which the screen has to showup.
-	 *@param positionX the x co-ordinate of the position where the screen has to showup.
-	 *@param positionY the y co-ordinate of the position where the screen has to showup.
+	 * ExperienceScreen constructor.
+	 *
+	 * @param the container in which the screen has to showup.
+	 */
+	public ExperienceScreen(Container _desktop) {
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE VISION PARAMETER SCREEN
+			super("EBLA Experience Form",false,true,true,true);
+
+		// SET SIZE
+			setSize(640,480);
+
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
+
+		// DATABASE CONFIGURATION
+			try {
+
+			// INITIALIZE DATABASE CONNECTION
+				connector = new DBConnector(EBLAGui.dbFileName,true);
+
+			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
+				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
+
+				String url = bufRead.readLine();
+				if (url == null) {
+					url = "";
+				}
+
+				String username = bufRead.readLine();
+				if (username == null) {
+					username = "";
+				}
+
+				String password = bufRead.readLine();
+				if (password == null) {
+					password = "";
+				}
+
+			// INITIALIZE ROWSET FOR PARAMETER DATA
+				rowset = new JdbcRowSetImpl(url, username, password);
+
+				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
+				dataNavigator = new SSDataNavigator(rowset);
+				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+
+			} catch(SQLException se) {
+				se.printStackTrace();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
+
+		// SET DATABASE COLUMNS FOR EACH WIDGET
+			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+
+			txtVideoPath.setDocument(new SSTextDocument(rowset,"video_path"));
+
+			txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+
+			txtExperienceLexemes.setDocument(new SSTextDocument(rowset,"experience_lexemes"));
+
+			txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+
+
+		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
+			int currentRow = 0;
+			GridBagConstraints constraints = new GridBagConstraints();
+
+
+		// CREATE/LAYOUT PANEL FOR WIDGETS
+			EBLAPanel panel  = new EBLAPanel();
+			panel.setLayout(new GridBagLayout());
+
+			panel.addRow(txtDescription, currentRow++, "Description");
+			panel.addRow(txtVideoPath, currentRow++, "Video Path");
+			panel.addRow(txtTmpPath, currentRow++, "Tmp Path");
+			panel.addRow(txtExperienceLexemes, currentRow++, "Experience Lexemes");
+			panel.addRow(txtNotes, currentRow++, "Notes");
+
+
+		// ADD WIDGET PANEL AND DATA NAVIGATOR TO EXPERIENCE SCREEN
+			Container contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			contentPane.add(panel,constraints);
+
+			constraints.gridy = 1;
+			contentPane.add(dataNavigator,constraints);
+
+	} // end of ExperienceScreen constructor
+
+
+
+	/**
+	 * Adds the experience screen to the specified container at the specified position.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the x co-ordinate of the position where the screen has to showup.
+	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
 	public void showUp(Container container,double positionX, double positionY){
 
-		int optionChoosen = -1;
 		// SET THE POSITION OF THE SCREEN.
-		this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)positionX, (int)positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-
 			Component[] components = container.getComponents();
 			int i=0;
 			for(i=0; i< components.length;i++){
@@ -209,33 +198,38 @@ public class ExperienceScreen extends JInternalFrame {
 					break;
 				}
 			}
-			// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
+
+		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
 			if(i == components.length) {
 				container.add(this);
 			}
-			this.setVisible(true);
-			// MOVE THE SCREEN TO THE FRONT
-			this.moveToFront();
 
-			// REQUEST FOCUS FOR THE SCREEN
+		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
+			this.setVisible(true);
+			this.moveToFront();
 			this.requestFocus();
-			// MAKE THE SCREEN SELECTED SCREEN
+
+		// MAKE THE SCREEN SELECTED SCREEN
 			try{
 				this.setClosed(false);
 				this.setSelected(true);
-			}catch(PropertyVetoException pve){
+			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
 			}
 
-	}
+	} // end showUp()
+
+
 
 	/**
-	 * shows the census screen at the default location on the specified container.
-	 *@param container the container in which the screen has to showup.
+	 * Shows the experience screen at the default location on the specified container.
+	 *
+	 * @param the container in which the screen has to showup.
 	 */
 	public void showUp(Container container) {
 		showUp(container, 30,30);
-	}
+	} // end showUp()
+
 
 } // end of ExperienceScreen class
 
@@ -243,6 +237,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
