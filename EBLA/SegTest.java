@@ -107,8 +107,8 @@ public class SegTest {
 					// EXTRACT VERSION
 						edisonPortVersion = Integer.parseInt(args[1]);
 
-					// EXTRACT DISPLAY FLAG
-						displayText = Boolean.parseBoolean(args[2]);
+					// EXTRACT DISPLAY FLAG - NOTE parseBoolean NOT ADDED UNTIL J2SE 1.5
+						displayText = Boolean.getBoolean(args[2]);
 
 					// EXTRACT COLOR RADIUS
 						colorRadius = Float.parseFloat(args[3]);
@@ -237,6 +237,9 @@ public class SegTest {
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/02 03:27:44  yoda2
+ * Updated for 0.7.0 release of jEDISON & EBLA.  Added port version option & detailed display option.
+ *
  * Revision 1.5  2003/11/24 16:46:04  yoda2
  * Updated usage instructions.
  *
