@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -405,6 +405,9 @@ public class RegionList {
 
 /*
  * $Log$
+ * Revision 1.9  2002/12/11 23:06:15  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.8  2002/09/20 19:49:00  bpangburn
  * Fixed various JavaDoc error messages.
  *

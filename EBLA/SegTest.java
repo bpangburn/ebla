@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -225,6 +225,9 @@ public class SegTest {
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/24 14:47:48  yoda2
+ * Fixed bug that was setting the color and spatial radii to the value supplied for the spatial radius.  Added a factor to control speed (1.0) vs. quality (0.0) for the high speedup option (added for 4-14-2003 release of C++ EDISON).
+ *
  * Revision 1.2  2002/12/11 22:37:52  yoda2
  * Initial migration to SourceForge.
  *

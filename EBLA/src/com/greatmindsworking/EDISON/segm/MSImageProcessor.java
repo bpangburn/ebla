@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -297,7 +297,7 @@ public class MSImageProcessor extends MeanShift {
 	 * This method uploads the image and converts its
 	 * data into the LUV space. If another conversion
 	 * is desired data may be uploaded into this class
-	 * via the procedure MeanShift::UploadInput().
+	 * via the procedure UploadInput().
 	 *
 	 * Usage: DefineImage(data, type, height, width)
 	 *
@@ -374,9 +374,9 @@ public class MSImageProcessor extends MeanShift {
 	 * This method uploads the image and converts its
 	 * data into the LUV space. If another conversion
 	 * is desired data may be uploaded into this class
-	 * via the procedure MeanShift::UploadInput().
+	 * via the procedure UploadInput().
 	 *
-	 * Usage: DefineImage(data, type, height, width)
+	 * Usage: DefineBgImage(data, type, height, width)
 	 *
 	 * Pre:
 	 *    - data_ is a one dimensional array of unsigned char RGB vectors
@@ -395,6 +395,8 @@ public class MSImageProcessor extends MeanShift {
 	 * @param width		the image width
 	 */
 	public void DefineBgImage(int[] data_, ImageType type, int height_, int width_) {
+//-bp- Not sure why this method is necessary as the code seems identical to the exiting
+//     DefineImage method.
 
 		try {
 
@@ -4918,6 +4920,12 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.12  2003/11/24 14:56:26  yoda2
+ * Updated Java port to bring code in sync with 4-14-2003 release of original EDISON C++ code (had been based on 4-25-2002 version).  The major changes are:
+ * 1. LUV image data is now stored in floating point format (was integer)
+ * 2. Misc bug fixes and elimination of some unnecessary code
+ * 3. Added new versions of NonOptimized, Optimized1, and Optimized2 filters
+ *
  * Revision 1.11  2002/12/11 23:03:43  yoda2
  * Initial migration to SourceForge.
  *

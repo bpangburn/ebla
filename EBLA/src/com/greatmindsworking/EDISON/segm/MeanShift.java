@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn & Jonathan P. Ayo
+ * Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -2970,6 +2970,12 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.14  2003/11/24 14:56:26  yoda2
+ * Updated Java port to bring code in sync with 4-14-2003 release of original EDISON C++ code (had been based on 4-25-2002 version).  The major changes are:
+ * 1. LUV image data is now stored in floating point format (was integer)
+ * 2. Misc bug fixes and elimination of some unnecessary code
+ * 3. Added new versions of NonOptimized, Optimized1, and Optimized2 filters
+ *
  * Revision 1.13  2002/12/11 23:03:12  yoda2
  * Initial migration to SourceForge.
  *
