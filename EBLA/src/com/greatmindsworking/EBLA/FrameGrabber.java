@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@ import javax.media.control.FrameGrabbingControl;
 import javax.media.format.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
+import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
 
 
@@ -107,15 +108,22 @@ public class FrameGrabber extends JFrame {
 	private FrameGrabbingControl fgc = null;
 
 
+	/**
+	 * EBLA status screen where frames should be displayed as they are ripped
+	 */
+	private StatusScreen statusScreen = null;
+
+
 
 	/**
 	 * Class constructor that sets parameters and calls appropriate initialization methods
 	 *
 	 * @param _sourcePath	directory path and full file name for the source movie file
 	 * @param _targetPath	directory path and first part of file name for image files generated from frames
+	 * @param _statusScreen	EBLA status window where video should be displayed (if applicable)
 	 * @param _displayFlag	flag indicating whether or not to display movie while processing
 	 */
-	public FrameGrabber(String _sourcePath, String _targetPath, boolean _displayFlag) {
+	public FrameGrabber(String _sourcePath, String _targetPath, StatusScreen _statusScreen, boolean _displayFlag) {
 
 		try {
 
@@ -132,8 +140,12 @@ public class FrameGrabber extends JFrame {
 					System.exit(0);
 				}
 
+			// SET STATUS WINDOW
+				statusScreen = _statusScreen;
+
 			// CALL FUNCTION TO INITIALIZE DISPLAY
-				if (_displayFlag) {
+			// IF STATUS WINDOW IS NOT NULL, DON'T INITIALIZE A SEPARATE WINDOW
+				if ((displayFlag) && (statusScreen==null)) {
 					if (initializeDisplay()==false) {
 						System.out.println("Unable to initialize display.");
 					}
@@ -214,6 +226,7 @@ public class FrameGrabber extends JFrame {
 			// ADD VISUAL COMPONENT FOR PLAYER
 				Component vc;
 				if ((vc = player.getVisualComponent()) != null) {
+
 					// ADD COMPONENT TO CENTER OF FRAME
 						getContentPane().add("Center", vc);
 
@@ -234,7 +247,7 @@ public class FrameGrabber extends JFrame {
 					// MAKE FRAME VISIBLE
 						setVisible(true);
 
-				}
+				} // end if ((vc = player.getVisualComponent()) != null)
 
 	  	} catch (Exception e) {
 			System.out.println("\n--- FrameGrabber.initializeDisplay() Exception ---\n");
@@ -245,6 +258,7 @@ public class FrameGrabber extends JFrame {
 			return true;
 
 	} // end initializeDisplay()
+
 
 
 	/**
@@ -327,6 +341,16 @@ public class FrameGrabber extends JFrame {
 								// this line must be used instead for JDK 1.3 or earlier
 								//	ImageIOWorkaround.write(tmpBufImage, "png", new File(targetFile));
 
+							// IF UPDATE GUI IF APPLICABLE
+								if ((displayFlag) && (statusScreen!=null)) {
+									// ADD CURRENT FRAME ON STATUS SCREEN
+										statusScreen.updateImage(tmpBufImage, 1);
+
+									// SET STATUS SCREEN REFRESH
+										Thread.sleep(100);
+								}
+
+
 							// ADVANCE TO NEXT FRAME
 								fpc.skip(1);
 
@@ -378,7 +402,7 @@ public class FrameGrabber extends JFrame {
 				}
 
 			// CREATE INSTANCE OF OBJECT AND CALL CONSTRUCTOR
-				myFG = new FrameGrabber(sourcePath, targetPath, displayFlag);
+				myFG = new FrameGrabber(sourcePath, targetPath, null, displayFlag);
 
 			// RIP FRAMES
 				if (myFG.ripFrames()==0) {
@@ -442,6 +466,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.7  2002/12/11 22:51:37  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.6  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
