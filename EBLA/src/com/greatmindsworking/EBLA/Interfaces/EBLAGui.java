@@ -61,352 +61,467 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class EBLAGui extends JFrame {
 
-	/*
+	/**
+	 * EBLA version string
+	 */
+	private final static String eblaVersion = "version 0.6.0-alpha";
+
+	/**
+	 * debugging option
+	 */
+	boolean guiDebug = false;
+
+	/**
 	 * EBLA menu bar instance.
 	 */
-	EblaMenuBar menuBar = new EblaMenuBar();
-	/*
-	 * DataBase connection object
+	EBLAMenuBar menuBar = new EBLAMenuBar();
+
+	/**
+	 * database connection object
 	 */
 	DBConnector connector = null;
-	/*
-	 *Database settings screen object
+
+	/**
+	 * database settings screen object
 	 */
 	DBSettingsScreen dbSettingsScreen = null;
-	/*
-	 *EBLA Vision parameter screen object
+
+	/**
+	 * EBLA vision parameters screen object
 	 */
 	ParameterScreen parameterScreen = null;
-	/*
-	 *Attributes screen object
+
+	/**
+	 * EBLA perceptual attributes screen object
 	 */
 	AttributeScreen attributeScreen = null;
-	/*
-	 *Experiences screen object
+
+	/**
+	 * EBLA experiences screen object
 	 */
 	ExperienceScreen experienceScreen = null;
-	/*
-	 *desktop added on to the contentPane of EBLA main frame
+
+	/**
+	 * desktop added to the content pane of the EBLA application frame
 	 */
 	JDesktopPane desktop = new JDesktopPane();
 
-	/*
-	 *File name (including path ) which contains database information
+	/**
+	 * file name (including path) containing the database connection information
 	 */
 	public static final String dbFileName = "dbSettings";
 
+
+
 	/**
-	 *	constructs an EBLA GUI object and tries to login.
-	 *If login is successful shows the parameter screen. Login fails if it can't connect to
-	 *the database. In which case it informs the same to the user and displays the dbsettings
-	 *screen.
+	 * Constructs the application window for EBLA and attempts to connect to the database.
+	 *
+	 * If the database login is successful, it shows the vision parameter screen. Otherwise
+	 * it informs the user and displays the database settings screen.
 	 */
 	public EBLAGui() {
 
-		super("Experience Based Language Acquisition v1.0");
-		setSize(650, 500);
-		setTitle("EBLA");
-		// SET THE FRAME VISIBLE
-		setVisible(true);
+		// SET APPLICATION TITLE BAR TEXT
+			super("Experience Based Language Acquisition -- " + eblaVersion);
+
+		// SET DIMENSIONS
+			setSize(650, 500);
+
+		// SET APPLICATION NAME
+			setTitle("Experience Based Language Acquistion");
+
+		// MAKE THE FRAME VISIBLE
+			setVisible(true);
+
 		// ADD MENU BAR TO THE FRAME
-		setJMenuBar(menuBar);
+			setJMenuBar(menuBar);
+
 		// ADD THE DESKTOP TO THE FRAME
-		getContentPane().add(desktop);
+			getContentPane().add(desktop);
+
 		// TRY LOGGING IN
-		if(login()){
-		 	// do nothing
-		}
-		// IF LOGIN FAILS SHOW A DIALOG WITH THE SAME MESSAGE AND WHEN HE CLICKS ON OK
-		// SHOW THE DBSETTINGS SCREEN
-		else{
-
-			int option = JOptionPane.showInternalConfirmDialog(desktop,"Login Failed. \n Try changing the DB Settings","Login Failed",JOptionPane.OK_CANCEL_OPTION);
-			if(option == JOptionPane.OK_OPTION){
-				showDBSettings();
-			}
-
-		}
-
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-
-
-	}// END OF CONSTRUCTOR
-
-	/**
-	 *  checks if the db configuration file is present and if not shows the db settings screen
-	 *for adding the info.
-	 *@return returns true if configuration file is present and is readable
-	 */
-	private boolean getDBSettings(){
-		File dbFile = new File(dbFileName);
-		// SEE IF DB CONFIG FILE IS PRESENT
-		if( !dbFile.canRead()){
-			// TELL USER THAT DB INFO NOT PRESENT
-			int option = JOptionPane.showInternalConfirmDialog(desktop,"No DB Settings Present.\nPlease provide the DB info","No DB info",JOptionPane.OK_CANCEL_OPTION);
-			// IF HE WISHES TO GIVE THE INFO SHOW THE DB SETTINGS SCREEN
-			if(option == JOptionPane.OK_OPTION){
-				showDBSettings();
-				return true;
-			}
-			return false;
-		}
-		// IF DB INFO FILE IS PRESENT RETURN TRUE
-		return true;
-	}
-
-	/**
-	 *	login in to the system. login fails if it can't  connect to the database.
-	 *@return return true if login sucessfully. else show the db settings screen and returns false
-	 */
-	private boolean login(){
-		System.out.println("Login");
-		// GET THE DB SETTINGS IF PRESENT CONNECT TO DB
-		// ELSE LOGIN FAILS
-		if(getDBSettings()){
-			// TRY CONNECTING TO DB IF SUCCESSFUL SHOW THE PARAMETER SCREEN.
-			try{
-				connector = new DBConnector("dbSettings",false);
-				showParameterScreen();
-			}catch(IOException ioe){
-				return false;
-			}catch(Exception e){
-				return false;
-			}
-			// INFORM THE MENU BAR ABOUT SUCCESSFUL LOGIN.
-			menuBar.setLogin(true);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 *	disconnects from the database and closes the open screens.
-	 *@return returns true on successful logout
-	 */
-	private boolean logout(){
-		System.out.println("Logout");
-		// if the connection object is not null close the connection.
-		if(connector != null){
-			connector.closeConnection();
-		}
-		// close all the open screens
-		try{
-			if(parameterScreen != null)
-				parameterScreen.setClosed(true);
-			if(attributeScreen != null)
-				attributeScreen.setClosed(true);
-			if(experienceScreen != null)
-				experienceScreen.setClosed(true);
-		}catch(PropertyVetoException pve){
-			pve.printStackTrace();
-		}
-		// INFORM THE MENU BAR OF SUCCESSFUL LOGOUT.
-		menuBar.setLogout(true);
-		return true;
-	}
-
-	/**
-	 *	displays the parameter screen on the desktop.
-	 */
-	private void showParameterScreen(){
-		System.out.println("showPreferencesScreen");
-		// IF AN INSTANCE DOES NOT EXIST CREATE ONE AND DISPLAY THAT ON THE DESKTOP.
-		if(parameterScreen == null){
-			parameterScreen = new ParameterScreen(desktop);
-		}
-		parameterScreen.showUp(desktop);
-	}
-
-	/**
-	 *	displays the attribute screen on the desktop
-	 */
-	private void showAttributesScreen(){
-		System.out.println("showAttributesScreen");
-		// IF AN INSTANCE DOES NOT EXIST CREATE ONE AND DISPLAY THAT ON THE DESKTOP.
-		if(attributeScreen == null){
-			attributeScreen = new AttributeScreen(desktop);
-		}
-		attributeScreen.showUp(desktop);
-
-	}
-
-	/**
-	 *	displays the experience screen on the desktop
-	 */
-	private void showExperiencesScreen(){
-		// IF AN INSTANCE DOES NOT EXIST CREATE ONE AND DISPLAY THAT ON THE DESKTOP.
-		if(experienceScreen == null){
-			experienceScreen = new ExperienceScreen(desktop);
-		}
-		experienceScreen.showUp(desktop);
-	}
-
-	/**
-	 *	displays the DB Settings screen on the desktop
-	 */
-	private void showDBSettings(){
-		System.out.println("Show DB Settings");
-		// CREATE A FILE WITH THE DB CONFIG FILE NAME
-		File file = new File(dbFileName);
-		// IF AN INSTANCE DOES NOT EXIST CREATE ONE AND DISPLAY THAT ON THE DESKTOP.
-		if(dbSettingsScreen == null ){
-			dbSettingsScreen = new DBSettingsScreen(file);
-		}
-		dbSettingsScreen.showUp(desktop);
-		// ADD A LISTENER TO THE SCREEN
-		// WHEN THE USER IS DONE ASK HIM TO LOGIN AGAIN
-		dbSettingsScreen.addWindowListener(new WindowAdapter(){
-			public void windowClosed(WindowEvent we){
-				JOptionPane.showMessageDialog(desktop,"Please try logging in now.","Try Login",JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-
-	}
-
-	/**
-	 *	displays the about screen.
-	 */
-	private void showAboutScreen(){
-		System.out.println("about screen");
-	}
-
-
-	/**
-	 *	menu bar for the EBLA GUI frame.
-	 */
-	private class EblaMenuBar extends JMenuBar {
-
-		// MENUS FOR THE EBLA MENU BAR.
-		JMenu menuFile = new JMenu("File");
-		JMenu menuEdit = new JMenu("Edit");
-		JMenu menuUtilities = new JMenu("Utilities");
-		JMenu menuReports  = new JMenu("Reports");
-		JMenu menuHelp     = new JMenu("Help");
-
-		// MENU ITEMS FOR THE DIFFERENT MENUS
-		JMenuItem menuFileLogin  = null;
-		JMenuItem menuFileLogout = null;
-		JMenuItem menuFileExit = null;
-		JMenuItem menuEditExperiences = null;
-		JMenuItem menuEditAttributes = null;
-		JMenuItem menuEditParameters = null;
-		JMenuItem menuUtilitiesDBSettings = null;
-		JMenuItem menuHelpAbout = null;
-
-		// INSTANCE OF THE LISTENER FOR THE EBLA MENU ITEMS
-		EblaMenuListener menuListener = new EblaMenuListener();
-
-		/**
-		 *	disables the login button and enables logout button.
-		 */
-		public void setLogin(boolean login){
-			if(login == true){
-				menuFileLogin.setEnabled(false);
-				menuFileLogout.setEnabled(true);
-			}else{
-				menuFileLogin.setEnabled(true);
-				menuFileLogout.setEnabled(false);
-			}
-		}
-
-		/**
-		 *	disables the logout button and enables login button.
-		 */
-		public void setLogout(boolean logout){
-			if(logout == true){
-				menuFileLogin.setEnabled(true);
-				menuFileLogout.setEnabled(false);
-			}else{
-				menuFileLogin.setEnabled(false);
-				menuFileLogout.setEnabled(true);
-			}
-		}
-
-		/**
-		 *	constructs an object of the menu bar.
-		 */
-		public EblaMenuBar(){
-
-			// add the menus to the menu bar.
-			add(menuFile);
-			add(menuEdit);
-			add(menuUtilities);
-			add(menuReports);
-			add(menuHelp);
-
-			// ADD THE MENU ITEMS IN THEIR CORRESPONDING  MENUS
-			menuFileLogin = menuFile.add("Login");
-			menuFileLogout = menuFile.add("Logout");
-			menuFileExit   = menuFile.add("Exit");
-
-			menuEditParameters  = menuEdit.add("Parameters");
-			menuEditExperiences = menuEdit.add("Experiences");
-			menuEditAttributes  = menuEdit.add("Attributes");
-
-
-			menuUtilitiesDBSettings = menuUtilities.add("DB Settings");
-
-			menuHelpAbout = menuHelp.add("About");
-
-			// ADD LISTENERS  FOR THE MENU ITEMS
-			menuFileLogin.addActionListener(menuListener);
-			menuFileLogout.addActionListener(menuListener);
-			menuFileExit.addActionListener(menuListener);
-			menuEditExperiences.addActionListener(menuListener);
-			menuEditParameters.addActionListener(menuListener);
-			menuEditAttributes.addActionListener(menuListener);
-			menuUtilitiesDBSettings.addActionListener(menuListener);
-			menuHelpAbout.addActionListener(menuListener);
-
-
-		}
-
-		/**
-		 *	listener class for the menu items.
-		 */
-		private class EblaMenuListener implements ActionListener {
-
-			public void actionPerformed(ActionEvent ae){
-				// get the source item that triggered the event.
-				JMenuItem menuItem = (JMenuItem)ae.getSource();
-				// CHECK WHICH ITEM HAS BEEN CLICKED AND CALL THE CORRESPONDING FUNCTION
-				if(menuItem.equals(menuFileLogin) ){
-					if(login()){
-						menuFileLogin.setEnabled(false);
-						menuFileLogout.setEnabled(true);
-					}
-
-				}else if(menuItem.equals(menuFileLogout) ){
-					if(logout()){
-						menuFileLogin.setEnabled(true);
-						menuFileLogout.setEnabled(false);
-					}
-				}else if(menuItem.equals(menuFileExit) ){
-					System.exit(0);
-				}else if(menuItem.equals(menuEditParameters) ){
-					showParameterScreen();
-				}else if(menuItem.equals(menuEditExperiences) ){
-					showExperiencesScreen();
-				}else if(menuItem.equals(menuEditAttributes) ){
-					showAttributesScreen();
-				}else if(menuItem.equals(menuUtilitiesDBSettings) ){
+			if (!login()) {
+			// IF LOGIN FAILS SHOW A DIALOG WARNING USER AND THEN SHOW THE DATABASE SETTINGS SCREEN
+				int option = JOptionPane.showInternalConfirmDialog
+					(desktop,"Login failed. \n Try changing the database settings.",
+					"Login failed",JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION) {
 					showDBSettings();
-				}else if(menuItem.equals(menuHelpAbout)){
-					showAboutScreen();
+				}
+			}
+
+		// FORCE EBLA TO END IF APPLICATION WINDOW IS CLOSED
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+	} // end EBLAGui constructor
+
+
+
+	/**
+	 * Determines if the database configuration file is present.  If not, the database
+	 * settings screen is displayed.
+	 *
+	 * @return returns true if configuration file is present and is readable
+	 */
+	private boolean getDBSettings() {
+
+	  	// INITIALIZE FILE
+			File dbFile = new File(dbFileName);
+
+		// DETERMINE IF DATABASE CONFIG FILE IS PRESENT
+			if (!dbFile.canRead()) {
+				// TELL USER THAT DB INFO NOT PRESENT
+					int option = JOptionPane.showInternalConfirmDialog
+						(desktop,"No database settings found.\nPlease provide the database connection information.",
+						"No database settings",JOptionPane.OK_CANCEL_OPTION);
+
+				// IF USER WISHES TO ENTER THE INFO, SHOW THE DATABASE SETTINGS SCREEN
+					if (option == JOptionPane.OK_OPTION) {
+						showDBSettings();
+						return true;
+					}
+
+				return false;
+			}
+
+		// IF DATABASE CONFIG FILE IS PRESENT, RETURN TRUE
+			return true;
+
+	} // end getDBSettings()
+
+
+
+	/**
+	 * Logs into the database. If the login succeeds, show the vision parameter screen.
+	 * Otherwise, show the database settings screen and return false.
+     *
+     * @return return true if login sucessfully
+	 */
+	private boolean login() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Login");
+			}
+
+		// RETRIEVE THE DATABASE CONFIG FILE
+			if (getDBSettings()) {
+				// TRY CONNECTING TO THE DATABASE. IF SUCCESSFUL SHOW THE PARAMETER SCREEN.
+					try {
+						connector = new DBConnector("dbSettings",false);
+						showParameterScreen();
+					} catch(IOException ioe) {
+						return false;
+					} catch(Exception e) {
+						return false;
+					}
+
+				// UPDATE THE MENUBAR TO REFLECT SUCCESSFUL LOGIN
+					menuBar.setLogin(true);
+
+				// RETURN
+					return true;
+			}
+
+		// RETURN FALSE IF getDBSetting FAILS
+			return false;
+
+	} // end login()
+
+
+
+	/**
+	 * Disconnects from the database and closes any open screens.
+	 *
+	 * @return returns true on successful logout
+	 */
+	private boolean logout() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Logout");
+			}
+
+		// IF THE CONNECTION OBJECT IS NOT NULL CLOSE THE CONNECTION.
+			if (connector != null) {
+				connector.closeConnection();
+			}
+
+		// CLOSE ALL THE OPEN SCREENS
+			try {
+				if (parameterScreen != null) {
+					parameterScreen.setClosed(true);
+				}
+				if (attributeScreen != null) {
+					attributeScreen.setClosed(true);
+				}
+				if (experienceScreen != null) {
+					experienceScreen.setClosed(true);
 				}
 
-			}//END OF FUNCTION ACTION PERFORMED
+			} catch(PropertyVetoException pve) {
+				pve.printStackTrace();
+			}
 
-		}//END OF LISTENER
+		// UPDATE THE MENUBAR TO REFLECT SUCCESSFUL LOGOUT
+			menuBar.setLogout(true);
 
-	}//END OF EblaMenuBar
+		// RETURN
+			return true;
 
+	} // end logout()
+
+
+
+	/**
+	 *	displays the vision parameter screen in the application window
+	 */
+	private void showParameterScreen() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show Parameters Screen");
+			}
+
+		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP
+			if (parameterScreen == null) {
+				parameterScreen = new ParameterScreen(desktop);
+			}
+
+		// MAKE SCREEN VISIBLE
+			parameterScreen.showUp(desktop);
+
+	} // end showParameterScreen()
+
+
+
+	/**
+	 *	displays the attribute screen in the application window
+	 */
+	private void showAttributesScreen() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show Attributes Screen");
+			}
+
+		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
+			if (attributeScreen == null) {
+				attributeScreen = new AttributeScreen(desktop);
+			}
+
+		// MAKE SCREEN VISIBLE
+			attributeScreen.showUp(desktop);
+
+	} // end showAttributesScreen()
+
+
+
+	/**
+	 *	displays the experience screen in the application window
+	 */
+	private void showExperiencesScreen() {
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show Experiences Screen");
+			}
+
+		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
+			if (experienceScreen == null) {
+				experienceScreen = new ExperienceScreen(desktop);
+			}
+
+		// MAKE SCREEN VISIBLE
+			experienceScreen.showUp(desktop);
+
+	} // end showExperiencesScreen()
+
+
+
+	/**
+	 *	displays the database settings screen in the application window
+	 */
+	private void showDBSettings() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show Database Settings Screen");
+			}
+
+		// CREATE A FILE WITH THE DB CONFIG FILE NAME
+			File file = new File(dbFileName);
+
+		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
+			if (dbSettingsScreen == null) {
+				dbSettingsScreen = new DBSettingsScreen(file);
+			}
+
+		// MAKE SCREEN VISIBLE
+			dbSettingsScreen.showUp(desktop);
+
+		// ADD A LISTENER TO THE SCREEN
+		// WHEN THE USER IS DONE ASK HIM TO LOGIN AGAIN
+			dbSettingsScreen.addWindowListener(new WindowAdapter(){
+				public void windowClosed(WindowEvent we){
+					JOptionPane.showMessageDialog(desktop,"Please try logging in now.",
+					"Attempt login",JOptionPane.INFORMATION_MESSAGE);
+				}
+			});
+
+	} // end showDBSettings()
+
+
+
+	/**
+	 *	displays the EBLA about screen.
+	 */
+	private void showAboutScreen() {
+
+		// DEBUG INFO
+			if (guiDebug) {
+				System.out.println("Show About Screen");
+			}
+
+	} // end showAboutScreen()
+
+
+
+	/**
+	 *	menu bar for the EBLA GUI application window
+	 */
+	private class EBLAMenuBar extends JMenuBar {
+
+		// MENUS FOR THE EBLA MENU BAR.
+			JMenu menuFile = new JMenu("File");
+			JMenu menuEdit = new JMenu("Edit");
+			JMenu menuUtilities = new JMenu("Utilities");
+			JMenu menuReports = new JMenu("Reports");
+			JMenu menuHelp = new JMenu("Help");
+
+		// MENU ITEMS FOR THE DIFFERENT MENUS
+			JMenuItem menuFileLogin = null;
+			JMenuItem menuFileLogout = null;
+			JMenuItem menuFileExit = null;
+			JMenuItem menuEditExperiences = null;
+			JMenuItem menuEditAttributes = null;
+			JMenuItem menuEditParameters = null;
+			JMenuItem menuUtilitiesDBSettings = null;
+			JMenuItem menuHelpAbout = null;
+
+		// INSTANCE OF THE LISTENER FOR THE EBLA MENU ITEMS
+			EBLAMenuListener menuListener = new EBLAMenuListener();
+
+		// DISABLES THE LOGIN BUTTON AND ENABLES LOGOUT BUTTON.
+			public void setLogin(boolean login) {
+				if (login == true) {
+					menuFileLogin.setEnabled(false);
+					menuFileLogout.setEnabled(true);
+				} else {
+					menuFileLogin.setEnabled(true);
+					menuFileLogout.setEnabled(false);
+				}
+			} // end setLogin()
+
+		// DISABLES THE LOGOUT BUTTON AND ENABLES LOGIN BUTTON.
+			public void setLogout(boolean logout){
+				if (logout == true) {
+					menuFileLogin.setEnabled(true);
+					menuFileLogout.setEnabled(false);
+				} else {
+					menuFileLogin.setEnabled(false);
+					menuFileLogout.setEnabled(true);
+				}
+			} // end setLogout()
+
+		// CONSTRUCTS AN OBJECT OF THE MENU BAR.
+			public EBLAMenuBar(){
+
+				// ADD THE MENUS TO THE MENU BAR.
+					add(menuFile);
+					add(menuEdit);
+					add(menuUtilities);
+					add(menuReports);
+					add(menuHelp);
+
+				// ADD THE MENU ITEMS IN THEIR CORRESPONDING  MENUS
+					menuFileLogin = menuFile.add("Login");
+					menuFileLogout = menuFile.add("Logout");
+					menuFileExit = menuFile.add("Exit");
+
+					menuEditParameters = menuEdit.add("Parameters");
+					menuEditExperiences = menuEdit.add("Experiences");
+					menuEditAttributes = menuEdit.add("Attributes");
+
+
+					menuUtilitiesDBSettings = menuUtilities.add("DB Settings");
+
+					menuHelpAbout = menuHelp.add("About");
+
+				// ADD LISTENERS  FOR THE MENU ITEMS
+					menuFileLogin.addActionListener(menuListener);
+					menuFileLogout.addActionListener(menuListener);
+					menuFileExit.addActionListener(menuListener);
+					menuEditExperiences.addActionListener(menuListener);
+					menuEditParameters.addActionListener(menuListener);
+					menuEditAttributes.addActionListener(menuListener);
+					menuUtilitiesDBSettings.addActionListener(menuListener);
+					menuHelpAbout.addActionListener(menuListener);
+
+			} // end EBLAMenuBar constructor
+
+		// LISTENER CLASS FOR THE MENU ITEMS.
+			private class EBLAMenuListener implements ActionListener {
+
+				public void actionPerformed(ActionEvent ae){
+
+					// GET THE SOURCE ITEM THAT TRIGGERED THE EVENT.
+						JMenuItem menuItem = (JMenuItem)ae.getSource();
+
+					// CHECK WHICH ITEM HAS BEEN CLICKED AND CALL THE CORRESPONDING FUNCTION
+						if (menuItem.equals(menuFileLogin)) {
+							if (login()){
+								menuFileLogin.setEnabled(false);
+								menuFileLogout.setEnabled(true);
+							}
+
+						} else if (menuItem.equals(menuFileLogout)) {
+							if(logout()){
+								menuFileLogin.setEnabled(true);
+								menuFileLogout.setEnabled(false);
+							}
+						} else if (menuItem.equals(menuFileExit)) {
+							System.exit(0);
+						} else if (menuItem.equals(menuEditParameters)) {
+							showParameterScreen();
+						} else if (menuItem.equals(menuEditExperiences)) {
+							showExperiencesScreen();
+						} else if (menuItem.equals(menuEditAttributes)) {
+							showAttributesScreen();
+						} else if (menuItem.equals(menuUtilitiesDBSettings)) {
+							showDBSettings();
+						} else if (menuItem.equals(menuHelpAbout)) {
+							showAboutScreen();
+						}
+
+				} // end actionPerformed()
+
+			} // end EBLAMenuListener()
+
+	} // end EBLAMenuBar class
+
+
+
+	/**
+	 * allows instantation of EBLAGui from command line
+	 */
 	public static void main(String args[]) {
+
 		System.out.println("Starting EBLA...");
+
 		EBLAGui mainFrame = new EBLAGui();
 
-	}
+	} // end main()
+
 
 
 } // end of EBLAGui class
@@ -415,4 +530,7 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */
