@@ -84,7 +84,7 @@ public class SessionScreen extends JInternalFrame {
 		SSComboBox cmbLogToFileCode       	= new SSComboBox();
 		SSComboBox cmbRandomizeExpCode    	= new SSComboBox();
 		SSComboBox cmbRegenerateImages    	= new SSComboBox();
-		SSComboBox cmbDisplayVideosCode 	= new SSComboBox();
+		//SSComboBox cmbDisplayVideosCode 	= new SSComboBox();
 		SSComboBox cmbDisplayMessages 		= new SSComboBox();
 
 	// INITIALIZE "ENTITIES" TAB AND CONTENTS
@@ -164,8 +164,8 @@ public class SessionScreen extends JInternalFrame {
 				cmbRegenerateImages.setOption(SSComboBox.YES_NO_OPTION);
 				cmbRegenerateImages.getComboBox().setSelectedIndex(0);
 
-				cmbDisplayVideosCode.setOption(SSComboBox.YES_NO_OPTION);
-				cmbDisplayVideosCode.getComboBox().setSelectedIndex(1);
+				//cmbDisplayVideosCode.setOption(SSComboBox.YES_NO_OPTION);
+				//cmbDisplayVideosCode.getComboBox().setSelectedIndex(1);
 
 				cmbDisplayMessages.setOption(SSComboBox.YES_NO_OPTION);
 				cmbDisplayMessages.getComboBox().setSelectedIndex(0);
@@ -209,7 +209,7 @@ public class SessionScreen extends JInternalFrame {
 					generalPanel.addRow(cmbLogToFileCode.getComboBox(), currentRow++, "Log To File?");
 					generalPanel.addRow(cmbRandomizeExpCode.getComboBox(), currentRow++, "Randomize Experiences?");
 					generalPanel.addRow(cmbRegenerateImages.getComboBox(), currentRow++, "Regenerate Images?");
-					generalPanel.addRow(cmbDisplayVideosCode.getComboBox(), currentRow++, "Display Videos When Ripping?");
+					//generalPanel.addRow(cmbDisplayVideosCode.getComboBox(), currentRow++, "Display Videos When Ripping?");
 					generalPanel.addRow(cmbDisplayMessages.getComboBox(), currentRow++, "Display Detailed Messages?");
 
 
@@ -307,10 +307,11 @@ public class SessionScreen extends JInternalFrame {
 					boolRegenerateImages = true;
 				}
 
-				boolean boolDisplayVideos = false;
-				if (cmbDisplayVideosCode.getComboBox().getSelectedIndex() == 1) {
-					boolDisplayVideos = true;
-				}
+				//boolean boolDisplayVideos = false;
+				//if (cmbDisplayVideosCode.getComboBox().getSelectedIndex() == 1) {
+				//	boolDisplayVideos = true;
+				//}
+				boolean boolDisplayVideos = true;
 
 				boolean boolDisplayMessages = false;
 				if (cmbDisplayMessages.getComboBox().getSelectedIndex() == 1) {
@@ -447,6 +448,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/31 15:47:40  yoda2
+ * Removed old database synchronization code and unused fields.
+ *
  * Revision 1.6  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *
