@@ -41,6 +41,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.border.*;
 import java.beans.PropertyVetoException;
 import java.util.StringTokenizer;
 
@@ -57,7 +58,7 @@ import java.util.StringTokenizer;
  * @author	$Author$
  * @version	$Revision$
  */
-public class DBSettingsScreen extends JDialog {
+public class DBSettingsScreen extends JInternalFrame {
 
 	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR EXPERIENCE SCREEN
 		Container desktop = null;
@@ -71,8 +72,7 @@ public class DBSettingsScreen extends JDialog {
 		JTextField txtUsername 		= new JTextField();
 		JPasswordField txtPassword 	= new JPasswordField();
 
-		JButton btnSubmit 			= new JButton("Submit");
-		SubmitButtonListener submitListener = new SubmitButtonListener();
+		JButton btnClose			= new JButton("Close");
 
 
 	// FILE CONTAINING DATABASE CONNECTION SETTINGS
@@ -83,75 +83,139 @@ public class DBSettingsScreen extends JDialog {
 	/**
 	 * DBSettingsScreen constructor.
 	 *
-//	 * @param the container in which the screen has to showup.
+	 * @param the container in which the screen has to showup.
 	 * @param file containing database connection settings
 	 */
-	public DBSettingsScreen(File _file){
+	public DBSettingsScreen(Container _desktop, File _file) {
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
+			super("EBLA - Database Connection Screen",false,false,false,false);
 
-//		super("Database information",false,true,false,true);
-		setModal(true);
-		setSize(500,250);
-		setTitle("EBLA - Database Connection Screen");
-		dbFile = _file;
+		// SET SIZE
+			setSize(640,240);
 
-		try {
-			// CREATE BUFFERED READER TO READ IN DATABASE CONNECTION INFO FROM FILE
-			// (IF AVAILABLE)
-				BufferedReader bufRead = new BufferedReader(new FileReader("dbSettings"));
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
 
-			// READ DATA FROM FIRST LINE AND TOKENIZE
-				String dbLine = bufRead.readLine();
-				StringTokenizer st = new StringTokenizer(dbLine,":/",false);
+		// SET FILE CONTAINING DATABASE CONNNECTION SETTINGS
+			dbFile = _file;
 
-			// EXTRACT NEEDED TOKENS FROM CONNECTION STRING
-				// NEGLECT JDBC PART
-					st.nextToken();
-				// NEGLECT POSTGRES PART
-					st.nextToken();
-				// GIVES THE IP ADDRESS
-					txtIP.setText(st.nextToken());
-				// GIVES THE PORT NUMBER
-					txtPort.setText(st.nextToken());
-				// GIVES THE DATABASE NAME
-					txtDBPath.setText(st.nextToken());
+		// ATTEMPT TO READ DATABASE CONFIGURATION FILE
+			try {
+				// CREATE BUFFERED READER TO READ IN DATABASE CONNECTION INFO FROM FILE
+				// (IF AVAILABLE)
+					BufferedReader bufRead = new BufferedReader(new FileReader("dbSettings"));
 
-			// READ USERNAME
-				txtUsername.setText(bufRead.readLine());
+				// READ DATA FROM FIRST LINE AND TOKENIZE
+					String dbLine = bufRead.readLine();
+					StringTokenizer st = new StringTokenizer(dbLine,":/",false);
 
-			// READ PASSWORD
-				txtPassword.setText(bufRead.readLine());
+				// EXTRACT NEEDED TOKENS FROM CONNECTION STRING
+					// NEGLECT JDBC PART
+						st.nextToken();
+					// NEGLECT POSTGRES PART
+						st.nextToken();
+					// GIVES THE IP ADDRESS
+						txtIP.setText(st.nextToken());
+					// GIVES THE PORT NUMBER
+						txtPort.setText(st.nextToken());
+					// GIVES THE DATABASE NAME
+						txtDBPath.setText(st.nextToken());
 
-		} catch(FileNotFoundException fnfe) {
-			System.out.println(fnfe.getMessage());
-		} catch(IOException ioe) {
-			System.out.println(ioe.getMessage());
-		}
+				// READ USERNAME
+					txtUsername.setText(bufRead.readLine());
 
-		if(txtPort.getText().trim().equals(""))
-			txtPort.setText("5432");
+				// READ PASSWORD
+					txtPassword.setText(bufRead.readLine());
 
-		chkRemoteDB.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				JCheckBox checkBox = (JCheckBox)ae.getSource();
-				if (checkBox.isSelected()) {
-					txtIP.setEnabled(true);
-					txtPort.setEnabled(true);
-					//lblRemoteIP.setEnabled(true);
-					//lblRemotePort.setEnabled(true);
-				} else {
-					txtIP.setEnabled(false);
-					txtPort.setEnabled(false);
-					//lblRemoteIP.setEnabled(false);
-					//lblRemotePort.setEnabled(false);
+			} catch(FileNotFoundException fnfe) {
+				System.out.println(fnfe.getMessage());
+			} catch(IOException ioe) {
+				System.out.println(ioe.getMessage());
+			}
+
+
+		// IF DATABASE PORT IS NOT SUPPLIED, USE POSTGRES DEFAULT PORT
+			if (txtPort.getText().trim().equals("")) {
+				txtPort.setText("5432");
+			}
+
+
+		// ADD ACTION LISTENER TO CHECKBOX TO DISABLE FIELDS NOT NECESSARY FOR A LOCAL CONNECTION
+			chkRemoteDB.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					JCheckBox checkBox = (JCheckBox)ae.getSource();
+					if (checkBox.isSelected()) {
+						txtIP.setEnabled(true);
+						txtPort.setEnabled(true);
+						//lblRemoteIP.setEnabled(true);
+						//lblRemotePort.setEnabled(true);
+					} else {
+						txtIP.setEnabled(false);
+						txtPort.setEnabled(false);
+						//lblRemoteIP.setEnabled(false);
+						//lblRemotePort.setEnabled(false);
+					}
+
+				} // end actionPerformed()
+			});
+
+
+		// ADD ACTION LISTENER TO "CLOSE" BUTTON
+			btnClose.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					// WRITE DB SETTINGS TO LOCAL FILE
+						String dbPath = "jdbc:postgresql://" + txtIP.getText() + ":" + txtPort.getText() +"/" + txtDBPath.getText();
+						String username = txtUsername.getText();
+						String password = new String(txtPassword.getPassword());
+
+						try {
+							FileWriter file = new FileWriter(dbFile);
+							BufferedWriter bufWritter = new BufferedWriter(file);
+							bufWritter.write(dbPath + "\n");
+							bufWritter.write(username + "\n");
+							bufWritter.write(password);
+							bufWritter.close();
+						} catch(IOException ioe) {
+							ioe.printStackTrace();
+						}
+
+					// DISPOSE OF DATABASE SETTINGS WINDOW
+						dispose();
+				} // end actionPerformed()
+			});
+
+
+		// ADD INTERNAL FRAME LISTENER TO FORM TO CHECK FOR LOSS OF FOCUS OR CLOSE
+			addInternalFrameListener(new InternalFrameAdapter() {
+			// FRAME DEACTIVATED
+				public void internalFrameDeactivated(InternalFrameEvent ife) {
+					SwingUtilities.invokeLater(new Thread() {
+						public void run() {
+							DBSettingsScreen.this.moveToFront();
+							DBSettingsScreen.this.requestFocus();
+							try {
+								DBSettingsScreen.this.setSelected(true);
+							} catch(PropertyVetoException pve) {
+								System.out.println(pve.getMessage());
+							}
+
+						}
+					});
+				} // end internalFrameDeactivated()
+
+			// FRAME CLOSED
+				public void internalFrameClosed(InternalFrameEvent e) {
+					JOptionPane.showInternalMessageDialog(desktop,"Please try logging in now.",
+					"Attempt Login",JOptionPane.INFORMATION_MESSAGE);
 				}
 
-			}
-		});
+			});
 
 
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			int currentRow = 0;
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 
 		// CREATE/LAYOUT PANEL FOR WIDGETS
@@ -164,46 +228,39 @@ public class DBSettingsScreen extends JDialog {
 			panel.addRow(txtUsername, currentRow++, "Username");
 			panel.addRow(txtPassword, currentRow++, "Password");
 
-
-chkRemoteDB.setSelected(true);
+			chkRemoteDB.setSelected(true);
 
 			constraints.gridx =0;
 			constraints.gridy =5;
 			panel.add(chkRemoteDB,constraints);
 
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+			buttonPanel.add(btnClose);
+
 			constraints.gridx =1;
 			constraints.gridy =5;
-			panel.add(btnSubmit,constraints);
+			panel.add(buttonPanel,constraints);
 
 			getContentPane().add(panel);
 
-			btnSubmit.addActionListener(submitListener);
+	} // end DBSettingsScreen constructor
 
-	}
 
-	public void closeWindow() {
-		this.dispose();
-/*		try{
-			this.setClosed(true);
-		}catch(PropertyVetoException pve){
-			pve.printStackTrace();
-		}
-*/	}
 
 	/**
-	 *	adds the census screen to the specified container at the specified position.
-	 *@param container the container in which the screen has to showup.
-	 *@param positionX the x co-ordinate of the position where the screen has to showup.
-	 *@param positionY the y co-ordinate of the position where the screen has to showup.
+	 * Adds the database settings screen to the specified container at the specified position.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the x co-ordinate of the position where the screen has to showup.
+	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
 	public void showUp(Container container,double positionX, double positionY){
 
-		int optionChoosen = -1;
 		// SET THE POSITION OF THE SCREEN.
-		this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)positionX, (int)positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-
 			Component[] components = container.getComponents();
 			int i=0;
 			for(i=0; i< components.length;i++){
@@ -212,62 +269,49 @@ chkRemoteDB.setSelected(true);
 					break;
 				}
 			}
-			// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
-			if(i == components.length) {
-//				container.add(this);
-			}
-			this.setVisible(true);
-			// MOVE THE SCREEN TO THE FRONT
-//			this.moveToFront();
 
-			// REQUEST FOCUS FOR THE SCREEN
+		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
+			if(i == components.length) {
+				container.add(this);
+			}
+
+		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
+			this.setVisible(true);
+			this.moveToFront();
 			this.requestFocus();
-			// MAKE THE SCREEN SELECTED SCREEN
-/*			try{
+
+		// MAKE THE SCREEN SELECTED SCREEN
+			try{
 				this.setClosed(false);
 				this.setSelected(true);
-			}catch(PropertyVetoException pve){
+			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
 			}
-*/
-	}
+
+	} // end showUp()
+
+
 
 	/**
-	 * shows the census screen at the default location on the specified container.
-	 *@param container the container in which the screen has to showup.
+	 * Shows the database settings screen at the default location on the specified container.
+	 *
+	 * @param the container in which the screen has to showup.
 	 */
 	public void showUp(Container container) {
 		showUp(container, 30,30);
-	}
+	} // end showUp()
 
 
-	private class SubmitButtonListener implements ActionListener{
-		public void actionPerformed(ActionEvent ae){
-			String dbPath = "jdbc:postgresql://" + txtIP.getText() + ":" + txtPort.getText() +"/" + txtDBPath.getText();
-			String username = txtUsername.getText();
-			String password = new String(txtPassword.getPassword());
 
-			try{
-				FileWriter file = new FileWriter(dbFile);
-				BufferedWriter bufWritter = new BufferedWriter(file);
-				bufWritter.write(dbPath + "\n");
-				bufWritter.write(username + "\n");
-				bufWritter.write(password);
-				bufWritter.close();
-			}catch(IOException ioe){
-				ioe.printStackTrace();
-			}
-			closeWindow();
-
-		}
-
-	}
 } // end of DBSettingsScreen class
 
 
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/29 04:22:24  yoda2
+ * Code cleanup & JavaDoc.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *

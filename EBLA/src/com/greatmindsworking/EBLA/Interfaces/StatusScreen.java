@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.*;
 import java.beans.PropertyVetoException;
 import com.nqadmin.Utils.DBConnector;
@@ -87,7 +88,6 @@ public class StatusScreen extends JInternalFrame {
 			JLabel statusText = new JLabel("Initializing EBLA...", JLabel.CENTER);
 			JProgressBar progressBar = new JProgressBar();
 			JButton cancelButton = new JButton("Cancel");
-			Border spaceBelow = BorderFactory.createEmptyBorder(0, 0, 5, 0);
 
 
 	/**
@@ -99,7 +99,7 @@ public class StatusScreen extends JInternalFrame {
 	 */
 	public StatusScreen(Container _desktop, SessionData _sd, DBConnector _dbc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
-			super("EBLA - Calculation Status Screen",false,true,true,true);
+			super("EBLA - Calculation Status Screen",false,false,false,false);
 
 		// SET SIZE
 			setSize(640,480);
@@ -121,11 +121,52 @@ public class StatusScreen extends JInternalFrame {
         //progressBar.setMaximum(NUMLOOPS);
 
         // SET ACTION LISTENER FOR CANCEL BUTTON
-        	cancelButton.addActionListener(interruptListener);
+        	cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					if (eblaCanceled) {
+					// close window
+						dispose();
+
+					} else {
+					// interrupt EBLA
+						ebla.interrupt();
+
+					// change button text
+						cancelButton.setText("Close");
+
+					// reset cancled flag
+						eblaCanceled = true;
+					}
+
+				} // end actionPerformed()
+			});
         	//cancelButton.setEnabled(true);
+
+
+		// ADD INTERNAL FRAME LISTENER TO FORM TO CHECK FOR LOSS OF FOCUS
+			addInternalFrameListener(new InternalFrameAdapter() {
+			// FRAME DEACTIVATED
+				public void internalFrameDeactivated(InternalFrameEvent ife) {
+					SwingUtilities.invokeLater(new Thread() {
+						public void run() {
+							StatusScreen.this.moveToFront();
+							StatusScreen.this.requestFocus();
+							try {
+								StatusScreen.this.setSelected(true);
+							} catch(PropertyVetoException pve) {
+								System.out.println(pve.getMessage());
+							}
+
+						}
+					});
+				} // end internalFrameDeactivated()
+
+			});
+
 
 		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
 			GridBagConstraints constraints = new GridBagConstraints();
+			Border emptySpace = BorderFactory.createEmptyBorder(0, 0, 10, 0);
 
 
 		// CREATE/LAYOUT PANEL FOR INTERMEDIATE RESULT IMAGES
@@ -161,8 +202,13 @@ public class StatusScreen extends JInternalFrame {
 			constraints.gridy = 2;
 			contentPane.add(imagePanel, constraints);
 
+			EBLAPanel buttonPanel = new EBLAPanel();
+			buttonPanel.setBorder(emptySpace);
+			buttonPanel.add(cancelButton);
+
 			constraints.gridy = 3;
-			contentPane.add(cancelButton, constraints);
+			contentPane.add(buttonPanel, constraints);
+
 
 			//buttonBox.setBorder(spaceBelow);
 			//Border pbBorder = progressBar.getBorder();
@@ -274,30 +320,7 @@ public class StatusScreen extends JInternalFrame {
 
 
 
-    /**
-     * This action listener, called by the "Cancel" button, interrupts
-     * the worker thread which is running this.doWork().  Note that
-     * the doWork() method handles InterruptedExceptions cleanly.
-     */
-    ActionListener interruptListener = new ActionListener() {
-        public void actionPerformed(ActionEvent event) {
-            if (eblaCanceled) {
-			// close window
-				dispose();
 
-			} else {
-			// interrupt EBLA
-				ebla.interrupt();
-
-			// change button text
-				cancelButton.setText("Close");
-
-			// reset cancled flag
-				eblaCanceled = true;
-			}
-
-        }
-    };
 
 
 
@@ -361,6 +384,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/26 22:16:21  yoda2
+ * General code cleanup and addition of JavaDoc.
+ *
  * Revision 1.3  2003/12/26 20:48:45  yoda2
  * Reflected renaming of Session.java to SessionData.java and removed unnecessary import statements.
  *
