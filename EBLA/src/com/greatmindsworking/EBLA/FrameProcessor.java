@@ -258,6 +258,11 @@ public class FrameProcessor {
 
 			// LOOP THROUGH ALL IMAGES
 				for (int i=firstFrameIndex; i<=lastFrameIndex; i++) {
+					// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
+						if (statusScreen.getEBLACanceled()) {
+							return;
+						}
+
 					// INITIALIZE PROGRESS BAR
 						statusScreen.setBarMax(3, lastFrameIndex);
 
@@ -655,6 +660,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.31  2003/12/31 15:45:51  yoda2
+ * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
+ *
  * Revision 1.30  2003/12/30 23:19:41  yoda2
  * Modified for more detailed updating of EBLA Status Screen.
  *

@@ -315,6 +315,11 @@ public class FrameGrabber extends JFrame {
 
 					// LOOP THROUGH ALL FRAMES HERE...
 						for (int frameCounter=1; frameCounter<=totalFrames; frameCounter++) {
+							// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
+								if (statusScreen.getEBLACanceled()) {
+									return(0);
+								}
+
 							// SHOW FRAME BEING PROCESSED
 								System.out.println("Ripping frame #" + frameCounter);
 
@@ -477,6 +482,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.10  2003/12/30 23:19:41  yoda2
+ * Modified for more detailed updating of EBLA Status Screen.
+ *
  * Revision 1.9  2003/08/08 17:45:50  yoda2
  * Updated commandline execution instructions.
  *

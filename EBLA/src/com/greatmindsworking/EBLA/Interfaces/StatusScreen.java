@@ -142,14 +142,12 @@ public class StatusScreen extends JInternalFrame {
 						}
 
 					} else {
-					// INTERRUPT EBLA
-						ebla.interrupt();
+					// RESET CANCELED FLAG
+						eblaCanceled = true;
 
 					// CHANGE BUTTON TEXT
 						cancelButton.setText("Close");
 
-					// RESET CANCLED FLAG
-						eblaCanceled = true;
 					}
 
 				} // end actionPerformed()
@@ -274,6 +272,30 @@ public class StatusScreen extends JInternalFrame {
 				contentPane.add(buttonPanel, constraints);
 
 	} // end of StatusScreen constructor
+
+
+
+	/**
+	 * Returns flag indicating if the EBLA calc engine should be stopped.
+	 */
+	public boolean getEBLACanceled() {
+		return eblaCanceled;
+	}
+
+
+
+	/**
+	 * Changes "Cancel" button to "Close" button upon completion of EBLA calcs
+	 * and updates calculation status flag.
+	 */
+	public void indicateEBLACompletion() {
+		// RESET CANCELED FLAG
+			eblaCanceled = true;
+
+		// CHANGE BUTTON TEXT
+			cancelButton.setText("Close");
+
+	} // end indicateEBLACompletion()
 
 
 
@@ -493,8 +515,10 @@ public class StatusScreen extends JInternalFrame {
 
 		// START EBLA
 			try {
-				ebla = new EBLA(sd, dbc, this);
-				ebla.start();
+				if (ebla == null) {
+					ebla = new EBLA(sd, dbc, this);
+					ebla.start();
+				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -519,6 +543,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/30 23:20:30  yoda2
+ * Added more details of EBLA processing and cleaned up layout.
+ *
  * Revision 1.5  2003/12/29 23:19:42  yoda2
  * Finished JavaDoc and code cleanup.
  * Simulated modal behavior by retaking focus when lost.

@@ -377,6 +377,14 @@ public class SessionScreen extends JInternalFrame {
 			// CREATE STATUS SCREEN IF IT DOESN'T YET EXIST
 				if (statusScreen == null) {
 					statusScreen = new StatusScreen(desktop, sd, connector);
+
+					statusScreen.addInternalFrameListener(new InternalFrameAdapter() {
+					// FRAME CLOSED
+						public void internalFrameClosed(InternalFrameEvent ife) {
+							statusScreen = null;
+						} // end internalFrameClosed()
+
+					});
 				}
 
 			// DISPLAY STATUS SCREEN
@@ -448,6 +456,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2003/12/31 16:21:35  yoda2
+ * Removed display video option - doesn't apply to GUI as frames are always displayed during rip.
+ *
  * Revision 1.7  2003/12/31 15:47:40  yoda2
  * Removed old database synchronization code and unused fields.
  *

@@ -243,6 +243,8 @@ public class EBLA extends Thread {
 
 			int sleepInterval = 1;
 
+			boolean stopEBLA = false;
+
 
 		try {
 			// CREATE TMP STATEMENT
@@ -303,9 +305,10 @@ public class EBLA extends Thread {
 					//   3. PROCESS FRAMES AND WRITE TO frame_analysis_data
 					//   4. SET calc_status_code to 2
 						while (experienceRS.next()) {
-							// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
-								if (Thread.interrupted()) {
-							    	throw new InterruptedException();
+							// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
+								if (statusScreen.getEBLACanceled()) {
+									stopEBLA = true;
+							    	throw new Exception("EBLA Execution Canceled.");
                 				}
 
 							// UPDATE STATUS SCREEN
@@ -390,7 +393,7 @@ public class EBLA extends Thread {
 								frameCount = fg.ripFrames();
 
 							// DISPOSE OF FRAME GRABBER AND SET TO NULL
-								fg.dispose();
+							//	fg.dispose();
 								fg = null;
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
@@ -468,9 +471,10 @@ public class EBLA extends Thread {
 					//   3. PROCESS FRAMES AND WRITE TO frame_analysis_data
 					//   4. SET calc_status_code to 2
 						if (experienceRS.next()) {
-							// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
-								if (Thread.interrupted()) {
-									throw new InterruptedException();
+							// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
+								if (statusScreen.getEBLACanceled()) {
+									stopEBLA = true;
+							    	throw new Exception("EBLA Execution Canceled.");
                 				}
 
 							// UPDATE STATUS SCREEN
@@ -596,7 +600,7 @@ public class EBLA extends Thread {
 				tmpRS.close();
 
 			// RESET LENGTH OF PROGRESS BAR #2 TO TOTAL # OF RUNS
-				statusScreen.setBarMax(2, ((sd.getMinStdDevStop()-sd.getMinStdDevStart())/sd.getMinStdDevStep()*sd.getEBLALoopCount())+1);
+				statusScreen.setBarMax(2, (((sd.getMinStdDevStop()-sd.getMinStdDevStart())/sd.getMinStdDevStep()+1)*sd.getEBLALoopCount()));
 
 			// INITIALIZE LOG FILES - STAMP NAMES WITH SESSION ID
 				fo1 = new FileWriter("session_" + sd.getSessionID() + "_performance.ssv");
@@ -677,9 +681,10 @@ public class EBLA extends Thread {
 
 						// IF A RECORD IS RETURNED, EXTRACT PARAMETERS, OTHERWISE WARN USER
 							while (experienceRS.next()) {
-								// CHECK TO SEE IF THREAD HAS BEEN INTERRUPTED
-									if (Thread.interrupted()) {
-										throw new InterruptedException();
+								// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
+									if (statusScreen.getEBLACanceled()) {
+										stopEBLA = true;
+										throw new Exception("EBLA Execution Canceled.");
 									}
 
 								// EXTRACT EXPERIENCE ID
@@ -848,7 +853,12 @@ public class EBLA extends Thread {
 			// UPDATE ENDING TIMESTAMP FOR CURRENT SESSION
 				sd.updateSessionStop(dbc);
 
-		} catch (InterruptedException ie) {
+			// INDICATE COMPLETION OF EBLA ON STATUS SCREEN
+				statusScreen.indicateEBLACompletion();
+
+		} catch (Exception e) {
+		// CHECK FOR CANCEL BUTTON
+			if (stopEBLA) {
 			// UPDATE STATUS
 				statusScreen.updateStatus(1, "EBLA Session Interrupted!");
 
@@ -857,48 +867,22 @@ public class EBLA extends Thread {
 					experienceRS.close();
 					tmpRS.close();
 					tmpState.close();
-					fo3.close();
-					fo2.close();
-					fo1.close();
+					//fo3.close();
+					//fo2.close();
+					//fo1.close();
+
 				} catch (Exception misc) {
-					// do nothing...
+					System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
+					misc.printStackTrace();
 				}
+			}
 
-			// RETURN
-            	return;
-
-		} catch (Exception e) {
+		// DISPLAY EXCEPTION MESSAGE
 			System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
 			e.printStackTrace();
 		}
 
 	} // end processExperiences()
-
-
-
-	/**
-	 * Closes database connection and sets objects that are no longer needed to null
-	 *
-	 * @param _saveChanges	boolean indicating whether or not to save database changes
-	 */
-	private void cleanUp(boolean _saveChanges) {
-
-		try {
-
-			// SAVE DATABASE CHANGES
-				if (_saveChanges) {
-					dbc.commitChanges();
-				}
-
-			// SET OBJECTS THAT ARE NO LONGER NEEDED TO NULL
-				pd = null;
-
-		} catch (Exception e) {
-			System.out.println("\n--- EBLA.cleanUp() Exception ---\n");
-			e.printStackTrace();
-		}
-
-	} // end dispose()
 
 
 
@@ -918,25 +902,6 @@ public class EBLA extends Thread {
 		}
 
 	} // end run()
-
-
-
-	/**
-	 * Finalize routine to be called when finished threaded execution.
-	 */
-	public void finalize() {
-
-		try {
-
-			// SAVE DATABASE CHANGES AND SET OBJECT NO LONGER NEEDED TO NULL
-				cleanUp(true);
-
-		} catch (Exception e) {
-			System.out.println("\n--- EBLA.finalize() Exception ---\n");
-			e.printStackTrace();
-		}
-
-	} // end finalize()
 
 
 
@@ -1056,6 +1021,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.31  2003/12/30 23:19:41  yoda2
+ * Modified for more detailed updating of EBLA Status Screen.
+ *
  * Revision 1.30  2003/12/26 20:25:52  yoda2
  * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
  *
