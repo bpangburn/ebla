@@ -332,7 +332,7 @@ public class ParameterScreen extends JInternalFrame {
 			tabbedPane.addTab("General", generalPanel);
 			tabbedPane.addTab("Vision System", visionPanel);
 			tabbedPane.addTab("Intermediate Results", resultsPanel);
-			tabbedPane.addTab("Misc", miscPanel);
+			tabbedPane.addTab("Misc.", miscPanel);
 
 		// CREATE PANEL FOR BUTTONS
 			EBLAPanel buttonPanel = new EBLAPanel();
@@ -430,6 +430,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.14  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.13  2004/01/08 23:19:32  yoda2
  * Disabled reduce color depth field.
  *

@@ -258,7 +258,7 @@ public class SessionScreen extends JInternalFrame {
 			tabbedPane.addTab("General", generalPanel);
 			tabbedPane.addTab("Entity Recognition", entitiesPanel);
 			tabbedPane.addTab("Lexeme Generation", lexemesPanel);
-			tabbedPane.addTab("Misc", miscPanel);
+			tabbedPane.addTab("Misc.", miscPanel);
 
 
 		// CREATE PANEL FOR BUTTON
@@ -455,6 +455,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.11  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.10  2003/12/31 19:44:26  yoda2
  * Added logic to set a default session description based on the parameter description and current date/time.
  *

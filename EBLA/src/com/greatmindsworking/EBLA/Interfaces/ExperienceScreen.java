@@ -170,8 +170,8 @@ public class ExperienceScreen extends JInternalFrame {
 			panel.addRow(txtExperienceID, currentRow++, "Experience ID");
 			panel.addRow(txtDescription, currentRow++, "Description");
 			panel.addRow(txtVideoPath, currentRow++, "Video Path");
-			panel.addRow(txtTmpPath, currentRow++, "Tmp Path");
-			panel.addRow(txtExperienceLexemes, currentRow++, "Experience Lexemes");
+			panel.addRow(txtTmpPath, currentRow++, "Intermediate Results Directory");
+			panel.addRow(txtExperienceLexemes, currentRow++, "Protolanguage Description");
 			panel.addRow(txtNotes, currentRow++, "Notes");
 
 
@@ -260,6 +260,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.8  2004/01/07 19:44:21  yoda2
  * Verified that primary key is displayed on each screen and is disabled.
  *
