@@ -9,4 +9,4 @@
 rm ./com/greatmindsworking/EBLA/*.class
 rm ./com/greatmindsworking/EBLA/Interfaces/*.class
 rm ./com/greatmindsworking/EDISON/segm/*.class
-javac -classpath .;./jars/rowset.jar;./jars/pg73jdbc3.jar;./jars/jmf.jar;./jars/swingUtils.jar;./jars/utils.jar com/greatmindsworking/EBLA/Interfaces/EBLAGui.java
+javac -classpath .;./jars/rowset.jar;./jars/pg73jdbc3.jar;./jars/jmf.jar;./jars/swingSet.jar;./jars/utils.jar com/greatmindsworking/EBLA/Interfaces/EBLAGui.java
