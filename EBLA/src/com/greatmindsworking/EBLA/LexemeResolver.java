@@ -489,7 +489,7 @@ public class LexemeResolver {
 			//		3. ADD RECORD TO experience_lexeme_data WITH resolution_code = 0
 				itt = lexemeAL.iterator();
 				while (itt.hasNext()) {
-					// INITIALIZE FLAG INDICATING IF ENTITY ALREADY EXISTS IN DATABASE
+					// INITIALIZE FLAG INDICATING IF LEXEME ALREADY EXISTS IN DATABASE
 						lexemeExists = false;
 
 					// EXTRACT CURRENT LEXEME
@@ -508,7 +508,7 @@ public class LexemeResolver {
 							// RESET FLAG
 								lexemeExists = true;
 
-							// EXTRACT ENTITY ID
+							// EXTRACT LEXEME ID
 								lexemeID = lexemeRS.getLong("lexeme_id");
 
 							// EXTRACT OCCURANCE COUNT
@@ -1304,6 +1304,10 @@ public class LexemeResolver {
 					// RESET foundPair
 						foundPair = false;
 
+
+// COULD THIS RETURN RECORDS WHERE THERE WERE TWO UNMAPPED LEXEMES AND A SINGLE UNMAPPED ENTITY???
+
+
 					// QUERY experience_entity_data AND experience_lexeme_data FOR EXPERIENCES WITH ONLY A SINGLE
 					// UNRESOLVED entity-lexeme PAIR -- ONLY RETURN FIRST RESULT
 						sql = "SELECT eed.experience_id, COUNT(*) FROM experience_entity_data eed, experience_lexeme_data eld"
@@ -1321,7 +1325,7 @@ public class LexemeResolver {
 
 					// RESOLVE RESULTS
 						if (expRS.next()) {
-							// INIDCATE THAT A PAIR HAS BEEN FOUND
+							// INDICATE THAT A PAIR HAS BEEN FOUND
 								foundPair = true;
 
 							// EXTRACT EXPERIENCE ID
@@ -1402,6 +1406,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.23  2004/06/24 17:24:49  yoda2
+ * Fixed bug in generateDescriptions where candidate entities were being filtered by runID, but not by experienceID.
+ *
  * Revision 1.22  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *
