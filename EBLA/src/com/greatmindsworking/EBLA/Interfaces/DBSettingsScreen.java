@@ -41,10 +41,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.sql.*;
 import java.beans.PropertyVetoException;
 import java.util.StringTokenizer;
-import com.nqadmin.swingSet.*;
 
 
 
@@ -61,53 +59,71 @@ import com.nqadmin.swingSet.*;
  */
 public class DBSettingsScreen extends JDialog {
 
-	JCheckBox chkRemoteDB = new JCheckBox("Remote DataBase");
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR EXPERIENCE SCREEN
+		Container desktop = null;
 
-	JLabel lblRemoteIP = new JLabel("Remote Machine IP");
-	JLabel lblRemotePort = new JLabel("Port number");
-	JLabel lblDBPath    = new JLabel("Database Name");
-	JLabel lblUsername = new JLabel("Username");
-	JLabel lblPassword = new JLabel("Password");
+	// INITIALIZE DB SETTINGS SCREEN WIDGETS
+		JCheckBox chkRemoteDB 		= new JCheckBox("Remote Database");
 
-	JTextField txtIP = new JTextField();
-	JTextField txtPort = new JTextField();
-	JTextField txtDBPath = new JTextField();
-	JTextField txtUsername = new JTextField();
-	JPasswordField txtPassword = new JPasswordField();
+		JTextField txtIP 			= new JTextField();
+		JTextField txtPort 			= new JTextField();
+		JTextField txtDBPath 		= new JTextField();
+		JTextField txtUsername 		= new JTextField();
+		JPasswordField txtPassword 	= new JPasswordField();
 
-	JButton btnSubmit = new JButton("Submit");
-	SubmitButtonListener submitListener = new SubmitButtonListener();
+		JButton btnSubmit 			= new JButton("Submit");
+		SubmitButtonListener submitListener = new SubmitButtonListener();
 
-	File dbFile = null;
 
+	// FILE CONTAINING DATABASE CONNECTION SETTINGS
+		File dbFile = null;
+
+
+
+	/**
+	 * DBSettingsScreen constructor.
+	 *
+//	 * @param the container in which the screen has to showup.
+	 * @param file containing database connection settings
+	 */
 	public DBSettingsScreen(File _file){
 
 //		super("Database information",false,true,false,true);
 		setModal(true);
 		setSize(500,250);
-		setTitle("Database information");
+		setTitle("EBLA - Database Connection Screen");
 		dbFile = _file;
 
-		try{
-			BufferedReader bufRead = new BufferedReader(new FileReader("dbSettings"));
-			String dbLine = bufRead.readLine();
-			StringTokenizer st = new StringTokenizer(dbLine,":/",false);
-			// NEGLECT JDBC PART
-			st.nextToken();
-			// NEGLECT POSTGRES PART
-			st.nextToken();
-			// GIVES THE IP ADDRESS
-			txtIP.setText(st.nextToken());
-			// GIVES THE PORT NUMBER
-			txtPort.setText(st.nextToken());
-			// GIVES THE DATABASE NAME
-			txtDBPath.setText(st.nextToken());
+		try {
+			// CREATE BUFFERED READER TO READ IN DATABASE CONNECTION INFO FROM FILE
+			// (IF AVAILABLE)
+				BufferedReader bufRead = new BufferedReader(new FileReader("dbSettings"));
 
-			txtUsername.setText(bufRead.readLine());
-			txtPassword.setText(bufRead.readLine());
-		}catch(FileNotFoundException fnfe){
+			// READ DATA FROM FIRST LINE AND TOKENIZE
+				String dbLine = bufRead.readLine();
+				StringTokenizer st = new StringTokenizer(dbLine,":/",false);
+
+			// EXTRACT NEEDED TOKENS FROM CONNECTION STRING
+				// NEGLECT JDBC PART
+					st.nextToken();
+				// NEGLECT POSTGRES PART
+					st.nextToken();
+				// GIVES THE IP ADDRESS
+					txtIP.setText(st.nextToken());
+				// GIVES THE PORT NUMBER
+					txtPort.setText(st.nextToken());
+				// GIVES THE DATABASE NAME
+					txtDBPath.setText(st.nextToken());
+
+			// READ USERNAME
+				txtUsername.setText(bufRead.readLine());
+
+			// READ PASSWORD
+				txtPassword.setText(bufRead.readLine());
+
+		} catch(FileNotFoundException fnfe) {
 			System.out.println(fnfe.getMessage());
-		}catch(IOException ioe){
+		} catch(IOException ioe) {
 			System.out.println(ioe.getMessage());
 		}
 
@@ -117,67 +133,55 @@ public class DBSettingsScreen extends JDialog {
 		chkRemoteDB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				JCheckBox checkBox = (JCheckBox)ae.getSource();
-				if( checkBox.isSelected()){
+				if (checkBox.isSelected()) {
 					txtIP.setEnabled(true);
 					txtPort.setEnabled(true);
-					lblRemoteIP.setEnabled(true);
-					lblRemotePort.setEnabled(true);
-				}else{
+					//lblRemoteIP.setEnabled(true);
+					//lblRemotePort.setEnabled(true);
+				} else {
 					txtIP.setEnabled(false);
 					txtPort.setEnabled(false);
-					lblRemoteIP.setEnabled(false);
-					lblRemotePort.setEnabled(false);
+					//lblRemoteIP.setEnabled(false);
+					//lblRemotePort.setEnabled(false);
 				}
 
 			}
 		});
 
-		EBLAPanel panel = new EBLAPanel();
-		chkRemoteDB.setSelected(true);
 
-		panel.setLayout(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		panel.add(lblRemoteIP,constraints);
-		constraints.gridy = 1;
-		panel.add(lblRemotePort,constraints);
-		constraints.gridy = 2;
-		panel.add(lblDBPath,constraints);
-		constraints.gridy = 3;
-		panel.add(lblUsername,constraints);
-		constraints.gridy = 4;
-		panel.add(lblPassword,constraints);
+		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
+			int currentRow = 0;
+			GridBagConstraints constraints = new GridBagConstraints();
 
 
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		panel.add(txtIP,constraints);
-		constraints.gridy = 1;
-		panel.add(txtPort,constraints);
-		constraints.gridy = 2;
-		panel.add(txtDBPath,constraints);
-		constraints.gridy = 3;
-		panel.add(txtUsername,constraints);
-		constraints.gridy = 4;
-		panel.add(txtPassword,constraints);
+		// CREATE/LAYOUT PANEL FOR WIDGETS
+			EBLAPanel panel  = new EBLAPanel();
+			panel.setLayout(new GridBagLayout());
 
-		constraints.gridx =0;
-		constraints.gridy =5;
-		panel.add(chkRemoteDB,constraints);
+			panel.addRow(txtIP, currentRow++, "Database Server IP");
+			panel.addRow(txtPort, currentRow++, "Port Number");
+			panel.addRow(txtDBPath, currentRow++, "Database Name");
+			panel.addRow(txtUsername, currentRow++, "Username");
+			panel.addRow(txtPassword, currentRow++, "Password");
 
-		constraints.gridx =1;
-		constraints.gridy =5;
-		panel.add(btnSubmit,constraints);
 
-		getContentPane().add(panel);
+chkRemoteDB.setSelected(true);
 
-		btnSubmit.addActionListener(submitListener);
+			constraints.gridx =0;
+			constraints.gridy =5;
+			panel.add(chkRemoteDB,constraints);
+
+			constraints.gridx =1;
+			constraints.gridy =5;
+			panel.add(btnSubmit,constraints);
+
+			getContentPane().add(panel);
+
+			btnSubmit.addActionListener(submitListener);
 
 	}
 
-	public void closeWindow(){
+	public void closeWindow() {
 		this.dispose();
 /*		try{
 			this.setClosed(true);
@@ -264,6 +268,9 @@ public class DBSettingsScreen extends JDialog {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
