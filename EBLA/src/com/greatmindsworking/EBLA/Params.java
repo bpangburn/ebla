@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ package com.greatmindsworking.EBLA;
 
 
 import java.sql.*;
+import com.nqadmin.Utils.DBConnector;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
 
 
@@ -46,101 +47,26 @@ import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
  *<p>
  * EBLA - Experience-Based Language Acquisition
  *<p>
- * Manages runtime parameters for EBLA, retrieving from the ebla_data database
- * if a parameter_data record ID is supplied and using defaults otherwise.
+ * Manages video processing parameters for EBLA.
  *<p>
  * @author	$Author$
  * @version	$Revision$
  */
 public class Params {
 	/**
-	 * boolean flag indicating whether to process videos for current run
-	 *
-	 * If true, all video pre-processing will be performed up to the entity analysis stage.
+	 * ID of parameter_data record
 	 */
-	private boolean processVideos = true;
+	private long parameterID = 0;
 
 	/**
-	 * boolean flag indicating whether to process entities for current run
-	 *
-	 * This stage cannot run unless there are records in the frame_analysis_data table.
+	 * text description of video processing parameters
 	 */
-	private boolean processEntities = true;
-
-	/**
-	 * boolean flag indicating whether to process lexemes for current run
-	 *
-	 * This stage cannot run unless there are records in the entity_data table.
-	 */
-	private boolean processLexemes = true;
-
-	/**
-	 * boolean flag indicating whether to write results to screen or log file
-	 */
-	private boolean logToFile = true;
-
-	/**
-	 * boolean flag indicating whether to randomize the experiences processed by EBLA
-	 */
-	private boolean randomizeExp = true;
-
-	/**
-	 * boolean flag indicating whether to generate descriptions for some experiences
-	 */
-	private boolean generateDesc = false;
-
-	/**
-	 * number of experiences to process before trying to generate descriptions
-	 */
-	private int descThreshold = 7;
-
-	/**
-	 * starting minimum standard deviation for matching entities
-	 */
-	private int minStdDevStart = 5;
-
-	/**
-	 * stopping minimum standard deviation for matching entities
-	 */
-	private int minStdDevStop = 5;
-
-	/**
-	 * minimum standard deviation step size
-	 */
-	private int minStdDevStep = 5;
-
-	/**
-	 * number of times to process all experiences for each minimum standard deviation
-	 */
-	private int eblaLoopCount = 5;
-
-	/**
-	 * boolean flag indicating whether to limit standard deviation to value specified
-	 *
-	 * When this is true, the standard deviation calculated for the current entity
-	 * is ignored.
-	 */
-	private boolean fixedStdDev = false;
+	private String description;
 
 	/**
 	 * temporary path for processing movies (experiences)
 	 */
 	private String tmpPath = "./ebla/";
-
-	/**
-	 * boolean flag indicating whether to display movies while extracting frames
-	 */
-	private boolean displayMovie = false;
-
-	/**
-	 * boolean flag indicating whether to show detailed intermediate results on the terminal
-	 */
-	private boolean displayText = false;
-
-	/**
-	 * boolean flag indicating whether to save movie frames after processing/analysis
-	 */
-	private boolean saveImages = false;
 
 	/**
 	 * float containing the color radius for mean-shift analysis image segmentation
@@ -213,11 +139,6 @@ public class Params {
 	private boolean reduceColor = false;
 
 	/**
-	 * boolean flag indicating whether lexemes are case sensitive
-	 */
-	private boolean caseSensitive = false;
-
-	/**
 	 * string containing notes about current set of runtime parameters
 	 */
 	private String notes = "";
@@ -225,18 +146,20 @@ public class Params {
 
 
 	/**
-	 * Class constructor that creates an object containing runtime parameters for EBLA based
-	 * on a record in the parameter_data database table
+	 * Class constructor that creates an object containing vision processing parameters
+	 * for EBLA based on a record in the parameter_data database table.
 	 *
 	 * @param _dbc			connection to database containing parameter table
-	 * @param _parameterID	ID of parameter record to lookup (-1 if system should use first available)
+	 * @param _parameterID	ID of parameter record to lookup
 	 */
     public Params(DBConnector _dbc, long _parameterID) {
 
 		try {
+			// SET PARAMETER ID
+				parameterID = _parameterID;
 
 			// LOOKUP PARAMETERS FROM DATABASE
-				lookupParams(_dbc, _parameterID);
+				lookupParams(_dbc);
 
 		} catch (Exception e) {
 			System.out.println("\n--- Params Constructor Exception ---\n");
@@ -251,9 +174,8 @@ public class Params {
 	 * Private method to lookup runtime parameters in a database
 	 *
 	 * @param _dbc			connection to database containing parameter table
-	 * @param _parameterID	ID of parameter record to lookup (-1 if system should use first available)
 	 */
-	private void lookupParams(DBConnector _dbc, long _parameterID) {
+	private void lookupParams(DBConnector _dbc) {
 
 		// DECLARATIONS
 			Statement paramState;	// STATEMENT USED TO CREATE PARAMETER RECORDSET
@@ -264,11 +186,7 @@ public class Params {
 		try {
 
 			// BUILD PARAMETER_DATA QUERY STRING
-				if (_parameterID == -1) {
-					sql = "SELECT * FROM parameter_data;";
-				} else {
-					sql = "SELECT * FROM parameter_data WHERE parameter_id = " + _parameterID + ";";
-				}
+				sql = "SELECT * FROM parameter_data WHERE parameter_id = " + parameterID + ";";
 
 			// CREATE STATEMENT
 				paramState = _dbc.getStatement();
@@ -278,93 +196,16 @@ public class Params {
 
 			// IF A RECORD IS RETURNED, EXTRACT PARAMETERS, OTHERWISE WARN USER
 				if (paramRS.next()) {
-					// EXTRACT VIDEO PROCESSING FLAG
-						if (paramRS.getInt("process_videos_code")==0) {
-							processVideos = false;
-						} else {
-							processVideos = true;
-						}
-
-					// EXTRACT ENTITY PROCESSING FLAG
-						if (paramRS.getInt("process_entities_code")==0) {
-							processEntities = false;
-						} else {
-							processEntities = true;
-						}
-
-					// EXTRACT LEXEME PROCESSING FLAG
-						if (paramRS.getInt("process_lexemes_code")==0) {
-							processLexemes = false;
-						} else {
-							processLexemes = true;
-						}
-
-					// EXTRACT OUTPUT DESTINATION FLAG
-						if (paramRS.getInt("log_to_file_code")==0) {
-							logToFile = false;
-						} else {
-							logToFile = true;
-						}
-
-					// EXTRACT EXPERIENCE RANDOMIZATION FLAG
-						if (paramRS.getInt("randomize_exp_code")==0) {
-							randomizeExp = false;
-						} else {
-							randomizeExp = true;
-						}
-
-					// EXTRACT DESCRIPTION GENERATION FLAG
-						if (paramRS.getInt("generate_desc_code")==0) {
-							generateDesc = false;
-						} else {
-							generateDesc = true;
-						}
-
-					// EXTRACT DESCRIPTION GENERATION THRESHOLD
-						descThreshold = paramRS.getInt("desc_threshold");
-
-					// EXTRACT MINIMUM STANDARD DEVIATION VALUES
-						minStdDevStart = paramRS.getInt("min_sd_start");
-						minStdDevStop = paramRS.getInt("min_sd_stop");
-						minStdDevStep = paramRS.getInt("min_sd_step");
-
-					// EXTRACT # OF TIMES TO PROCESS EXPERIENCES FOR EACH
-					// MINIMUM STANDARD DEVIATION VALUE
-						eblaLoopCount = paramRS.getInt("loop_count");
-
-					// EXTRACT FIXED MINIMUM STANDARD DEVIATION FLAG
-						if (paramRS.getInt("fixed_sd_code")==0) {
-							fixedStdDev = false;
-						} else {
-							fixedStdDev = true;
+					// EXTRACT DESCRIPTION
+						tmpString = paramRS.getString("description");
+						if (tmpString != "") {
+							description = tmpString;
 						}
 
 					// EXTRACT TEMP PROCESSING PATH
 						tmpString = paramRS.getString("tmp_path");
 						if (tmpString != "") {
 							tmpPath = tmpString;
-						}
-
-					// EXTRACT MOVIE DISPLAY FLAG
-						if (paramRS.getInt("display_movie_code")==0) {
-							displayMovie = false;
-						} else {
-							displayMovie = true;
-						}
-
-					// EXTRACT DETAILED MESSAGE DISPLAY FLAG
-						if (paramRS.getInt("display_text_code")==0) {
-							displayText = false;
-						} else {
-							displayText = true;
-						}
-
-
-					// EXTRACT SAVE EXTRACTED IMAGES FLAG
-						if (paramRS.getInt("save_images_code")==0) {
-							saveImages = false;
-						} else {
-							saveImages = true;
 						}
 
 					// EXTRACT MEAN-SHIFT ANALYSIS IMAGE SEGMENTATION PARAMETERS
@@ -406,13 +247,6 @@ public class Params {
 							reduceColor = true;
 						}
 
-					// EXTRACT CASE-SENSITIVITY FLAG
-						if (paramRS.getInt("case_sensitive_code")==0) {
-							caseSensitive = false;
-						} else {
-							caseSensitive = true;
-						}
-
 					// EXTRACT NOTES
 						tmpString = paramRS.getString("notes");
 						if (tmpString != "") {
@@ -440,144 +274,24 @@ public class Params {
 
 
 	/**
-	 * Returns a boolean flag indicating whether to process videos for the current run.
+	 * Returns the database ID for the current vision parameters.
 	 *
-	 * @return process videos flag for current session
+	 * @return database ID for vision parameters
 	 */
-	public boolean getProcessVideos() {
-		return processVideos;
-	} // end getProcessVideos()
+	public long getParameterID() {
+		return parameterID;
+	} // end getParameterID()
 
 
 
 	/**
-	 * Returns a boolean flag indicating whether to process entities for the current run.
+	 * Returns the current vision parameters description.
 	 *
-	 * @return process entities flag for current session
+	 * @return description for current vision parameters
 	 */
-	public boolean getProcessEntities() {
-		return processEntities;
-	} // end getProcessEntities()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether to process lexemes for the current run.
-	 *
-	 * @return process lexemes flag for current session
-	 */
-	public boolean getProcessLexemes() {
-		return processLexemes;
-	} // end getProcessLexemes()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether to display intermediate results
-	 * or write them to a log file (ebla_log.txt in the current path).
-	 *
-	 * @return log to file flag for current session
-	 */
-	public boolean getLogToFile() {
-		return logToFile;
-	} // end getLogToFile()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether to randomize the experiences
-	 * processed by EBLA.
-	 *
-	 * @return randomize experiences flag for current session
-	 */
-	public boolean getRandomizeExp() {
-		return randomizeExp;
-	} // end getRandomizeExp()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether to generate descriptions for
-	 * some of the experiences being processed by EBLA.
-	 *
-	 * @return generate descriptions flag for current session
-	 */
-	public boolean getGenerateDesc() {
-		return generateDesc;
-	} // end getGenerateDesc()
-
-
-
-	/**
-	 * Returns a number of experiences to process before attempting to generate
-	 * descriptions.
-	 *
-	 * @return experience threshold for description generation
-	 */
-	public int getDescThreshold() {
-		return descThreshold;
-	} // end getDescThreshold()
-
-
-
-	/**
-	 * Returns the starting minimum standard deviation to use for entity
-	 * comparisons.
-	 *
-	 * @return starting minimum standard deviation
-	 */
-	public int getMinStdDevStart() {
-		return minStdDevStart;
-	} // end getMinStdDevStart()
-
-
-
-	/**
-	 * Returns the stopping minimum standard deviation to use for entity
-	 * comparisons.
-	 *
-	 * @return stopping minimum standard deviation
-	 */
-	public int getMinStdDevStop() {
-		return minStdDevStop;
-	} // end getMinStdDevStop()
-
-
-
-	/**
-	 * Returns the step size for incrementing the  minimum standard deviation.
-	 *
-	 * @return minimum standard deviation step size
-	 */
-	public int getMinStdDevStep() {
-		return minStdDevStep;
-	} // end getMinStdDevStep()
-
-
-
-	/**
-	 * Returns the number of times to process the experiences for each
-	 * minimum standard deviation value.
-	 *
-	 * @return number of times to evaluate each minimum standard deviation
-	 */
-	public int getEBLALoopCount() {
-		return eblaLoopCount;
-	} // end getEBLALoopCount()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether to fix the standard
-	 * deviation used for comparing entities to the specified minimum.
-	 * Otherwise the calculated standard deviation for each attribute
-	 * can be used if it is greater than the specified minimum value.
-	 *
-	 * @return fixed standard deviation flag for entity comparisons
-	 */
-	public boolean getFixedStdDev() {
-		return fixedStdDev;
-	} // end getFixedStdDev()
+	public String getDescription() {
+		return description;
+	} // end getDescription()
 
 
 
@@ -589,42 +303,6 @@ public class Params {
 	public String getTmpPath() {
 		return tmpPath;
 	} // end getTmpPath()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether or not to display experience movies
-	 * when ripping/extracting frames.
-	 *
-	 * @return display flag for experience movies
-	 */
-	public boolean getDisplayMovie() {
-		return displayMovie;
-	} // end getDisplayMovie()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether or not to display detailed intermediate
-	 * results while processing experiences.
-	 *
-	 * @return display flag for detailed intermediate results
-	 */
-	public boolean getDisplayText() {
-		return displayText;
-	} // end getDisplayText()
-
-
-
-	/**
-	 * Returns a boolean flag indicating whether or not to save intermediate image files
-	 * generated during frame processing.
-	 *
-	 * @return save flag for intermediate image files
-	 */
-	public boolean getSaveImages() {
-		return saveImages;
-	} // end getSaveImages()
 
 
 
@@ -803,17 +481,6 @@ public class Params {
 
 
 	/**
-	 * Returns a boolean flag indicating whether or not lexemes are case-sensitive.
-	 *
-	 * @return case-sensitivity flag for current session
-	 */
-	public boolean getCaseSensitive() {
-		return caseSensitive;
-	} // end getCaseSensitive()
-
-
-
-	/**
 	 * Returns any notes in the database about the "current" experience.
 	 *
 	 * @return notes on the "current" experience
@@ -840,6 +507,9 @@ public class Params {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.14  2003/05/15 21:19:14  yoda2
+ * Removed null constructor.
+ *
  * Revision 1.13  2003/05/15 21:04:17  yoda2
  * Removed include_code as part of DB restructuring.
  *
