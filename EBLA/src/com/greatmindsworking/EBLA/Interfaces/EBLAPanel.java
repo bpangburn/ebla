@@ -58,121 +58,202 @@ import javax.swing.border.*;
  */
 public class EBLAPanel extends JPanel {
 
-	Dimensions dimensions = new Dimensions();
+	/**
+	 * custom widget dimensions for EBLA
+	 */
+	Dimensions EBLAdims = new Dimensions();
 
-	SoftBevelBorder  softBevelBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
+	/**
+	 * widget border for EBLA
+	 */
+	SoftBevelBorder softBevelBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
 
+
+
+	/**
+	 * Constructs a panel for the EBLA GUI.
+	 */
 	public EBLAPanel() {
 
-		// setPreferredSize(new Dimension(450,300));
+		setPreferredSize(EBLADims.getPanelAreaDimension());
 
-	}
+	} // end EBLAPanel constructor
 
-	public Component add(JComponent component) {
 
-		if (component instanceof JLabel){
-		// label
-			component.setBorder(softBevelBorder);
-			component.setPreferredSize(dimensions.getMediumLabelDimension());
-			component.setMaximumSize(dimensions.getMediumLabelDimension());
-		} else if (component instanceof JTextField) {
-		// single-line textbox
-			component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-			component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
-		} else if (component instanceof JButton){
-		// button
-			component.setBorder(softBevelBorder);
-			component.setPreferredSize(dimensions.getMediumButtonDimension());
-			component.setMaximumSize  (dimensions.getMediumButtonDimension());
-		} else if (component instanceof JComboBox) {
-		// combobox
-			component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-			component.setMaximumSize  (dimensions.getMediumTextFieldDimension());
-		} else if (component instanceof JTextArea) {
-		// multi-line textbox
-			component.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
-			((JTextArea)component).setLineWrap(true);
-			((JTextArea)component).setWrapStyleWord(true);
 
-			int columns = ((JTextArea)component).getColumns();
-			int rows = ((JTextArea)component).getRows();
+	/**
+	 * Method to add a component to the panel using the default dimensions.
+	 *
+	 * @param _component widget to add to panel
+	 *
+	 * @return new component added to panel
+	 */
+	public Component add(JComponent _component) {
 
-			JScrollPane scrollPane = new JScrollPane((JTextArea)component);
+		// SET WIDGET OPTIONS BASED ON TYPE
+			if (_component instanceof JLabel){
+			// LABEL
+				// border
+					_component.setBorder(softBevelBorder);
 
-			if ((columns > 1) && (rows > 1))
-				scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
-			else
-				scrollPane.setPreferredSize(new Dimension(3,15));
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
+					_component.setMaximumSize(EBLADims.getMediumLabelDimension());
+			} else if (_component instanceof JTextField) {
+			// SINGLE-LINE TEXTBOX
+				// border
+					_component.setBorder(softBevelBorder);
 
-			scrollPane.setMinimumSize(dimensions.getMediumTextAreaDimension());
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
+					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+			} else if (_component instanceof JButton){
+			// BUTTON
+				// border
+					_component.setBorder(softBevelBorder);
 
-			return super.add(scrollPane);
-		}
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumButtonDimension());
+					_component.setMaximumSize  (EBLADims.getMediumButtonDimension());
+			} else if (_component instanceof JComboBox) {
+			// COMBOBOX
+				// border
+					_component.setBorder(softBevelBorder);
 
-		if (! (component instanceof JTextArea)) {
-			return super.add((Component)component);
-		}
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
+					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+			} else if (_component instanceof JTextArea) {
+			// MULTI-LINE TEXTBOX
+				// border
+					_component.setBorder(softBevelBorder);
 
-		// This statement is not required but the return statement is required by the compiler
-		return component;
+				// line wrap options
+					((JTextArea)_component).setLineWrap(true);
+					((JTextArea)_component).setWrapStyleWord(true);
+
+				// scrollpane options
+					int columns = ((JTextArea)_component).getColumns();
+					int rows = ((JTextArea)_component).getRows();
+
+					JScrollPane scrollPane = new JScrollPane((JTextArea)_component);
+
+					if ((columns > 1) && (rows > 1)) {
+						scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
+					} else {
+						scrollPane.setPreferredSize(new Dimension(3,15));
+					}
+
+					scrollPane.setMinimumSize(EBLADims.getMediumTextAreaDimension());
+
+					return super.add(scrollPane);
+			} // end if
+
+		// ADD WIDGET AND RETURN FOR ALL EXCEPT MULTI-LINE TEXTBOX
+			if (! (_component instanceof JTextArea)) {
+				return super.add((Component)_component);
+			}
+
+		// THIS STATEMENT IS NOT REQUIRED BUT THE RETURN STATEMENT IS REQUIRED BY THE COMPILER
+			return _component;
 
 	} // end public Component add
 
 
-	public void add(JComponent component, java.lang.Object constraints, boolean setDefaults) {
 
-		if ( setDefaults == false) {
-			super.add((Component)component, constraints);
+	/**
+	 * Method to add a component to the panel with the specified (grid bag) constraints.
+	 *
+	 * Can use either the custom EBLA dimensions or the default JPanel dimensions.
+	 *
+	 * @param _component widget to add to panel
+	 * @param _constraints (grid bag) constraints for widget
+	 * @param _setDimensions boolean indicating whether or not to use custom EBLA dimensions
+	 *
+	 * @return new component added to panel
+	 */
+	public void add(JComponent _component, java.lang.Object _constraints, boolean _setDimensions) {
+
+		if (_setDimensions == false) {
+			super.add((Component)_component, _constraints);
 		} else {
-			add(component, constraints);
+			add(_component, _constraints);
 		}
 	} // end public void add
 
 
-	public void add(JComponent component, java.lang.Object constraints) {
 
-			if (component instanceof JLabel) {
-			// label
-				component.setBorder(softBevelBorder);
-				component.setPreferredSize(dimensions.getMediumLabelDimension());
-				component.setMaximumSize(dimensions.getMediumLabelDimension());
-				component.setMinimumSize(dimensions.getMediumLabelDimension());
-			} else if (component instanceof JTextField) {
-			// single-line textbox
-				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-				component.setMaximumSize(dimensions.getMediumTextFieldDimension());
-				component.setMinimumSize(dimensions.getMediumTextFieldDimension());
-			} else if (component instanceof JButton) {
-			// button
-				component.setBorder(softBevelBorder);
-				component.setPreferredSize(dimensions.getMediumButtonDimension());
-				component.setMaximumSize(dimensions.getMediumButtonDimension());
-				component.setMinimumSize(dimensions.getMediumButtonDimension());
-			} else if (component instanceof JComboBox) {
-			// combobox
-				component.setPreferredSize(dimensions.getMediumTextFieldDimension());
-				component.setMaximumSize(dimensions.getMediumTextFieldDimension());
-				component.setMinimumSize(dimensions.getMediumTextFieldDimension());
-			} else if (component instanceof JTextArea) {
-			// multi-line textbox
-				component.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+	/**
+	 * Method to add a component to the panel with the specified (grid bag) constraints.
+	 *
+	 * @param _component widget to add to panel
+	 * @param _constraints (grid bag) constraints for widget
+	 */
+	public void add(JComponent _component, java.lang.Object _constraints) {
 
-				((JTextArea)component).setLineWrap(true);
-				((JTextArea)component).setWrapStyleWord(true);
+		// SET WIDGET OPTIONS BASED ON TYPE
+			if (_component instanceof JLabel){
+			// LABEL
+				// border
+					_component.setBorder(softBevelBorder);
 
-				JScrollPane scrollPane = new JScrollPane((JTextArea)component);
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
+					_component.setMaximumSize(EBLADims.getMediumLabelDimension());
+			} else if (_component instanceof JTextField) {
+			// SINGLE-LINE TEXTBOX
+				// border
+					_component.setBorder(softBevelBorder);
 
-				scrollPane.setPreferredSize(dimensions.getMediumTextAreaDimension());
-				scrollPane.setMinimumSize(dimensions.getMediumTextAreaDimension());
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
+					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+			} else if (_component instanceof JButton){
+			// BUTTON
+				// border
+					_component.setBorder(softBevelBorder);
 
-				super.add(scrollPane, constraints);
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumButtonDimension());
+					_component.setMaximumSize  (EBLADims.getMediumButtonDimension());
+			} else if (_component instanceof JComboBox) {
+			// COMBOBOX
+				// border
+					_component.setBorder(softBevelBorder);
+
+				// preferred and maximum dimensions
+					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
+					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+			} else if (_component instanceof JTextArea) {
+			// MULTI-LINE TEXTBOX
+				// border
+					_component.setBorder(softBevelBorder);
+
+				// line wrap options
+					((JTextArea)_component).setLineWrap(true);
+					((JTextArea)_component).setWrapStyleWord(true);
+
+				// scrollpane options
+					int columns = ((JTextArea)_component).getColumns();
+					int rows = ((JTextArea)_component).getRows();
+
+					JScrollPane scrollPane = new JScrollPane((JTextArea)_component);
+
+					if ((columns > 1) && (rows > 1)) {
+						scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
+					} else {
+						scrollPane.setPreferredSize(new Dimension(3,15));
+					}
+
+					scrollPane.setMinimumSize(EBLADims.getMediumTextAreaDimension());
+
+					super.add(scrollPane);
+			} // end if
+
+		// ADD WIDGET AND RETURN FOR ALL EXCEPT MULTI-LINE TEXTBOX
+			if (! (_component instanceof JTextArea)) {
+				super.add((Component)_component);
 			}
-
-			if (! (component instanceof JTextArea)) {
-				super.add((Component)component, constraints);
-			}
-
-			//return component;
 
 	} // end public void add
 
@@ -182,6 +263,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/23 02:07:45  yoda2
+ * Code cleanup & documentation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
