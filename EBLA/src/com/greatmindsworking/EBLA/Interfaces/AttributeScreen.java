@@ -184,7 +184,7 @@ public class AttributeScreen extends JInternalFrame {
 			EBLAPanel panel  = new EBLAPanel();
 			panel.setLayout(new GridBagLayout());
 
-			panel.addRow(txtAttributeID, currentRow++, "Attribute List ID");
+			panel.addRow(txtAttributeID, currentRow++, "Attribute ID");
 			panel.addRow(txtDescription, currentRow++, "Description");
 			panel.addRow(txtIncludeCode, currentRow++, "Include Code");
 			panel.addRow(txtTypeCode, currentRow++, "Type Code");
@@ -209,6 +209,9 @@ public class AttributeScreen extends JInternalFrame {
 
 			constraints.gridy = 2;
 			contentPane.add(buttonPanel, constraints);
+
+		// DISABLE PRIMARY KEY
+			txtAttributeID.setEnabled(false);
 
 	} // end of AttributeScreen constructor
 
@@ -274,6 +277,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/31 15:46:59  yoda2
+ * Added listener to save current record if form loses focus.
+ *
  * Revision 1.5  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *

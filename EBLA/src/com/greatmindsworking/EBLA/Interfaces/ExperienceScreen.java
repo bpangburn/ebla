@@ -71,6 +71,7 @@ public class ExperienceScreen extends JInternalFrame {
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE EXPERIENCE SCREEN WIDGETS
+		JTextField txtExperienceID 		= new JTextField();
 		JTextField txtDescription 		= new JTextField();
 		JTextField txtVideoPath 		= new JTextField();
 		JTextField txtTmpPath 			= new JTextField();
@@ -160,6 +161,8 @@ public class ExperienceScreen extends JInternalFrame {
 
 
 		// SET DATABASE COLUMNS FOR EACH WIDGET
+			txtExperienceID.setDocument(new SSTextDocument(rowset,"experience_id"));
+
 			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
 			txtVideoPath.setDocument(new SSTextDocument(rowset,"video_path"));
@@ -181,6 +184,7 @@ public class ExperienceScreen extends JInternalFrame {
 			EBLAPanel panel  = new EBLAPanel();
 			panel.setLayout(new GridBagLayout());
 
+			panel.addRow(txtExperienceID, currentRow++, "Experience ID");
 			panel.addRow(txtDescription, currentRow++, "Description");
 			panel.addRow(txtVideoPath, currentRow++, "Video Path");
 			panel.addRow(txtTmpPath, currentRow++, "Tmp Path");
@@ -205,6 +209,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 			constraints.gridy = 2;
 			contentPane.add(buttonPanel, constraints);
+
+		// DISABLE PRIMARY KEY
+			txtExperienceID.setEnabled(false);
 
 	} // end of ExperienceScreen constructor
 
@@ -270,6 +277,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/31 15:46:59  yoda2
+ * Added listener to save current record if form loses focus.
+ *
  * Revision 1.6  2003/12/30 23:21:20  yoda2
  * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
  *

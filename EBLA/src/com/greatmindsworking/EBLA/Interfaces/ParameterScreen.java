@@ -377,6 +377,9 @@ public class ParameterScreen extends JInternalFrame {
 			constraints.gridy = 2;
 			contentPane.add(buttonPanel,constraints);
 
+		// DISABLE PRIMARY KEY
+			txtParameterID.setEnabled(false);
+
 	} // end of ParameterScreen constructor
 
 
@@ -441,6 +444,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2003/12/31 19:44:26  yoda2
+ * Added logic to set a default session description based on the parameter description and current date/time.
+ *
  * Revision 1.9  2003/12/31 15:46:37  yoda2
  * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
  * Added listener to save current record if form loses focus.
