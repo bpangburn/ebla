@@ -523,5 +523,10 @@ public class Session {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 13:38:48  yoda2
+ * Added for use with new database structure.
+ * Contains several data members originally in the Params class along with several new data members.
+ * This allows for execution & storage of multiple calculation sessions for a single set of parameter values.
+ *
  *
  */
