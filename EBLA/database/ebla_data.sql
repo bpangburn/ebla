@@ -61,6 +61,9 @@ CREATE TABLE parameter_data (
        MEAN-SHIFT ANALYSIS COLOR IMAGE SEGMENTATION */
     seg_speed_up_code       INT2        	DEFAULT 0
                                         	NOT NULL,
+    /* SPEEDUP FACTOR FOR HIGH SPEEDUP OPTION */
+    seg_speed_up_factor     FLOAT       	DEFAULT 0.5
+                                        	NOT NULL,
     /* FILE PREFIX FOR TEMP FRAMES EXTRACTED FROM EACH MOVIE/EXPERIENCE */
     frame_prefix            VARCHAR(50),
     /* FILE PREFIX FOR TEMP SEGMENTED IMAGES CREATED FOR EACH FRAME */
