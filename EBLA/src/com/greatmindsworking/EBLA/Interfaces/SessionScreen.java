@@ -257,7 +257,7 @@ public class SessionScreen extends JInternalFrame {
 		// ADD TABS TO TABBED PANE
 			tabbedPane.addTab("General", generalPanel);
 			tabbedPane.addTab("Entity Recognition", entitiesPanel);
-			tabbedPane.addTab("Lexeme Generation", lexemesPanel);
+			tabbedPane.addTab("Lexical Analysis and Generation", lexemesPanel);
 			tabbedPane.addTab("Misc.", miscPanel);
 
 
@@ -455,6 +455,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2004/01/09 18:56:35  yoda2
+ * Small eyewash changes to labels/tabs.
+ *
  * Revision 1.11  2004/01/09 14:22:31  yoda2
  * Modified screens to use a single database connection.
  *
