@@ -4,7 +4,7 @@ $Id$
 ReadMe file for Java port of the EDISON mean shift image segmentation code.
 ==============================================================================
 
-Copyright (c) 2002-2003, Brian E. Pangburn & Jonathan P. Ayo
+Copyright (c) 2002-2004, Brian E. Pangburn & Jonathan P. Ayo
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -80,23 +80,22 @@ perceived "events".  The segmentation algorithms form the backbone for EBLA's
 vision system.  For more information on EBLA, visit
 http://www.greatmindsworking.com
 
-This release of jEDISON has been brought into sync with the 4-14-2003 release
-of the C++ EDISON code.  The 0.5.0 release was based on teh 4-25-2002 
-C++ code.
+This release of jEDISON allow for segmentation based on either the 04-25-2002
+or the 04-14-2003 release of the C++ EDISON code.
 
 ==============================================================================
 
-This code has been tested using the Java 2 SDK 1.4.2 available from
-http://java.sun.com/j2se/1.4.2/index.html
+This code has been tested using the Java 2 SDK 1.4.2 and 1.5 beta available
+from http://java.sun.com/j2se/
 
 This release of jEDISON is being distributed as a single JAR file
-(jEDISON_0.6.0_alpha.jar) containing the source, binaries, and JavaDoc
+(jEDISON_0.7.0_alpha.jar) containing the source, binaries, and JavaDoc
 documentation.
 
 To extract jEDISON, place the JAR file where you would like it installed (e.g.
 "c:\temp\jEDISON\" or "/home/<username>/jEDISON/") and issue the command:
 
-jar -xf jEDISON_0.6.0_alpha.jar
+jar -xf jEDISON_0.7.0_alpha.jar
 
 Note that except for the demo, SegTest.java, jEDISON is part of the package:
 com.greatmindsworking.EDISON.segm so most of the files for jEDISON will
@@ -111,7 +110,6 @@ To recompile jEDISON:
   1. change to the directory containing this file, SegText.java,
      and my_image.png
   2. type "javac SegTest.java"
-  
   
 To regenerate the JavaDoc documentation:
   1. change to the installation directory containing this file, SegText.java,

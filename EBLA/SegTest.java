@@ -85,6 +85,8 @@ public class SegTest {
 			String inputFile = "./input.png"; 	// INPUT FILE NAME
 			String outputFile = "./segment.png";// OUTPUT FILE NAME
 
+			int edisonPortVersion = 1;			// INDICATES WHICH PORT OF EDISON TO USE (0=04-25-2003; 1=04-14-2003)
+			boolean displayText = true;			// INDICATES WHETHER OR NOT TO DISPLAY DETAILED MESSAGES
 			float colorRadius = (float)6.5; 	// COLOR RADIUS FOR MEAN SHIFT ANALYSIS IMAGE SEGMENTATION
 			int spatialRadius = 7; 				// SPATIAL RADIUS FOR MEAN SHIFT ANALYSIS IMAGE SEGMENTATION
 			int minRegion = 20; 				// MINIMUM NUMBER OF PIXEL THAT CONSTITUTE A REGION FOR
@@ -98,24 +100,30 @@ public class SegTest {
 		try {
 
 			// CHECK TO SEE SIX PARAMETERS WERE PASSED FROM THE COMMAND LINE
-				if (args.length >= 5) {
+				if (args.length >= 7) {
 					// EXTRACT SOURCE IMAGE
 						inputFile = args[0];
 
+					// EXTRACT VERSION
+						edisonPortVersion = Integer.parseInt(args[1]);
+
+					// EXTRACT DISPLAY FLAG
+						displayText = Boolean.parseBoolean(args[2]);
+
 					// EXTRACT COLOR RADIUS
-						colorRadius = Float.parseFloat(args[1]);
+						colorRadius = Float.parseFloat(args[3]);
 
 					// EXTRACT SPATIAL RADIUS
-						spatialRadius = Integer.parseInt(args[2]);
+						spatialRadius = Integer.parseInt(args[4]);
 
 					// EXTRACT MINIMUM REGION
-						minRegion = Integer.parseInt(args[3]);
+						minRegion = Integer.parseInt(args[5]);
 
 					// EXTRACT SPEEDUP LEVEL
-						speedUp = Integer.parseInt(args[4]);
+						speedUp = Integer.parseInt(args[6]);
 						if (speedUp == 2) {
 							if (args.length==6) {
-								highSpeedUpFactor = Float.parseFloat(args[5]);
+								highSpeedUpFactor = Float.parseFloat(args[7]);
 							} else {
 								warnUser=true;
 							}
@@ -131,12 +139,13 @@ public class SegTest {
 			// TELL USER HOW TO USE TEST CLASS (IF NECESSARY)
 				if (warnUser) {
 				// DISPLAY MESSAGE
-					System.out.println("Usage: java SegTest <source image> <color radius> <spatial radius>"
+					System.out.println("Usage: java SegTest <source image> <version: 0=04-25-2002, 1=04-14-2003>"
+					    + " <display: true/false> <color radius> <spatial radius>"
 						+ " <min region> <speedup: 0=none, 1=medium, 2=high> <for speedup of 2, speed factor: 0.0=better quality, 1.0=better speed>");
 					System.out.println("");
-					System.out.println("e.g.  java SegTest my_image.png 6.5 7 20 0");
-					System.out.println(" -or- java SegTest my_image.png 6.5 7 20 1");
-					System.out.println(" -or- java SegTest my_image.png 6.5 7 20 2 0.5");
+					System.out.println("e.g.  java SegTest my_image.png 0 true 6.5 7 20 0");
+					System.out.println(" -or- java SegTest my_image.png 1 false 6.5 7 20 1");
+					System.out.println(" -or- java SegTest my_image.png 1 true 6.5 7 20 2 0.5");
 					System.out.println("");
 					System.out.println("For more information on mean shift image segmentaton, consult:");
 					System.out.println(" [1] D. Comanicu, P. Meer: 'Mean shift: A robust approach toward feature");
@@ -191,14 +200,15 @@ public class SegTest {
 
 			// SEGMENT IMAGE
 				if (speedUp == 0) {
-					mySegm.Segment(spatialRadius, colorRadius, minRegion, SpeedUpLevel.NO_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, displayText, spatialRadius,
+						colorRadius, minRegion, SpeedUpLevel.NO_SPEEDUP);
 				} else if (speedUp == 1) {
-					mySegm.Segment(spatialRadius, colorRadius, minRegion, SpeedUpLevel.MED_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, displayText, spatialRadius,
+						colorRadius, minRegion, SpeedUpLevel.MED_SPEEDUP);
 				} else {
-					mySegm.Segment(spatialRadius, colorRadius, minRegion, SpeedUpLevel.HIGH_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, displayText, spatialRadius,
+						colorRadius, minRegion, SpeedUpLevel.HIGH_SPEEDUP);
 				}
-
-
 
 			// GET RESULTING SEGMENTED IMAGE (RGB) PIXELS
 				int segpixels[] = new int[pixelCount];
@@ -227,6 +237,9 @@ public class SegTest {
 
 /*
  * $Log$
+ * Revision 1.5  2003/11/24 16:46:04  yoda2
+ * Updated usage instructions.
+ *
  * Revision 1.4  2003/11/24 16:19:29  yoda2
  * Updated copyright to 2002-2003.
  *
