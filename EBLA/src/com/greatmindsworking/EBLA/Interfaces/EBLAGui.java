@@ -110,6 +110,11 @@ public class EBLAGui extends JFrame {
 	 */
 	public static final String dbFileName = "dbSettings";
 
+	/**
+	 * indicates whether or not the database setting file is available
+	 */
+	boolean dbFileMissing = false;
+
 
 
 	/**
@@ -141,11 +146,16 @@ public class EBLAGui extends JFrame {
 		// TRY LOGGING IN
 			if (!login()) {
 			// IF LOGIN FAILS SHOW A DIALOG WARNING USER AND THEN SHOW THE DATABASE SETTINGS SCREEN
-				int option = JOptionPane.showInternalConfirmDialog
-					(desktop,"Login failed. \n Try changing the database settings.",
-					"Login failed",JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION) {
+				if (dbFileMissing) {
 					showDBSettings();
+					dbFileMissing = false;
+				} else {
+				int option = JOptionPane.showInternalConfirmDialog
+						(desktop,"Login failed. \n Try changing the database settings.",
+						"Login failed",JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						showDBSettings();
+					}
 				}
 			}
 
@@ -169,6 +179,9 @@ public class EBLAGui extends JFrame {
 
 		// DETERMINE IF DATABASE CONFIG FILE IS PRESENT
 			if (!dbFile.canRead()) {
+				// INDICATE THAT DB SETTING FILE WAS NOT FOUND
+					dbFileMissing = true;
+
 				// TELL USER THAT DB INFO NOT PRESENT
 					int option = JOptionPane.showInternalConfirmDialog
 						(desktop,"No database settings found.\nPlease provide the database connection information.",
@@ -632,6 +645,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.11  2004/01/13 17:12:13  yoda2
+ * Changed database behavior to autocommit changes.
+ *
  * Revision 1.10  2004/01/09 14:22:31  yoda2
  * Modified screens to use a single database connection.
  *
