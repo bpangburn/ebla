@@ -41,7 +41,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.nqadmin.Utils.DBConnector;
 import com.greatmindsworking.EBLA.EBLA;
@@ -65,31 +64,55 @@ import java.awt.geom.AffineTransform;
  */
 public class StatusScreen extends JInternalFrame {
 
-	ImageComponent ic1 = null;
-	ImageComponent ic2 = null;
-	ImageComponent ic3 = null;
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR STATUS SCREEN
+		Container desktop = null;
 
-	DBConnector dbc = null;
-	SessionData sd = null;
-	EBLA ebla = null;
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENT
+		DBConnector dbc = null;
 
-	boolean eblaCanceled = false;
+	// INITIALIZE EBLA CALCULATION CLASSES
+		SessionData sd = null;
+		EBLA ebla = null;
 
-	Container desktop = null;
-    JLabel statusField = new JLabel("Initializing EBLA...", JLabel.CENTER);
-    JProgressBar progressBar = new JProgressBar();
-    JButton interruptButton;
-    Border spaceBelow = BorderFactory.createEmptyBorder(0, 0, 5, 0);
+	// INITIALIZE FLAG TO INDICATE IF USER HAS CANCELED EBLA CALCULATIONS
+		boolean eblaCanceled = false;
+
+	// INITIALIZE MISC WIDGETS USED FOR DISPLAYING PROGRESS/INTERMEDIATE RESULTS
+		// INITIALIZE IMAGE COMPONENTS TO DISPLAY INTERMEDIATE RESULTS
+			ImageComponent ic1 = null;
+			ImageComponent ic2 = null;
+			ImageComponent ic3 = null;
+
+		// LABELS, PROGRESS BARS, BUTTONS, ETC.
+			JLabel statusText = new JLabel("Initializing EBLA...", JLabel.CENTER);
+			JProgressBar progressBar = new JProgressBar();
+			JButton cancelButton = new JButton("Cancel");
+			Border spaceBelow = BorderFactory.createEmptyBorder(0, 0, 5, 0);
 
 
+	/**
+	 * StatusScreen constructor.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the SessionData object need to initialize the EBLA calc engine.
+	 * @param the database connection to the ebla_data database
+	 */
+	public StatusScreen(Container _desktop, SessionData _sd, DBConnector _dbc) {
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
+			super("EBLA - Calculation Status Screen",false,true,true,true);
 
-	public StatusScreen(Container _desktop, SessionData _sd, DBConnector _dbc){
-		super("EBLA Calculation Status", false,true,true,true);
-		setSize(550,400);
+		// SET SIZE
+			setSize(640,480);
 
-		desktop = _desktop;
-		sd = _sd;
-		dbc = _dbc;
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
+
+		// SET SESSION OBJECT
+			sd = _sd;
+
+		// SET DATABASE CONNECTION
+			dbc = _dbc;
+
 
         //setBorder(BorderFactory.createTitledBorder(
         //              BorderFactory.createLineBorder(Color.black),
@@ -97,64 +120,63 @@ public class StatusScreen extends JInternalFrame {
 
         //progressBar.setMaximum(NUMLOOPS);
 
-        interruptButton = new JButton("Cancel");
-        interruptButton.addActionListener(interruptListener);
-        interruptButton.setEnabled(true);
+        // SET ACTION LISTENER FOR CANCEL BUTTON
+        	cancelButton.addActionListener(interruptListener);
+        	//cancelButton.setEnabled(true);
 
-        JComponent buttonBox = new JPanel();
-        buttonBox.add(interruptButton);
-
-        JComponent imageBox = new JPanel();
-        imageBox.setLayout(new GridBagLayout());
+		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
+			GridBagConstraints constraints = new GridBagConstraints();
 
 
-		GridBagConstraints constraints = new GridBagConstraints();
+		// CREATE/LAYOUT PANEL FOR INTERMEDIATE RESULT IMAGES
+			EBLAPanel imagePanel  = new EBLAPanel();
+			imagePanel.setLayout(new GridBagLayout());
+
+			BufferedImage tmpImage = new BufferedImage(160, 140, BufferedImage.TYPE_INT_RGB);
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			ic1 = new ImageComponent(tmpImage);
+			imagePanel.add(ic1, constraints);
+
+			constraints.gridx = 1;
+			ic2 = new ImageComponent(tmpImage);
+			imagePanel.add(ic2, constraints);
+
+			constraints.gridx = 2;
+			ic3 = new ImageComponent(tmpImage);
+			imagePanel.add(ic3, constraints);
+
+		// ADD IMAGE PANEL, CANCEL BUTTON, PROGRESS BAR, & STATUS LABEL TO STATUS SCREEN
+			Container contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			contentPane.add(statusText, constraints);
+
+			constraints.gridy = 1;
+			contentPane.add(progressBar, constraints);
+
+			constraints.gridy = 2;
+			contentPane.add(imagePanel, constraints);
+
+			constraints.gridy = 3;
+			contentPane.add(cancelButton, constraints);
+
+			//buttonBox.setBorder(spaceBelow);
+			//Border pbBorder = progressBar.getBorder();
+			//progressBar.setBorder(BorderFactory.createCompoundBorder(
+			//                                spaceBelow,
+			//                                pbBorder));
+
+	} // end of StatusScreen constructor
 
 
-        //BufferedImage tmpImage = new BufferedImage(160, 140, BufferedImage.TYPE_INT_RGB);
-        BufferedImage tmpImage = new BufferedImage(160, 140, BufferedImage.TYPE_INT_RGB);
 
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		ic1 = new ImageComponent(tmpImage);
-		imageBox.add(ic1, constraints);
-
-		constraints.gridx = 1;
-		ic2 = new ImageComponent(tmpImage);
-		imageBox.add(ic2, constraints);
-
-		constraints.gridx = 2;
-		ic3 = new ImageComponent(tmpImage);
-		imageBox.add(ic3, constraints);
-
-
-		Container contentPane = getContentPane();
-
-
-
-		contentPane.setLayout(new GridBagLayout());
-		constraints.gridx = 0;
-		constraints.gridy = 3;
-		contentPane.add(imageBox,constraints);
-		constraints.gridy = 2;
-		contentPane.add(buttonBox,constraints);
-		constraints.gridy = 1;
-		contentPane.add(progressBar,constraints);
-		constraints.gridy = 0;
-		contentPane.add(statusField,constraints);
-
-        buttonBox.setBorder(spaceBelow);
-        Border pbBorder = progressBar.getBorder();
-        progressBar.setBorder(BorderFactory.createCompoundBorder(
-                                        spaceBelow,
-                                        pbBorder));
-
-
-
-    }
-
-
-	// from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+	/**
+	 * from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+	 */
 	public static BufferedImage scaleToSize(int nMaxWidth, int nMaxHeight, BufferedImage imgSrc) {
 		int nHeight = imgSrc.getHeight();
 		int nWidth = imgSrc.getWidth();
@@ -162,23 +184,27 @@ public class StatusScreen extends JInternalFrame {
 		double scaleY = (double)nMaxHeight / (double)nHeight;
 		double fScale = Math.min(scaleX, scaleY);
 		return scale(fScale, imgSrc);
-	}
+	} // end scaleToSize()
 
-	// from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+
+
+	/**
+	 * from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+	 */
 	public static BufferedImage scale(double scale, BufferedImage srcImg) {
 		if (scale == 1 ) {
 			return srcImg;
 		}
 		AffineTransformOp op = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale), null);
 		return op.filter(srcImg, null);
-	}
+	} // end scale()
+
 
 
     /**
-     * When the worker needs to update the GUI we do so by queuing
-     * a Runnable for the event dispatching thread with
-     * SwingUtilities.invokeLater().  In this case we're just
-     * changing the progress bars value.
+     * When the worker needs to update the GUI we do so by queuing a Runnable
+     * for the event dispatching thread with  SwingUtilities.invokeLater().
+     * In this case we're just changing the progress bars value.
      */
     public void setBarMax(final int i) {
         Runnable doSetBarMax = new Runnable() {
@@ -187,7 +213,7 @@ public class StatusScreen extends JInternalFrame {
             }
         };
         SwingUtilities.invokeLater(doSetBarMax);
-    }
+    } // end setBarMax()
 
 
     /**
@@ -203,7 +229,9 @@ public class StatusScreen extends JInternalFrame {
             }
         };
         SwingUtilities.invokeLater(doSetProgressBarValue);
-    }
+    } // end updateStatus()
+
+
 
     /**
      * When the worker needs to update the GUI we do so by queuing
@@ -214,15 +242,16 @@ public class StatusScreen extends JInternalFrame {
     public void updateStatus(final String s) {
         Runnable doSetStatusField = new Runnable() {
             public void run() {
-                statusField.setText(s);
+                statusText.setText(s);
             }
         };
         SwingUtilities.invokeLater(doSetStatusField);
-    }
+    } // end updateStatus()
+
+
 
     /**
      * Add a component to the status screen to display intermediate images from EBLA
-     *
      */
     public void updateImage(final BufferedImage bi, final int xCoord) {
         Runnable doUpdateImage = new Runnable() {
@@ -241,7 +270,8 @@ public class StatusScreen extends JInternalFrame {
 			}
         };
         SwingUtilities.invokeLater(doUpdateImage);
-    }
+    } // end updateImage()
+
 
 
     /**
@@ -260,7 +290,7 @@ public class StatusScreen extends JInternalFrame {
 				ebla.interrupt();
 
 			// change button text
-				interruptButton.setText("Close");
+				cancelButton.setText("Close");
 
 			// reset cancled flag
 				eblaCanceled = true;
@@ -272,19 +302,18 @@ public class StatusScreen extends JInternalFrame {
 
 
 	/**
-	 *	adds the census screen to the specified container at the specified position.
-	 *@param container the container in which the screen has to showup.
-	 *@param positionX the x co-ordinate of the position where the screen has to showup.
-	 *@param positionY the y co-ordinate of the position where the screen has to showup.
+	 * Adds the status screen to the specified container at the specified position.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the x co-ordinate of the position where the screen has to showup.
+	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
 	public void showUp(Container container,double positionX, double positionY){
 
-		int optionChoosen = -1;
 		// SET THE POSITION OF THE SCREEN.
-		this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)positionX, (int)positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-
 			Component[] components = container.getComponents();
 			int i=0;
 			for(i=0; i< components.length;i++){
@@ -293,43 +322,38 @@ public class StatusScreen extends JInternalFrame {
 					break;
 				}
 			}
-			// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
+
+		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
 			if(i == components.length) {
 				container.add(this);
 			}
-			this.setVisible(true);
-			// MOVE THE SCREEN TO THE FRONT
-			this.moveToFront();
 
-			// REQUEST FOCUS FOR THE SCREEN
+		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
+			this.setVisible(true);
+			this.moveToFront();
 			this.requestFocus();
-			// MAKE THE SCREEN SELECTED SCREEN
+
+		// MAKE THE SCREEN SELECTED SCREEN
 			try{
 				this.setClosed(false);
 				this.setSelected(true);
-			}catch(PropertyVetoException pve){
+			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
 			}
 
+	} // end showUp()
 
 
-			try {
-				ebla = new EBLA(sd, dbc, this);
-				ebla.start();
-	//			ebla.finalize();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-
-	}
 
 	/**
-	 * shows the census screen at the default location on the specified container.
-	 *@param container the container in which the screen has to showup.
+	 * Shows the experience screen at the default location on the specified container.
+	 *
+	 * @param the container in which the screen has to showup.
 	 */
 	public void showUp(Container container) {
 		showUp(container, 30,30);
-	}
+	} // end showUp()
+
 
 } // end of StatusScreen class
 
@@ -337,6 +361,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/26 20:48:45  yoda2
+ * Reflected renaming of Session.java to SessionData.java and removed unnecessary import statements.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *

@@ -40,8 +40,6 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -63,157 +61,177 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class AttributeScreen extends JInternalFrame {
 
-	JLabel lblDescription = new JLabel("Description");
-	JLabel lblIncludeCode = new JLabel("Include Code");
-	JLabel lblTypeCode = new JLabel("Type Code");
-	JLabel lblClassName = new JLabel("Class Name");
-	JLabel lblNotes = new JLabel("Notes");
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR ATTRIBUTE SCREEN
+		Container desktop = null;
 
-	JTextField txtDescription = new JTextField();
-	JTextField txtIncludeCode = new JTextField();
-	JTextField txtTypeCode = new JTextField();
-	JTextField txtClassName = new JTextField();
-	JTextField txtNotes = new JTextField();
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR ATTRIBUTE SCREEN
+		DBConnector connector = null;
+		JdbcRowSetImpl rowset = null;
 
-	Container desktop = null;
-	DBConnector connector       = null;
-	SSDataNavigator dataNavigator = null;
-	JdbcRowSetImpl rowset           = null;
+	// INITIALIZE ATTRIBUTE SCREEN WIDGETS
+		JTextField txtAttributeID 	= new JTextField();
+		JTextField txtDescription 	= new JTextField();
+		JTextField txtIncludeCode 	= new JTextField();
+		JTextField txtTypeCode 		= new JTextField();
+		JTextField txtClassName 	= new JTextField();
+		JTextArea txtNotes 			= new JTextArea(20,10);
 
-	public AttributeScreen(Container _desktop){
+	// INITIALIZE DATA NAVIGATOR
+		SSDataNavigator dataNavigator = null;
 
-		super("Attributes Form",false,true,true,true);
-		setSize(550,400);
-
-		desktop = _desktop;
-
-		try{
-			connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-			String url = bufRead.readLine();
-			if (url == null) {
-				url = "";
-			}
-
-			String username = bufRead.readLine();
-			if (username == null) {
-				username = "";
-			}
-
-			String password = bufRead.readLine();
-			if (password == null) {
-				password = "";
-			}
-
-			rowset = new JdbcRowSetImpl(url, username, password);
-
-			rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
-			dataNavigator = new SSDataNavigator(rowset);
-			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
-		}catch(SQLException se){
-			se.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
-		txtIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
-		txtTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
-		txtClassName.setDocument(new SSTextDocument(rowset,"class_name"));
-		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
-
-		EBLAPanel panel = new EBLAPanel();
-		panel.setLayout(new GridBagLayout());
-
-		GridBagConstraints constraints = new GridBagConstraints();
-
-
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		panel.add(lblDescription,constraints);
-		constraints.gridy = 1;
-		panel.add(lblIncludeCode,constraints);
-		constraints.gridy = 2;
-		panel.add(lblTypeCode,constraints);
-		constraints.gridy = 3;
-		panel.add(lblClassName,constraints);
-		constraints.gridy = 4;
-		panel.add(lblNotes,constraints);
-
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		panel.add(txtDescription,constraints);
-		constraints.gridy = 1;
-		panel.add(txtIncludeCode,constraints);
-		constraints.gridy = 2;
-		panel.add(txtTypeCode,constraints);
-		constraints.gridy = 3;
-		panel.add(txtClassName,constraints);
-		constraints.gridy = 4;
-		panel.add(txtNotes,constraints);
-
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new GridBagLayout());
-
-		constraints.gridx=0;
-		constraints.gridy=0;
-		contentPane.add(panel,constraints);
-		constraints.gridy=1;
-		contentPane.add(dataNavigator,constraints);
-
-	}
 
 	/**
-	 *	adds the census screen to the specified container at the specified position.
-	 *@param container the container in which the screen has to showup.
-	 *@param positionX the x co-ordinate of the position where the screen has to showup.
-	 *@param positionY the y co-ordinate of the position where the screen has to showup.
+	 * AttributeScreen constructor.
+	 *
+	 * @param the container in which the screen has to showup.
+	 */
+	public AttributeScreen(Container _desktop) {
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
+			super("EBLA - Attribute Screen",false,true,true,true);
+
+		// SET SIZE
+			setSize(640,480);
+
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
+
+		// DATABASE CONFIGURATION
+			try {
+
+			// INITIALIZE DATABASE CONNECTION
+				connector = new DBConnector(EBLAGui.dbFileName,true);
+
+			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
+				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
+
+				String url = bufRead.readLine();
+				if (url == null) {
+					url = "";
+				}
+
+				String username = bufRead.readLine();
+				if (username == null) {
+					username = "";
+				}
+
+				String password = bufRead.readLine();
+				if (password == null) {
+					password = "";
+				}
+
+			// INITIALIZE ROWSET FOR ATTRIBUTE LIST DATA
+				rowset = new JdbcRowSetImpl(url, username, password);
+
+				rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
+				dataNavigator = new SSDataNavigator(rowset);
+				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+
+			} catch(SQLException se) {
+				se.printStackTrace();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
+
+		// SET DATABASE COLUMNS FOR EACH WIDGET
+			txtAttributeID.setDocument(new SSTextDocument(rowset,"attribute_list_id"));
+
+			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+
+			txtIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
+
+			txtTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
+
+			txtClassName.setDocument(new SSTextDocument(rowset,"class_name"));
+
+			txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+
+
+		// INITIALIZE VARIABLES NEEDED FOR LAYOUT
+			int currentRow = 0;
+			GridBagConstraints constraints = new GridBagConstraints();
+
+
+		// CREATE/LAYOUT PANEL FOR WIDGETS
+			EBLAPanel panel  = new EBLAPanel();
+			panel.setLayout(new GridBagLayout());
+
+			panel.addRow(txtAttributeID, currentRow++, "Attribute List ID");
+			panel.addRow(txtDescription, currentRow++, "Description");
+			panel.addRow(txtIncludeCode, currentRow++, "Include Code");
+			panel.addRow(txtTypeCode, currentRow++, "Type Code");
+			panel.addRow(txtClassName, currentRow++, "Class Name");
+			panel.addRow(txtNotes, currentRow++, "Notes");
+
+
+		// ADD WIDGET PANEL AND DATA NAVIGATOR TO EXPERIENCE SCREEN
+			Container contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			contentPane.add(panel,constraints);
+
+			constraints.gridy = 1;
+			contentPane.add(dataNavigator,constraints);
+
+	} // end of AttributeScreen constructor
+
+
+
+	/**
+	 * Adds the attribute screen to the specified container at the specified position.
+	 *
+	 * @param the container in which the screen has to showup.
+	 * @param the x co-ordinate of the position where the screen has to showup.
+	 * @param the y co-ordinate of the position where the screen has to showup.
 	 */
 	public void showUp(Container container,double positionX, double positionY){
 
-		int optionChoosen = -1;
 		// SET THE POSITION OF THE SCREEN.
-		this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)positionX, (int)positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-
 			Component[] components = container.getComponents();
 			int i=0;
 			for(i=0; i< components.length;i++){
-				if(components[i] instanceof ExperienceScreen ) {
+				if(components[i] instanceof AttributeScreen ) {
 					System.out.println("Already on desktop");
 					break;
 				}
 			}
-			// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
+
+		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
 			if(i == components.length) {
 				container.add(this);
 			}
-			this.setVisible(true);
-			// MOVE THE SCREEN TO THE FRONT
-			this.moveToFront();
 
-			// REQUEST FOCUS FOR THE SCREEN
+		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
+			this.setVisible(true);
+			this.moveToFront();
 			this.requestFocus();
-			// MAKE THE SCREEN SELECTED SCREEN
+
+		// MAKE THE SCREEN SELECTED SCREEN
 			try{
 				this.setClosed(false);
 				this.setSelected(true);
-			}catch(PropertyVetoException pve){
+			} catch(PropertyVetoException pve) {
 				pve.printStackTrace();
 			}
 
-	}
+	} // end showUp()
+
+
 
 	/**
-	 * shows the census screen at the default location on the specified container.
-	 *@param container the container in which the screen has to showup.
+	 * Shows the experience screen at the default location on the specified container.
+	 *
+	 * @param the container in which the screen has to showup.
 	 */
 	public void showUp(Container container) {
 		showUp(container, 30,30);
-	}
+	} // end showUp()
+
 
 } // end of AttributeScreen class
 
@@ -221,6 +239,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
