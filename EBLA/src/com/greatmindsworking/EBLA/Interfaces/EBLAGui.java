@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2003, Brian E. Pangburn & Prasanth R. Pasala
+ * Copyright (c) 2003-2004, Brian E. Pangburn & Prasanth R. Pasala
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 * EBLA version string
 	 */
-	private final static String eblaVersion = "version 0.6.0-alpha";
+	private final static String eblaVersion = "version 0.7.0-alpha";
 
 	/**
 	 * debugging option
@@ -645,6 +645,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2004/01/13 18:33:22  yoda2
+ * Fixed dialog behavior when database settings are missing.
+ *
  * Revision 1.11  2004/01/13 17:12:13  yoda2
  * Changed database behavior to autocommit changes.
  *
