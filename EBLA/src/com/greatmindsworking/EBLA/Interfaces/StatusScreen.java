@@ -78,15 +78,31 @@ public class StatusScreen extends JInternalFrame {
 	// INITIALIZE FLAG TO INDICATE IF USER HAS CANCELED EBLA CALCULATIONS
 		boolean eblaCanceled = false;
 
+	// TEMP IMAGE TO BE USED AS PLACE HOLDER
+		BufferedImage tmpImage = null;
+
 	// INITIALIZE MISC WIDGETS USED FOR DISPLAYING PROGRESS/INTERMEDIATE RESULTS
 		// INITIALIZE IMAGE COMPONENTS TO DISPLAY INTERMEDIATE RESULTS
+			EBLAPanel imagePanel  = new EBLAPanel();
 			ImageComponent ic1 = null;
 			ImageComponent ic2 = null;
 			ImageComponent ic3 = null;
 
 		// LABELS, PROGRESS BARS, BUTTONS, ETC.
-			JLabel statusText = new JLabel("Initializing EBLA...", JLabel.CENTER);
-			JProgressBar progressBar = new JProgressBar();
+			JLabel statusText1 = new JLabel("Initializing EBLA...");
+			JLabel statusText2 = new JLabel("");
+			JLabel statusText3 = new JLabel("");
+
+			JLabel imageLabel1 = new JLabel("Original Image");
+			JLabel imageLabel2 = new JLabel("Segmented Image");
+			JLabel imageLabel3 = new JLabel("Polygon Image");
+
+
+			JProgressBar statusBar1 = new JProgressBar();
+			JProgressBar statusBar2 = new JProgressBar();
+			JProgressBar statusBar3 = new JProgressBar();
+
+
 			JButton cancelButton = new JButton("Cancel");
 
 
@@ -114,27 +130,25 @@ public class StatusScreen extends JInternalFrame {
 			dbc = _dbc;
 
 
-        //setBorder(BorderFactory.createTitledBorder(
-        //              BorderFactory.createLineBorder(Color.black),
-        //              "EBLA Calculation Status"));
-
-        //progressBar.setMaximum(NUMLOOPS);
-
         // SET ACTION LISTENER FOR CANCEL BUTTON
         	cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					if (eblaCanceled) {
-					// close window
-						dispose();
+					// CLOSE WINDOW
+						try {
+							setClosed(true);
+						} catch(PropertyVetoException pve) {
+							pve.printStackTrace();
+						}
 
 					} else {
-					// interrupt EBLA
+					// INTERRUPT EBLA
 						ebla.interrupt();
 
-					// change button text
+					// CHANGE BUTTON TEXT
 						cancelButton.setText("Close");
 
-					// reset cancled flag
+					// RESET CANCLED FLAG
 						eblaCanceled = true;
 					}
 
@@ -170,51 +184,94 @@ public class StatusScreen extends JInternalFrame {
 
 
 		// CREATE/LAYOUT PANEL FOR INTERMEDIATE RESULT IMAGES
-			EBLAPanel imagePanel  = new EBLAPanel();
 			imagePanel.setLayout(new GridBagLayout());
 
-			BufferedImage tmpImage = new BufferedImage(160, 140, BufferedImage.TYPE_INT_RGB);
+			tmpImage = new BufferedImage(160, 116, BufferedImage.TYPE_INT_RGB);
+
+			Border blackBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
 
 			constraints.gridx = 0;
 			constraints.gridy = 0;
+			EBLAPanel tmpPanel1 = new EBLAPanel();
 			ic1 = new ImageComponent(tmpImage);
-			imagePanel.add(ic1, constraints);
-
-			constraints.gridx = 1;
-			ic2 = new ImageComponent(tmpImage);
-			imagePanel.add(ic2, constraints);
-
-			constraints.gridx = 2;
-			ic3 = new ImageComponent(tmpImage);
-			imagePanel.add(ic3, constraints);
-
-		// ADD IMAGE PANEL, CANCEL BUTTON, PROGRESS BAR, & STATUS LABEL TO STATUS SCREEN
-			Container contentPane = getContentPane();
-			contentPane.setLayout(new GridBagLayout());
-
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			contentPane.add(statusText, constraints);
+			tmpPanel1.add(ic1);
+			tmpPanel1.setBorder(blackBorder);
+			imagePanel.add(tmpPanel1, constraints);
 
 			constraints.gridy = 1;
-			contentPane.add(progressBar, constraints);
+			imagePanel.add(imageLabel1, constraints, false);
 
-			constraints.gridy = 2;
-			contentPane.add(imagePanel, constraints);
+			constraints.gridx = 1;
+			constraints.gridy = 0;
+			EBLAPanel tmpPanel2 = new EBLAPanel();
+			ic2 = new ImageComponent(tmpImage);
+			tmpPanel2.add(ic2);
+			tmpPanel2.setBorder(blackBorder);
+			imagePanel.add(tmpPanel2, constraints);
 
-			EBLAPanel buttonPanel = new EBLAPanel();
-			buttonPanel.setBorder(emptySpace);
-			buttonPanel.add(cancelButton);
+			constraints.gridy = 1;
+			imagePanel.add(imageLabel2, constraints, false);
 
-			constraints.gridy = 3;
-			contentPane.add(buttonPanel, constraints);
+			constraints.gridx = 2;
+			constraints.gridy = 0;
+			EBLAPanel tmpPanel3 = new EBLAPanel();
+			ic3 = new ImageComponent(tmpImage);
+			tmpPanel3.add(ic3);
+			tmpPanel3.setBorder(blackBorder);
+			imagePanel.add(tmpPanel3, constraints);
 
+			constraints.gridy = 1;
+			imagePanel.add(imageLabel3, constraints, false);
 
-			//buttonBox.setBorder(spaceBelow);
-			//Border pbBorder = progressBar.getBorder();
-			//progressBar.setBorder(BorderFactory.createCompoundBorder(
-			//                                spaceBelow,
-			//                                pbBorder));
+		// ADD IMAGE PANEL, CANCEL BUTTON, PROGRESS BAR, & STATUS LABEL TO STATUS SCREEN
+			// SET CONTAINER AND LAYOUT
+				Container contentPane = getContentPane();
+				contentPane.setLayout(new GridBagLayout());
+
+			// ROW 1
+				constraints.anchor = GridBagConstraints.WEST;
+				constraints.gridx = 0;
+				constraints.gridy = 0;
+				contentPane.add(statusText1, constraints);
+
+				constraints.anchor = GridBagConstraints.EAST;
+				constraints.gridx = 1;
+				contentPane.add(statusBar1, constraints);
+
+			// ROW 2
+				constraints.anchor = GridBagConstraints.WEST;
+				constraints.gridx = 0;
+				constraints.gridy = 1;
+				contentPane.add(statusText2, constraints);
+
+				constraints.anchor = GridBagConstraints.EAST;
+				constraints.gridx = 1;
+				contentPane.add(statusBar2, constraints);
+
+			// ROW 3
+				constraints.anchor = GridBagConstraints.WEST;
+				constraints.gridx = 0;
+				constraints.gridy = 2;
+				contentPane.add(statusText3, constraints);
+
+				constraints.anchor = GridBagConstraints.EAST;
+				constraints.gridx = 1;
+				contentPane.add(statusBar3, constraints);
+
+			// IMAGE PANEL
+				constraints.anchor = GridBagConstraints.CENTER;
+				constraints.gridx = 0;
+				constraints.gridy = 3;
+				constraints.gridwidth = 2;
+				contentPane.add(imagePanel, constraints);
+
+			// BUTTON PANEL
+				EBLAPanel buttonPanel = new EBLAPanel();
+				buttonPanel.setBorder(emptySpace);
+				buttonPanel.add(cancelButton);
+
+				constraints.gridy = 5;
+				contentPane.add(buttonPanel, constraints);
 
 	} // end of StatusScreen constructor
 
@@ -248,14 +305,21 @@ public class StatusScreen extends JInternalFrame {
 
 
     /**
-     * When the worker needs to update the GUI we do so by queuing a Runnable
-     * for the event dispatching thread with  SwingUtilities.invokeLater().
-     * In this case we're just changing the progress bars value.
+     * Sets the max value for the specified progress bar.
      */
-    public void setBarMax(final int i) {
+    public void setBarMax(final int barIndex, final int max) {
         Runnable doSetBarMax = new Runnable() {
             public void run() {
-                progressBar.setMaximum(i);
+				if (barIndex==1) {
+                	statusBar1.setMaximum(max);
+                	statusBar1.setVisible(true);
+				} else if (barIndex==2) {
+					statusBar2.setMaximum(max);
+					statusBar2.setVisible(true);
+				} else {
+					statusBar3.setMaximum(max);
+					statusBar3.setVisible(true);
+				}
             }
         };
         SwingUtilities.invokeLater(doSetBarMax);
@@ -263,53 +327,96 @@ public class StatusScreen extends JInternalFrame {
 
 
     /**
-     * When the worker needs to update the GUI we do so by queuing
-     * a Runnable for the event dispatching thread with
-     * SwingUtilities.invokeLater().  In this case we're just
-     * changing the progress bars value.
+     * Updates the specified progress bar.
      */
-    public void updateStatus(final int i) {
-        Runnable doSetProgressBarValue = new Runnable() {
+    public void updateBar(final int barIndex, final int i) {
+        Runnable doUpdateBar = new Runnable() {
             public void run() {
-                progressBar.setValue(i);
+				if (barIndex==1) {
+					statusBar1.setValue(i);
+				} else if (barIndex==2) {
+					statusBar2.setValue(i);
+				} else {
+					statusBar3.setValue(i);
+				}
             }
         };
-        SwingUtilities.invokeLater(doSetProgressBarValue);
+        SwingUtilities.invokeLater(doUpdateBar);
+    } // end updateBar()
+
+
+
+    /**
+     * Hides the specified progress bar.
+     */
+    public void hideBar(final int barIndex) {
+        Runnable doHideBar = new Runnable() {
+            public void run() {
+				if (barIndex==1) {
+					statusBar1.setVisible(false);
+				} else if (barIndex==2) {
+					statusBar2.setVisible(false);
+				} else {
+					statusBar3.setVisible(false);
+				}
+            }
+        };
+        SwingUtilities.invokeLater(doHideBar);
+    } // end hideBar()
+
+
+    /**
+     * Hides the entire intermediate image panel.
+     */
+    public void hideImagePanel() {
+        Runnable doHideImagePanel = new Runnable() {
+            public void run() {
+				imagePanel.setVisible(false);
+            }
+        };
+        SwingUtilities.invokeLater(doHideImagePanel);
+    } // end hideImagePanel()
+
+
+
+
+    /**
+     * Updates the text for the specified status label.
+     */
+    public void updateStatus(final int statusIndex, final String s) {
+        Runnable doUpdateStatus = new Runnable() {
+            public void run() {
+				if (statusIndex==1) {
+					statusText1.setText(s);
+				} else if (statusIndex==2) {
+					statusText2.setText(s);
+				} else {
+					statusText3.setText(s);
+				}
+            }
+        };
+        SwingUtilities.invokeLater(doUpdateStatus);
     } // end updateStatus()
 
 
 
     /**
-     * When the worker needs to update the GUI we do so by queuing
-     * a Runnable for the event dispatching thread with
-     * SwingUtilities.invokeLater().  In this case we're just
-     * changing the progress bars value.
+     * Updates intermediate images for the EBLA vision system.
      */
-    public void updateStatus(final String s) {
-        Runnable doSetStatusField = new Runnable() {
-            public void run() {
-                statusText.setText(s);
-            }
-        };
-        SwingUtilities.invokeLater(doSetStatusField);
-    } // end updateStatus()
-
-
-
-    /**
-     * Add a component to the status screen to display intermediate images from EBLA
-     */
-    public void updateImage(final BufferedImage bi, final int xCoord) {
+    public void updateImage(final int imageIndex, final BufferedImage bi) {
         Runnable doUpdateImage = new Runnable() {
             public void run() {
-				if (xCoord==1) {
-					ic1.updateImage(scaleToSize(160, 140, bi));
+				if (imageIndex==1) {
+					ic1.updateImage(scaleToSize(160, 116, bi));
+					ic1.setVisible(true);
 					ic1.repaint();
-				} else if (xCoord==2) {
-					ic2.updateImage(scaleToSize(160, 140, bi));
+				} else if (imageIndex==2) {
+					ic2.updateImage(scaleToSize(160, 116, bi));
+					ic2.setVisible(true);
 					ic2.repaint();
 				} else {
-					ic3.updateImage(scaleToSize(160, 140, bi));
+					ic3.updateImage(scaleToSize(160, 116, bi));
+					ic3.setVisible(true);
 					ic3.repaint();
 				}
 
@@ -320,7 +427,27 @@ public class StatusScreen extends JInternalFrame {
 
 
 
+    /**
+     * Hides intermediate images for the EBLA vision system.
+     */
+    public void hideImage(final int imageIndex) {
+        Runnable doHideImage = new Runnable() {
+            public void run() {
+				if (imageIndex==1) {
+					ic1.updateImage(tmpImage);
+					ic1.repaint();
+				} else if (imageIndex==2) {
+					ic2.updateImage(tmpImage);
+					ic2.repaint();
+				} else {
+					ic3.updateImage(tmpImage);
+					ic3.repaint();
+				}
 
+			}
+        };
+        SwingUtilities.invokeLater(doHideImage);
+    } // end hideImage()
 
 
 
@@ -364,6 +491,14 @@ public class StatusScreen extends JInternalFrame {
 				pve.printStackTrace();
 			}
 
+		// START EBLA
+			try {
+				ebla = new EBLA(sd, dbc, this);
+				ebla.start();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
 	} // end showUp()
 
 
@@ -384,6 +519,11 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/29 23:19:42  yoda2
+ * Finished JavaDoc and code cleanup.
+ * Simulated modal behavior by retaking focus when lost.
+ * Added close button.
+ *
  * Revision 1.4  2003/12/26 22:16:21  yoda2
  * General code cleanup and addition of JavaDoc.
  *
