@@ -774,6 +774,7 @@ public class EBLA extends Thread {
 									// RESOLVE LEXEMES OR GENERATE DESCRIPTIONS
 										if (experienceIndex > (experienceCount - sd.getDescToGenerate())) {
 											lr.generateDescriptions(fo3, loopCount, i);
+											fo3.flush();
 										} else {
 											lr.resolveLexemes();
 										}
@@ -847,6 +848,7 @@ public class EBLA extends Thread {
 
 							fo1.write(loopCount + ";" + i + ";" + j + ";" + experienceIndex + ";" + secCopy + ";" + totalLex + ";"
 								+ totalUMLex + ";" + totalEnt + ";" + totalUMEnt + "\n");
+							fo1.flush();
 
 						// WRITE MAPPING LOG INFO
 						// NEED: loopCount, experienceIndex, (resolutionIndex-experienceIndex)
@@ -862,6 +864,8 @@ public class EBLA extends Thread {
 								int resIndex = tmpRS.getInt("resolution_index");
 								fo2.write(loopCount + ";" + expIndex + ";" + (resIndex-expIndex) + "\n");
 							}
+
+							fo2.flush();
 
 						// CLOSE TMP RESULTSET
 							tmpRS.close();
@@ -1061,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.35  2004/01/13 21:17:28  yoda2
+ * Fixed two bugs one that skipped experiences that required video processing and another that messed up results files.
+ *
  * Revision 1.34  2004/01/13 17:11:44  yoda2
  * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
  *
