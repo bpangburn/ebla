@@ -1443,9 +1443,22 @@ public class MeanShift {
 		// Compute mean shift vector using sum computed
 		// by lattice search, wsum, and yk_ptr:
 		// Mh = Mh/wsum - yk_ptr
-			for (i = 0; i < N+2; i++) {
-				Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
+		//	for (i = 0; i < N+2; i++) {
+		//		Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
+		//	}
+			if (wsum > 0) {
+				for(i = 0; i < N+2; i++) {
+					Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
+				}
+			} else {
+				for (i=0; i< N+2; i++) {
+					Mh_ptr[i] = 0;
+				}
 			}
+
+
+
+
 
 
 		} catch (Exception e) {
@@ -2572,7 +2585,12 @@ public class MeanShift {
 								diff = 0;
 								for(p = 0; p < P[k]; p++) {
 									el    = (data[dataPoint+p+s]-yk_ptr[p+s+2])/h[k];
-									diff += el*el;
+									//diff += el*el;
+									if ((p==0)&&(yk_ptr[2] > 80)) {
+										diff += 4*el*el;
+									} else {
+									   	diff += el*el;
+									}
 								}
 
 							// next subspace
@@ -2593,9 +2611,15 @@ public class MeanShift {
 						wsum += weight;
 
 						// set basin of attraction mode table
-							if (modeTable[pointIndx] == 0) {
-								pointList[pointCount++]	= pointIndx;
-								modeTable[pointIndx]	= 2;
+						//	if (modeTable[pointIndx] == 0) {
+						//		pointList[pointCount++]	= pointIndx;
+						//		modeTable[pointIndx]	= 2;
+						//	}
+							if (diff < 0.5) {
+							   if(modeTable[pointIndx] == 0) {
+									pointList[pointCount++] = pointIndx;
+									modeTable[pointIndx] = 2;
+							   }
 							}
 
 					}
@@ -2946,6 +2970,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.13  2002/12/11 23:03:12  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.12  2002/09/20 19:49:00  bpangburn
  * Fixed various JavaDoc error messages.
  *
