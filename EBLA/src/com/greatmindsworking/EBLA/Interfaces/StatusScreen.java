@@ -138,6 +138,9 @@ public class StatusScreen extends JInternalFrame {
         	cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					if (eblaCanceled) {
+					// SET EBLA TO NULL
+						ebla = null;
+
 					// CLOSE WINDOW
 						try {
 							setClosed(true);
@@ -553,6 +556,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2004/01/02 22:25:30  yoda2
+ * Made intermediate images slightly larger and added a blank line following the first status JLabel.
+ *
  * Revision 1.7  2003/12/31 19:38:08  yoda2
  * Fixed various thread synchronization issues.
  *
