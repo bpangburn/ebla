@@ -207,7 +207,7 @@ public class EBLAGui extends JFrame {
 			if (getDBSettings()) {
 				// TRY CONNECTING TO THE DATABASE. IF SUCCESSFUL SHOW THE PARAMETER SCREEN.
 					try {
-						dbc = new DBConnector("dbSettings",false);
+						dbc = new DBConnector("dbSettings",true);
 						showParameterScreen();
 					} catch(IOException ioe) {
 						return false;
@@ -632,6 +632,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2004/01/09 14:22:31  yoda2
+ * Modified screens to use a single database connection.
+ *
  * Revision 1.9  2003/12/31 21:17:39  yoda2
  * Added menu items to display a popup under "Reports" and the readme file under "Help"
  *
