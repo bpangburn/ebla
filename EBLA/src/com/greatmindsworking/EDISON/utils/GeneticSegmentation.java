@@ -49,10 +49,10 @@ import com.greatmindsworking.EDISON.segm.*;
 public class GeneticSegmentation {
 
 	// GENE POOL SIZE
-		final static int poolSize = 10;
+		final static int poolSize = 200;
 
 	// TOTAL NUMBER OF GENERATIONS
-		final static int totalGenerations = 3;
+		final static int totalGenerations = 25;
 
 	// GENETIC ALGORITHM MODE
     	final static boolean eliteMode = true;
@@ -60,8 +60,14 @@ public class GeneticSegmentation {
     // MAXIMUM NUMBER OF EXCESS REGIONS PER FRAME TO REMAIN IN GENE POOL
     	final static int maxExcessRegionsPerFrame = 10;
 
+    // SPEEDUP LEVEL
+    	final static int speedUpLevel = 1;
+
     // NUMBER OF IMAGES TO EVALUATE FROM TOTAL IMAGE POOL
-    	final static int imageSampleSize = 50;
+    	final static int imageSampleSize = 200;
+
+    // PENALTY FACTOR FOR DROPPED FRAMES
+    	final static int dropPenaltyFactor = 3;
 
     // VERBOSE MODE
     	final static boolean verbose = true;
@@ -161,7 +167,7 @@ public class GeneticSegmentation {
 			float colorRadius = (float)0.0;
 			int spatialRadius = 0;
 			int minRegion = 0;
-			int speedUp = 2;
+			int speedUp = speedUpLevel;
 			float speedUpFactor = (float)0.0;
 
 
@@ -172,8 +178,8 @@ public class GeneticSegmentation {
 		//  		I.E. NUM=150 -- 0 TO 149
 		// 		NEXTDOUBLE() == VALUE BETWEEN 0 AND 1
 			for (int i = 0; i < poolSize; i++) {
-				// SET COLOR RADIUS (0 to 25)
-					colorRadius = (rand.nextFloat() * (float)25.0);
+				// SET COLOR RADIUS (0 to 25 in increments of 0.5)
+					colorRadius = (float)rand.nextInt(51) / (float)2.0;
 
 				// SET SPATIAL RADIUS (0 to 25)
 					spatialRadius = rand.nextInt(26);
@@ -182,7 +188,9 @@ public class GeneticSegmentation {
 					minRegion = rand.nextInt(1001);
 
 				// SET SPEEDUP FACTOR
-					speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+					if (speedUpLevel == 2) {
+						speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+					}
 
 				// SETTINGS TO GENE POOL
 					pool[i] = new SegParams(colorRadius, spatialRadius, minRegion, speedUp, speedUpFactor);
@@ -219,6 +227,8 @@ public class GeneticSegmentation {
 
 
 		try {
+		// GET START DATE/TIME
+			java.util.Date startTime = new java.util.Date();
 
 		// INITIALIZE OUTPUT FILE
 			fw = new FileWriter("GeneticSegmentationResults.txt");
@@ -238,7 +248,11 @@ public class GeneticSegmentation {
 				// THEN SORT THE GENE POOL INTO ASCENDING ORDER BASED ON ERROR.
 					if (eliteMode && i>0) {
 					// RE-EVALUATE ALL NEW SEG PARAMETERS
-						for (int j=(int)(poolSize*0.2); j<poolSize; j++) {
+						//for (int j=(int)(poolSize*0.2); j<poolSize; j++) {
+// if running all images then no need to re-run existing seg parameters, but if running
+// just a subset (e.g. 200 of 4000), existing parameters will be tried on additional images
+// and final survivors must perform well again and again
+						for (int j=0; j<poolSize; j++) {
 							analyizeSegmentationSettings(pool[j]);
 						}
 					} else {
@@ -319,6 +333,13 @@ public class GeneticSegmentation {
 
 			} // end for loop
 
+		// GET STOP DATE/TIME
+			java.util.Date stopTime = new java.util.Date();
+
+		// WRITE OUT START/STOP DATE/TIME
+			fw.write("\n\nSegmentation Parameter Genetic Optimizer started: " + startTime + " ... finished: "
+				+ stopTime);
+
 		// CLOSE RESULTS FILE
 			fw.close();
 
@@ -359,8 +380,10 @@ public class GeneticSegmentation {
 				if (rand.nextBoolean()) {
 					answer.minRegion = pool[choice].minRegion;
 				}
-				if (rand.nextBoolean()) {
-					answer.speedUpFactor = pool[choice].speedUpFactor;
+				if (speedUpLevel == 2) {
+					if (rand.nextBoolean()) {
+						answer.speedUpFactor = pool[choice].speedUpFactor;
+					}
 				}
 
 		} catch (Exception e) {
@@ -382,7 +405,7 @@ public class GeneticSegmentation {
 			float colorRadius = (float)0.0;
 			int spatialRadius = 0;
 			int minRegion = 0;
-			int speedUp = 2;
+			int speedUp = speedUpLevel;
 			float speedUpFactor = (float)0.0;
 			SegParams answer = null;
 
@@ -394,8 +417,8 @@ public class GeneticSegmentation {
 		//  		I.E. NUM=150 -- 0 TO 149
 		// 		NEXTDOUBLE() == VALUE BETWEEN 0 AND 1
 
-		// SET COLOR RADIUS (0 to 25)
-			colorRadius = (rand.nextFloat() * (float)25.0);
+		// SET COLOR RADIUS (0 to 25 in increments of 0.5)
+			colorRadius = (float)rand.nextInt(51) / (float)2.0;
 
 		// SET SPATIAL RADIUS (0 to 25)
 			spatialRadius = rand.nextInt(26);
@@ -404,7 +427,9 @@ public class GeneticSegmentation {
 			minRegion = rand.nextInt(1001);
 
 		// SET SPEEDUP FACTOR
-			speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+			if (speedUpLevel == 2) {
+				speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+			}
 
 		// SETTINGS TO GENE POOL
 			answer = new SegParams(colorRadius, spatialRadius, minRegion, speedUp, speedUpFactor);
@@ -429,14 +454,10 @@ public class GeneticSegmentation {
 
 		int currentRegions = 0;
 		int excessRegions = 0;
+		BufferedImage tmpImage;
 
 
 		try {
-
-
-// DISPLAY SEG PARAMETERS
-//	_sp.printParameters();
-
 
 		// LOOP THROUGH ALL FILES IN ARRAYLIST
 			//for (int i=0; i<fileList.size(); i++) {\
@@ -445,7 +466,7 @@ public class GeneticSegmentation {
 				String tmpFile = (String)fileList.get(rand.nextInt(fileList.size()));
 
 			// LOAD SOURCE IMAGE USING LOADER CLASS
-				BufferedImage tmpImage = ImageIO.read(new File(tmpFile));
+				tmpImage = ImageIO.read(new File(tmpFile));
 
 			// DETERMINE WIDTH AND HEIGHT
 				int width = tmpImage.getWidth();
@@ -486,16 +507,27 @@ public class GeneticSegmentation {
 				}
 
 			// DETERMINE # REGIONS
-				currentRegions = mySegm.GetRegions().length;
+				currentRegions = mySegm.GetRegions().length - 3;
+
+			// APPLY PENALTY FOR DROPPING OBJECTS (E.G. NEGATIVE RESULT)
+				if (currentRegions < 0) {
+					currentRegions = Math.abs(currentRegions * dropPenaltyFactor);
+				}
+
+			// DISCARD mySegm
+				mySegm = null;
 
 			// DETERMINE IF CURRENT SETTINGS ARE HORRIFIC
-				if ((currentRegions+3) > maxExcessRegionsPerFrame) {
+				if (currentRegions > maxExcessRegionsPerFrame) {
 					excessRegions = maxAcceptableRegions;
 					break;
 				}
 
 			// UPDATE SCORE FOR CURRENT SEGMENTATION PARAMETERS
-				excessRegions += Math.abs(currentRegions - 3);
+				excessRegions += currentRegions;
+
+			// RECOMMEND GARBAGE COLLECTION
+				System.gc();
 
 			}
 
@@ -557,4 +589,7 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.1  2004/01/21 19:40:30  yoda2
+ * Added experimental jEDISON genetic training algorithm for determining "optimal" segmentation parameters for a given set of images.
+ *
  */
