@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002, Brian E. Pangburn
+ * Copyright (c) 2002-2003, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ package com.greatmindsworking.EBLA;
 import java.awt.*;
 import java.util.*;
 import java.sql.*;
+import com.nqadmin.Utils.DBConnector;
 
 
 
@@ -75,7 +76,23 @@ public class EntityExtractor {
 	private long expID = -1;
 
 	/**
-	 * Params object containing runtime parameters
+	 * long containing the database record ID for the current parameter-
+	 * experience combination
+	 */
+	private long paramExpID = -1;
+
+	/**
+	 * long containing the database record ID for the current calculation run
+	 */
+	private long runID = -1;
+
+	/**
+	 * Session object containing runtime options
+	 */
+	private Session s = null;
+
+	/**
+	 * Params object containing vision processing parameters
 	 */
 	private Params p = null;
 
@@ -94,20 +111,33 @@ public class EntityExtractor {
 	/**
 	 * Class constructor that does stuff
 	 *
-	 * @param _expID	unique id of experience for which entities are being extracted
-	 * @param _dbc		connection to EBLA database
-	 * @param _p		runtime parameters
-	 * @param _minSD	minimum standard deviation (<1)
+	 * @param _expID		unique id of experience for which entities are being extracted
+	 * @param _paramExpID	unique id of current parameter-experience combination
+	 * @param _runID		unique id of current calculation run
+	 * @param _dbc			connection to EBLA database
+	 * @param _s			session options
+	 * @param _p			vision processing parameters
+	 * @param _minSD		minimum standard deviation (<1)
 	 */
-    public EntityExtractor(long _expID, DBConnector _dbc, Params _p, double _minSD) {
+    public EntityExtractor(long _expID, long _paramExpID, long _runID,
+    	DBConnector _dbc, Session _s, Params _p, double _minSD) {
 
 		try {
 
 			// SET EXPERIENCE ID
 				expID = _expID;
 
+			// SET PARAMETER-EXPERIENCE ID
+				paramExpID = _paramExpID;
+
+			// SET RUN ID
+				runID = _runID;
+
 			// SET DATABASE CONNECTION
 				dbc = _dbc;
+
+			// SET SESSION
+				s = _s;
 
 			// SET PARAMETERS
 				p = _p;
@@ -195,7 +225,7 @@ public class EntityExtractor {
 					objectIndex++;
 
 				// BUILD QUERY
-					sql = "SELECT * FROM frame_analysis_data WHERE experience_id = " + expID
+					sql = "SELECT * FROM frame_analysis_data WHERE parameter_experience_id = " + paramExpID
 						+ " AND object_number = " + objectIndex
 						+ " ORDER BY frame_number ASC;";
 
@@ -621,6 +651,7 @@ public class EntityExtractor {
 
 			double score = 0.0;
 
+
 		try {
 			// CREATE STATEMENTS
 				tmpState = dbc.getStatement();
@@ -652,7 +683,7 @@ public class EntityExtractor {
 								Attribute tmpAtt = (Attribute)attributeAL.get(i);
 
 							// CALC RANGE
-								if (p.getFixedStdDev()) {
+								if (s.getFixedStdDev()) {
 									if (tmpAtt.avgValue >= 0) {
 									// NON-NEGATIVE
 										max = tmpAtt.avgValue * (1.0 + minSD);
@@ -698,8 +729,10 @@ public class EntityExtractor {
 							// ADD CURRENT ATTRIBUTE TO QUERY
 							// HAD TO CAST min & max TO POSTGRES float8 TYPE USING DOUBLE COLONS
 							// COULD ALSO USE "CAST(val AS float8)
-									sql = sql + "SELECT entity_id FROM attribute_value_data WHERE attribute_list_id = " + tmpAtt.attributeListID
-										+ " AND avg_value BETWEEN " + min + "::float8 AND " + max + "::float8";
+								sql = sql + "SELECT entity_id FROM attribute_value_data "
+									+ " WHERE run_id = " + runID
+									+ " AND attribute_list_id = " + tmpAtt.attributeListID
+									+ " AND avg_value BETWEEN " + min + "::float8 AND " + max + "::float8";
 
 						} // end for
 
@@ -832,7 +865,8 @@ public class EntityExtractor {
 								entityRS.close();
 
 							// ADD ENTITY DATA RECORD
-								sql = "INSERT INTO entity_data (entity_id) VALUES (" + entityID + ");";
+								sql = "INSERT INTO entity_data (entity_id, run_id)"
+									+ " VALUES (" + entityID + "," + runID + ");";
 								tmpState.executeUpdate(sql);
 
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES
@@ -842,16 +876,16 @@ public class EntityExtractor {
 										Attribute tmpAtt = (Attribute)itt2.next();
 
 									// WRITE ATTRIBUTE VALUES TO DATABASE
-										sql = "INSERT INTO attribute_value_data (attribute_list_id, entity_id, avg_value, std_deviation)"
-											+ " VALUES (" + tmpAtt.attributeListID + ", " + entityID + ", " + tmpAtt.avgValue
+										sql = "INSERT INTO attribute_value_data (attribute_list_id, run_id, entity_id, avg_value, std_deviation)"
+											+ " VALUES (" + tmpAtt.attributeListID + ", " + runID + "," + entityID + ", " + tmpAtt.avgValue
 											+ ", " + tmpAtt.stdDeviation + ");";
 										tmpState.executeUpdate(sql);
 								}
 						} // end if (entityExists)...
 
-					// ADD EXPERIENCE ENTITY RECORD
-						sql = "INSERT INTO experience_entity_data (experience_id, entity_id, resolution_code) VALUES ("
-							+ expID + ", " + entityID + ", 0);";
+					// ADD EXPERIENCE-ENTITY RECORD
+						sql = "INSERT INTO experience_entity_data (experience_id, run_id, entity_id, resolution_code) VALUES ("
+							+ expID + ", " + runID + ", " + entityID + ", 0);";
 						tmpState.executeUpdate(sql);
 
 				} // end while
@@ -872,56 +906,15 @@ public class EntityExtractor {
 
 	} // end writeToDB()
 
-
-
-    /**
-     * Main procedure - allows EntityExtractor to be run in stand-alone mode
-     */
-    public static void main(String[] args) {
-
-		// DECLARATIONS
-			long experienceID = 1;
-
-		try {
-			// CHECK TO SEE IF A PARAMETER ID WAS PASSED FROM THE COMMAND LINE
-				if (args.length > 0) {
-					// EXTRACT ID
-						experienceID = Long.parseLong(args[0]);
-
-				}
-
-			// ESTABLISH DATABASE CONNECTION
-				DBConnector myDBC = new DBConnector(true);
-
-			// INITIALIZE AN ENTITY EXTRACTOR
-				EntityExtractor ee = new EntityExtractor(experienceID, myDBC, null, 0.35);
-
-			// EXTRACT ENTITIES (OBJECT & RELATIONS)
-				ee.extractEntities();
-
-			// WRITE ENTITIES TO DATABASE
-				ee.writeToDB();
-
-			// INDICATE SUCCESS TO USER
-				System.out.println("Entities extracted successfully!");
-
-			// EXIT
-				System.out.println("Exiting EntityExtractor.main() standalone testing routine.");
-				System.exit(0);
-
-		} catch (Exception e) {
-			System.out.println("\n--- EntityExtractor.main() Exception ---\n");
-			e.printStackTrace();
-		}
-
-    } // end main()
-
 } // end EntityExtractor class
 
 
 
 /*
  * $Log$
+ * Revision 1.21  2002/12/11 22:50:27  yoda2
+ * Initial migration to SourceForge.
+ *
  * Revision 1.20  2002/10/27 23:04:50  bpangburn
  * Finished JavaDoc.
  *
