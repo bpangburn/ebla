@@ -71,14 +71,14 @@ public class AttributeScreen extends JInternalFrame {
 		JdbcRowSetImpl rowset = null;
 
 	// INITIALIZE ATTRIBUTE SCREEN WIDGETS
-		JTextField txtAttributeID 	= new JTextField();
-		JTextField txtDescription 	= new JTextField();
-		JTextField txtIncludeCode 	= new JTextField();
-		JTextField txtTypeCode 		= new JTextField();
-		JTextField txtClassName 	= new JTextField();
-		JTextArea txtNotes 			= new JTextArea(20,10);
+		JTextField txtAttributeID 		= new JTextField();
+		JTextField txtDescription 		= new JTextField();
+		SSComboBox cmbIncludeCode 		= new SSComboBox();
+		SSComboBox cmbTypeCode 			= new SSComboBox();
+		JTextField txtClassName 		= new JTextField();
+		JTextArea txtNotes 				= new JTextArea(20,10);
 
-		JButton btnClose			= new JButton("Close");
+		JButton btnClose				= new JButton("Close");
 
 	// INITIALIZE DATA NAVIGATOR
 		SSDataNavigator dataNavigator = null;
@@ -165,9 +165,12 @@ public class AttributeScreen extends JInternalFrame {
 
 			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
-			txtIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
+			cmbIncludeCode.setOption(SSComboBox.YES_NO_OPTION);
+			cmbIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
 
-			txtTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
+			String[] tmpString = {"Object", "Object-Object Relation"};
+			cmbTypeCode.setOption(tmpString);
+			cmbTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
 
 			txtClassName.setDocument(new SSTextDocument(rowset,"class_name"));
 
@@ -186,9 +189,9 @@ public class AttributeScreen extends JInternalFrame {
 
 			panel.addRow(txtAttributeID, currentRow++, "Attribute ID");
 			panel.addRow(txtDescription, currentRow++, "Description");
-			panel.addRow(txtIncludeCode, currentRow++, "Include Code");
-			panel.addRow(txtTypeCode, currentRow++, "Type Code");
-			panel.addRow(txtClassName, currentRow++, "Class Name");
+			panel.addRow(cmbIncludeCode.getComboBox(), currentRow++, "Include Attribute?");
+			panel.addRow(cmbTypeCode.getComboBox(), currentRow++, "Attribute Type");
+			panel.addRow(txtClassName, currentRow++, "Attribute Calculation Class");
 			panel.addRow(txtNotes, currentRow++, "Notes");
 
 
@@ -212,6 +215,11 @@ public class AttributeScreen extends JInternalFrame {
 
 		// DISABLE PRIMARY KEY
 			txtAttributeID.setEnabled(false);
+
+		// DISABLE TYPE CODE AND CLASS NAME
+			cmbTypeCode.getComboBox().setEnabled(false);
+			txtClassName.setEnabled(false);
+
 
 	} // end of AttributeScreen constructor
 
@@ -277,6 +285,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2004/01/07 19:44:21  yoda2
+ * Verified that primary key is displayed on each screen and is disabled.
+ *
  * Revision 1.6  2003/12/31 15:46:59  yoda2
  * Added listener to save current record if form loses focus.
  *
