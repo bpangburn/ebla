@@ -72,7 +72,7 @@ public class EBLAGui extends JFrame {
 	boolean guiDebug = false;
 
 	/**
-	 * EBLA menu bar instance.
+	 * EBLA menu bar instance
 	 */
 	EBLAMenuBar menuBar = new EBLAMenuBar();
 
@@ -452,7 +452,6 @@ public class EBLAGui extends JFrame {
 					menuEditExperiences = menuEdit.add("Experiences");
 					menuEditAttributes = menuEdit.add("Attributes");
 
-
 					menuUtilitiesDBSettings = menuUtilities.add("DB Settings");
 
 					menuHelpAbout = menuHelp.add("About");
@@ -530,6 +529,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.2  2003/09/23 03:01:30  yoda2
  * Code cleanup & documentation.
  *
