@@ -447,7 +447,7 @@ public class EBLA extends Thread {
 					statusScreen.updateStatus(1, "Current Operation: Video Processing");
 
 				// UPDATE STATUS TEXT #2
-					statusScreen.updateStatus(1, "Querying Experiences");
+					statusScreen.updateStatus(2, "Querying Experiences");
 
 				// INITIALIZE PROGRESS BAR #2
 					statusScreen.setBarMax(2, experienceCount);
@@ -1065,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.36  2004/02/06 15:59:52  yoda2
+ * Adding file flush after each result file is updated so that results may be viewed while EBLA is still running.
+ *
  * Revision 1.35  2004/01/13 21:17:28  yoda2
  * Fixed two bugs one that skipped experiences that required video processing and another that messed up results files.
  *
