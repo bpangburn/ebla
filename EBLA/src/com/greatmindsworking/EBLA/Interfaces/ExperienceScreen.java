@@ -149,6 +149,16 @@ public class ExperienceScreen extends JInternalFrame {
 			});
 
 
+		// ADD INTERNAL FRAME LISTENER TO SAVE RECORD UPON LOSS OF FOCUS
+			addInternalFrameListener(new InternalFrameAdapter() {
+			// FRAME DEACTIVATED
+				public void internalFrameDeactivated(InternalFrameEvent ife) {
+					dataNavigator.updatePresentRow();
+				} // end internalFrameDeactivated()
+
+			});
+
+
 		// SET DATABASE COLUMNS FOR EACH WIDGET
 			txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
@@ -260,6 +270,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/30 23:21:20  yoda2
+ * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
+ *
  * Revision 1.5  2003/12/29 23:20:27  yoda2
  * Added close button.
  *
