@@ -284,6 +284,8 @@ public class FrameGrabber extends JFrame {
 			int totalFrames = 0;				// TOTAL NUMBER OF FRAMES IN MOVIE
 			Time duration = null;				// DURATION OF VIDEO
 			String targetFile = "";				// TARGET FILE NAME FOR EXTRACTED FRAME
+			int sleepInterval = 1;
+
 
 		try {
 
@@ -307,6 +309,9 @@ public class FrameGrabber extends JFrame {
 
 					// INITIALIZE CONVERTER FOR BUFFER
 						bi = new BufferToImage((VideoFormat)buf.getFormat());
+
+					// INITIALIZE PROGRESS BAR
+						statusScreen.setBarMax(3, totalFrames);
 
 					// LOOP THROUGH ALL FRAMES HERE...
 						for (int frameCounter=1; frameCounter<=totalFrames; frameCounter++) {
@@ -343,11 +348,17 @@ public class FrameGrabber extends JFrame {
 
 							// IF UPDATE GUI IF APPLICABLE
 								if ((displayFlag) && (statusScreen!=null)) {
+									// UPDATE STATUS
+										statusScreen.updateStatus(3, "Ripped frame " + frameCounter + " of " + totalFrames);
+
+									// UPDATE PROGRESS BAR
+										statusScreen.updateBar(3, frameCounter);
+
 									// ADD CURRENT FRAME ON STATUS SCREEN
-										statusScreen.updateImage(tmpBufImage, 1);
+										statusScreen.updateImage(1, tmpBufImage);
 
 									// SET STATUS SCREEN REFRESH
-										Thread.sleep(100);
+										Thread.sleep(sleepInterval);
 								}
 
 
@@ -466,6 +477,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.9  2003/08/08 17:45:50  yoda2
+ * Updated commandline execution instructions.
+ *
  * Revision 1.8  2003/08/08 15:59:40  yoda2
  * Added logic to display frames to EBLA GUI during rip if applicable.
  *

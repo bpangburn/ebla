@@ -248,15 +248,18 @@ public class FrameProcessor {
 
 			ArrayList polyList = null;							// ARRAYLIST CONTAINING POLYGONS FOUND IN SEGMENTED IMAGE
 
+			int sleepInterval = 1;
+
 
 		try {
 
 			// INITIALIZE COUNTER TO ESTABLISH NUMBER OF FRAMES ACTUALLY PROCESSED
 				int frameCounter = 0;
 
-
 			// LOOP THROUGH ALL IMAGES
 				for (int i=firstFrameIndex; i<=lastFrameIndex; i++) {
+					// INITIALIZE PROGRESS BAR
+						statusScreen.setBarMax(3, lastFrameIndex);
 
 					// BUILD FILE EXTENSION
 						if (i<10) {
@@ -341,13 +344,21 @@ public class FrameProcessor {
 									ImageIO.write(polyImage, "png", new File(polyFile));
 							}
 
+
+						// UPDATE STATUS SCREEN
+							statusScreen.updateStatus(3, "Analyzed Frame " + i
+										+ " of " + lastFrameIndex);
+
+						// UPDATE PROGRESS BAR
+							statusScreen.updateBar(3, i);
+
 						// ADD CURRENT FRAME ON STATUS SCREEN
-							statusScreen.updateImage(frameImage, 1);
-							statusScreen.updateImage(segImage, 2);
-							statusScreen.updateImage(polyImage, 3);
+							statusScreen.updateImage(1, frameImage);
+							statusScreen.updateImage(2, segImage);
+							statusScreen.updateImage(3, polyImage);
 
 						// SET STATUS SCREEN REFRESH
-							Thread.sleep(100);
+							Thread.sleep(sleepInterval);
 
 				} // end for
 
@@ -639,6 +650,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.29  2003/12/26 20:25:53  yoda2
+ * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
+ *
  * Revision 1.28  2003/08/08 17:25:03  yoda2
  * Modified to accomidate the new database structure (e.g. parameter_experience_data).
  * Added logic to display frames to EBLA GUI during rip if applicable.
