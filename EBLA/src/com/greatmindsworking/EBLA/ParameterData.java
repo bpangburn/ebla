@@ -69,7 +69,7 @@ public class ParameterData {
 	private String tmpPath = "./ebla/";
 
 	/**
-	 * integer indicating which port of EDISON to use (0=04-25-2003; 1=04-14-2003)
+	 * integer indicating which port of EDISON to use (0=04-25-2002; 1=04-14-2003)
 	 */
 	private int edisonPortVersion = 0;
 
@@ -548,6 +548,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.20  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.19  2004/02/25 21:24:45  yoda2
  * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
  *
