@@ -402,7 +402,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, dbc, pd, updateFAD, statusScreen);
+									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -566,7 +566,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, dbc, pd, updateFAD, statusScreen);
+									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -1065,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.37  2004/02/06 19:42:12  yoda2
+ * Fixed glitch with "Querying Experiences" displaying at top of status screen during entire video processing stage.
+ *
  * Revision 1.36  2004/02/06 15:59:52  yoda2
  * Adding file flush after each result file is updated so that results may be viewed while EBLA is still running.
  *

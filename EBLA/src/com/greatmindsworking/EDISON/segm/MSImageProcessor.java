@@ -87,11 +87,6 @@ public class MSImageProcessor extends MeanShift {
 
 // PRIVATE CONSTANTS
 	/**
-	 * Status Prompt
-	 */
-	private static final boolean PROMPT = false;
-
-	/**
 	 * image pruning
 	 */
 	private static final int TOTAL_ITERATIONS = 14;
@@ -124,6 +119,11 @@ public class MSImageProcessor extends MeanShift {
 
 
 // PRIVATE DATA MEMBERS
+	/**
+	 * Status Prompt
+	 */
+	private boolean prompt = false;
+
 	/**
 	 * TIMER...
 	 */
@@ -605,7 +605,7 @@ public class MSImageProcessor extends MeanShift {
 
 
 		// start timer
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.StartTimer();
 			}
 
@@ -614,18 +614,27 @@ public class MSImageProcessor extends MeanShift {
 		// filter image according to speedup level...
 			if (speedUpLevel == SpeedUpLevel.NO_SPEEDUP) {
 			// no speedup...
-			//	NonOptimizedFilter((float)(sigmaS), sigmaR);
-				NewNonOptimizedFilter((float)(sigmaS), sigmaR);
+				if (edisonPortVersion==0) {
+					NonOptimizedFilter((float)(sigmaS), sigmaR);
+				} else {
+					NewNonOptimizedFilter((float)(sigmaS), sigmaR);
+				}
 
 			} else if (speedUpLevel == SpeedUpLevel.MED_SPEEDUP) {
 			// medium speedup
-			//	OptimizedFilter1((float)(sigmaS), sigmaR);
-				NewOptimizedFilter1((float)(sigmaS), sigmaR);
+				if (edisonPortVersion==0) {
+					OptimizedFilter1((float)(sigmaS), sigmaR);
+				} else {
+					NewOptimizedFilter1((float)(sigmaS), sigmaR);
+				}
 
 			} else if (speedUpLevel == SpeedUpLevel.HIGH_SPEEDUP) {
 			// high speedup
-			//	OptimizedFilter2((float)(sigmaS), sigmaR);
-				NewOptimizedFilter2((float)(sigmaS), sigmaR);
+				if (edisonPortVersion==0) {
+					OptimizedFilter2((float)(sigmaS), sigmaR);
+				} else {
+					NewOptimizedFilter2((float)(sigmaS), sigmaR);
+				}
 			}
 
 		// re-initialize structure
@@ -639,23 +648,24 @@ public class MSImageProcessor extends MeanShift {
 
 		// copy msRawData into LUV_data, rounding each component of each
 		// LUV value stored by msRawData to the nearest integer
-/*
 			int	i;
-			for (i = 0; i < L*N; i++) {
-				if (msRawData[i] < 0) {
-					LUV_data[i] = (int)(msRawData[i] - 0.5);
-				} else {
-					LUV_data[i] = (int)(msRawData[i] + 0.5);
+
+			if (edisonPortVersion==0) {
+				for (i = 0; i < L*N; i++) {
+					if (msRawData[i] < 0) {
+						LUV_data[i] = (int)(msRawData[i] - 0.5);
+					} else {
+						LUV_data[i] = (int)(msRawData[i] + 0.5);
+					}
 				}
-			}
-*/
-			int i;
-			for (i=0; i<L*N; i++) {
-				LUV_data[i] = msRawData[i];
+			} else {
+				for (i=0; i<L*N; i++) {
+					LUV_data[i] = msRawData[i];
+				}
 			}
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer = msSystem.ElapsedTime();
 				msSystem.Prompt("(" + timer + " sec)\nConnecting regions...");
 				msSystem.StartTimer();
@@ -665,7 +675,7 @@ public class MSImageProcessor extends MeanShift {
 			Connect();
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer = msSystem.ElapsedTime();
 				msSystem.Prompt("done. (" + timer + " seconds), numRegions = " + regionCount + "\n");
 				msSystem.StartTimer();
@@ -756,23 +766,24 @@ public class MSImageProcessor extends MeanShift {
 
 				// copy data into LUV_data used to classify
 				// image regions
-/*
 					int i;
-					for (i = 0; i < L*N; i++) {
-						if(data[i] < 0) {
-							LUV_data[i] = (int)(data[i] - 0.5);
-						} else {
-							LUV_data[i] = (int)(data[i] + 0.5);
+
+					if (edisonPortVersion==0) {
+						for (i = 0; i < L*N; i++) {
+							if(data[i] < 0) {
+								LUV_data[i] = (int)(data[i] - 0.5);
+							} else {
+								LUV_data[i] = (int)(data[i] + 0.5);
+							}
 						}
-					}
-*/
-					int i;
-					for (i=0; i<L*N; i++) {
-						LUV_data[i] = data[i];
+					} else {
+						for (i=0; i<L*N; i++) {
+							LUV_data[i] = data[i];
+						}
 					}
 
 				// update status
-					if (PROMPT) {
+					if (prompt) {
 						msSystem.Prompt("Connecting regions...");
 						msSystem.StartTimer();
 					}
@@ -786,7 +797,7 @@ public class MSImageProcessor extends MeanShift {
 					}
 
 				// update status
-					if (PROMPT) {
+					if (prompt) {
 						timer = msSystem.ElapsedTime();
 						msSystem.Prompt("done. (" + timer + " seconds), numRegions = " + regionCount + ".\n");
 					}
@@ -794,7 +805,7 @@ public class MSImageProcessor extends MeanShift {
 			} // end if (!(classState.OUTPUT_DEFINED))
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("Applying transitive closure...");
 				msSystem.StartTimer();
 			}
@@ -823,7 +834,7 @@ public class MSImageProcessor extends MeanShift {
 			visitTable	= null;
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer	= msSystem.ElapsedTime();
 				msSystem.Prompt("done. (" + timer + " seconds), numRegions = " + regionCount + "\n Pruning spurious regions...");
 				msSystem.StartTimer();
@@ -834,7 +845,7 @@ public class MSImageProcessor extends MeanShift {
 			Prune(minRegion);
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer	= msSystem.ElapsedTime();
 				msSystem.Prompt("done. (" + timer + " seconds), numRegions = " + regionCount + "\n");
 				msSystem.StartTimer();
@@ -893,12 +904,19 @@ public class MSImageProcessor extends MeanShift {
 	 * 						perform image filtering. A value of NO_SPEEDUP turns this
 	 *						optimization off and a value of SPEEDUP turns this optimization on
 	 */
- 	public void Segment(int sigmaS, float sigmaR, int minRegion, SpeedUpLevel speedUpLevel) {
+ 	public void Segment(int _edisonPortVersion, boolean _detailedOutput,
+		int sigmaS, float sigmaR, int minRegion, SpeedUpLevel speedUpLevel) {
 
 		try {
 
 		// DECLARATIONS
 			double timer;
+
+		// SET VERSION OF CODE TO USE
+			edisonPortVersion = _edisonPortVersion;
+
+		// SET DETAILED OUTPUT FLAG
+			prompt = _detailedOutput;
 
 		// make sure kernel is properly defined...
 			if ((h == null) || (kp < 2)) {
@@ -920,7 +938,7 @@ public class MSImageProcessor extends MeanShift {
 			}
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("Applying transitive closure...");
 				msSystem.StartTimer();
 			}
@@ -949,7 +967,7 @@ public class MSImageProcessor extends MeanShift {
 			visitTable	= null;
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer = msSystem.ElapsedTime();
 				msSystem.Prompt("done. (" + timer + " seconds), numRegions = " + regionCount + "\nPruning spurious regions...");
 				msSystem.StartTimer();
@@ -960,7 +978,7 @@ public class MSImageProcessor extends MeanShift {
 			Prune(minRegion);
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				timer	= msSystem.ElapsedTime();
 				msSystem.Prompt("done. ("+ timer + " seconds), numRegions = " + regionCount + "\nPruning spurious regions...");
 				msSystem.StartTimer();
@@ -1511,7 +1529,7 @@ public class MSImageProcessor extends MeanShift {
 			double[] Mh = new double [lN];
 
 		// update status
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("Applying mean shift (Using Lattice)... ");
 			}
 
@@ -1577,7 +1595,7 @@ public class MSImageProcessor extends MeanShift {
 			} // end for loop
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -1660,7 +1678,7 @@ public class MSImageProcessor extends MeanShift {
 		// proceed...
 
 			// update status
-				if (PROMPT) {
+				if (prompt) {
 					msSystem.Prompt("Applying mean shift (Using Lattice)...");
 				}
 
@@ -1851,7 +1869,7 @@ public class MSImageProcessor extends MeanShift {
 				} // end for
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -1945,7 +1963,7 @@ public class MSImageProcessor extends MeanShift {
 			// proceed...
 
 			// update status
-				if (PROMPT) {
+				if (prompt) {
 					msSystem.Prompt("Applying mean shift (Using Lattice)...");
 				}
 
@@ -2064,7 +2082,9 @@ public class MSImageProcessor extends MeanShift {
 													// update mode table for this data point
 													// indicating that a mode has been associated
 													// with it
-														modeTable[i] = 1;
+														if (edisonPortVersion==1) {
+															modeTable[i] = 1;
+														}
 
 													// indicate that a mode has been associated
 													// to this data point (data[i])
@@ -2104,7 +2124,9 @@ public class MSImageProcessor extends MeanShift {
 							// update mode table for this data point
 							// indicating that a mode has been associated
 							// with it
-								modeTable[i] = 1;
+								if (edisonPortVersion==1) {
+									modeTable[i] = 1;
+								}
 						}
 
 					// associate the data point indexed by
@@ -2133,7 +2155,7 @@ public class MSImageProcessor extends MeanShift {
 				} // end for
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -2191,8 +2213,11 @@ public class MSImageProcessor extends MeanShift {
 
 						// copy region color into modes
 							for (k = 0; k < N; k++) {
-								//modes[(N*label)+k]	= (float)(LUV_data[(N*i)+k]);
-								modes[(N*label)+k] = LUV_data[(N*i)+k];
+								if (edisonPortVersion==0) {
+									modes[(N*label)+k] = (float)(LUV_data[(N*i)+k]);
+								} else {
+									modes[(N*label)+k] = LUV_data[(N*i)+k];
+								}
 							}
 
 						// populate labels with label for this specified region
@@ -2263,28 +2288,32 @@ public class MSImageProcessor extends MeanShift {
 			// if a pixel has similar color to that located at
 			// regionLoc then declare it as part of this region
 				for (i = 0; i < 8; i++) {
-// following block of code was commented out between 4-25-2003 and 4-14-2003 EDISON releases
-/*
-					//if at boundary do not check certain neighbors because
-					//they do not exist...
-						if ((regionLoc%width == 0)&&((i == 3)||(i == 4)||(i == 5))) {
-							continue;
+					// if at boundary do not check certain neighbors because
+					// they do not exist...
+						if (edisonPortVersion==0) {
+							if ((regionLoc%width == 0)&&((i == 3)||(i == 4)||(i == 5))) {
+								continue;
+							}
+
+							if ((regionLoc%width == 255)&&((i == 0)||(i == 1)||(i == 7))) {
+								continue;
+							}
 						}
 
-						if ((regionLoc%width == 255)&&((i == 0)||(i == 1)||(i == 7))) {
-							continue;
-						}
-*/
-
-					//check bounds and if neighbor has been already labeled
+					// check bounds and if neighbor has been already labeled
 						neighLoc = regionLoc + neigh[i];
 
 						if ((neighLoc >= 0)&&(neighLoc < imageSize)&&(labels[neighLoc] < 0)) {
 
 							for (k = 0; k < N; k++) {
-								// if (LUV_data[(regionLoc*N)+k] != LUV_data[(neighLoc*N)+k])
-               					if (Math.abs(LUV_data[(regionLoc*N)+k]-LUV_data[(neighLoc*N)+k])>=LUV_threshold) {
-									break;
+								if (edisonPortVersion==0) {
+									if (LUV_data[(regionLoc*N)+k] != LUV_data[(neighLoc*N)+k]) {
+										break;
+									}
+								} else {
+									if (Math.abs(LUV_data[(regionLoc*N)+k]-LUV_data[(neighLoc*N)+k])>=LUV_threshold) {
+										break;
+									}
 								}
 							}
 
@@ -3528,7 +3557,7 @@ public class MSImageProcessor extends MeanShift {
 
 		// Allocate memory for integer modes used to perform connected components
 		// (image labeling)...
-			// LUV_data = new int [N*L];
+		// 04-14-2003 release of code uses float for LUV_data rather than int
 			LUV_data = new float[N*L];
 
 		// indicate that the class output storage structure has been defined
@@ -3721,7 +3750,7 @@ public class MSImageProcessor extends MeanShift {
 		// proceed ...
 
 			// update status
-				if (PROMPT) {
+				if (prompt) {
 					msSystem.Prompt("Applying mean shift (Using Lattice) ...");
 				}
 
@@ -4036,7 +4065,7 @@ public class MSImageProcessor extends MeanShift {
 				}
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -4184,7 +4213,7 @@ public class MSImageProcessor extends MeanShift {
 		// proceed ...
 
 			// update status
-				if (PROMPT) {
+				if (prompt) {
 					msSystem.Prompt("Applying mean shift (Using Lattice) ...");
 				}
 
@@ -4525,7 +4554,7 @@ public class MSImageProcessor extends MeanShift {
 				}
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -4674,7 +4703,7 @@ public class MSImageProcessor extends MeanShift {
 		// proceed ...
 
 			// update status
-				if (PROMPT) {
+				if (prompt) {
 					msSystem.Prompt("Applying mean shift (Using Lattice) ...");
 				}
 
@@ -4878,7 +4907,7 @@ public class MSImageProcessor extends MeanShift {
 				}
 
 		// Prompt user that filtering is completed
-			if (PROMPT) {
+			if (prompt) {
 				msSystem.Prompt("done.\n");
 			}
 
@@ -4902,7 +4931,7 @@ public class MSImageProcessor extends MeanShift {
 
 		speedThreshold = speedUpThreshold;
 
-		if (PROMPT) {
+		if (prompt) {
 			msSystem.Prompt("Setting speedup threshold to " + speedThreshold + ".\n");
 		}
 
@@ -4920,6 +4949,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.15  2004/01/21 19:31:46  yoda2
+ * Turned off printing of intermediate segmentation results and placed printout of speedup factor inside print flag.
+ *
  * Revision 1.14  2003/11/24 16:34:41  yoda2
  * Small JavaDoc fixes to get rid of warnings.
  *

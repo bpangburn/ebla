@@ -94,6 +94,10 @@ import java.util.*;
  */
 public class MeanShift {
 
+// PRIVATE CONSTANTS
+
+
+
 // INTERNAL PRIVATE CLASSES THAT REPLACE ORIGINAL C++ DATA STRUCTURES
 	/**
 	 *	k-Dimensional Binary Search Tree
@@ -128,6 +132,11 @@ public class MeanShift {
 
 
 // PUBLIC DATA MEMBERS
+	/**
+	 * Determine whether to use port based on 04-25-2002 (0) or 04-14-2003 (1) EDISON
+	 */
+	public int edisonPortVersion = 0;
+
 	/**
 	 * errorMessage is an error message that is set by a mean shift library class
 	 * when an error occurs.
@@ -1443,23 +1452,21 @@ public class MeanShift {
 		// Compute mean shift vector using sum computed
 		// by lattice search, wsum, and yk_ptr:
 		// Mh = Mh/wsum - yk_ptr
-		//	for (i = 0; i < N+2; i++) {
-		//		Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
-		//	}
-			if (wsum > 0) {
-				for(i = 0; i < N+2; i++) {
+			if (edisonPortVersion==0) {
+				for (i = 0; i < N+2; i++) {
 					Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
 				}
 			} else {
-				for (i=0; i< N+2; i++) {
-					Mh_ptr[i] = 0;
+				if (wsum > 0) {
+					for(i = 0; i < N+2; i++) {
+						Mh_ptr[i] = Mh_ptr[i]/wsum - yk_ptr[i];
+					}
+				} else {
+					for (i=0; i< N+2; i++) {
+						Mh_ptr[i] = 0;
+					}
 				}
 			}
-
-
-
-
-
 
 		} catch (Exception e) {
 			System.out.println("\n--- MeanShift.OptLatticeMSVector() Exception ---\n");
@@ -2585,11 +2592,14 @@ public class MeanShift {
 								diff = 0;
 								for(p = 0; p < P[k]; p++) {
 									el    = (data[dataPoint+p+s]-yk_ptr[p+s+2])/h[k];
-									//diff += el*el;
-									if ((p==0)&&(yk_ptr[2] > 80)) {
-										diff += 4*el*el;
+									if (edisonPortVersion==0) {
+										diff += el*el;
 									} else {
-									   	diff += el*el;
+										if ((p==0)&&(yk_ptr[2] > 80)) {
+											diff += 4*el*el;
+										} else {
+											diff += el*el;
+										}
 									}
 								}
 
@@ -2611,15 +2621,18 @@ public class MeanShift {
 						wsum += weight;
 
 						// set basin of attraction mode table
-						//	if (modeTable[pointIndx] == 0) {
-						//		pointList[pointCount++]	= pointIndx;
-						//		modeTable[pointIndx]	= 2;
-						//	}
-							if (diff < 0.5) {
-							   if(modeTable[pointIndx] == 0) {
-									pointList[pointCount++] = pointIndx;
-									modeTable[pointIndx] = 2;
-							   }
+							if (edisonPortVersion==0) {
+								if (modeTable[pointIndx] == 0) {
+									pointList[pointCount++]	= pointIndx;
+									modeTable[pointIndx]	= 2;
+								}
+							} else {
+								if (diff < 0.5) {
+								   if(modeTable[pointIndx] == 0) {
+										pointList[pointCount++] = pointIndx;
+										modeTable[pointIndx] = 2;
+								   }
+								}
 							}
 
 					}
@@ -2970,6 +2983,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.16  2003/11/24 16:34:41  yoda2
+ * Small JavaDoc fixes to get rid of warnings.
+ *
  * Revision 1.15  2003/11/24 16:20:10  yoda2
  * Updated copyright to 2002-2003.
  *

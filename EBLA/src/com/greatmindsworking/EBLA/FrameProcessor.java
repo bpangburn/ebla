@@ -140,6 +140,11 @@ public class FrameProcessor {
 	private ParameterData pd = null;
 
 	/**
+	 * SessionData object containing calc session settings
+	 */
+	private SessionData sd = null;
+
+	/**
 	 * boolean flag indicating whether or not to update the frame_analysis_data table
 	 */
 	private boolean updateFAD = false;
@@ -186,12 +191,13 @@ public class FrameProcessor {
 	 * @param _expPath				processing path for experiences
 	 * @param _dbc					connection to EBLA database
 	 * @param _pd					vision system parameters
+	 * @param _sd					calculation session settings
 	 * @param _updateFAD			boolean indicating whether or not to update frame_analysis_data
 	 * @param _statusScreen			EBLA status window where intermediate images should be displayed (if applicable)
 	 */
 	public FrameProcessor(int _firstFrameIndex, int _lastFrameIndex,
 		long _paramExpID, String _expPath, DBConnector _dbc, ParameterData _pd,
-		boolean _updateFAD, StatusScreen _statusScreen) {
+		SessionData _sd, boolean _updateFAD, StatusScreen _statusScreen) {
 
 		try {
 
@@ -210,6 +216,9 @@ public class FrameProcessor {
 
 			// SET VISION PARAMETERS
 				pd = _pd;
+
+			// SET CALCULATION SESSION SETTINGS
+				sd = _sd;
 
 			// SET frame_analysis_update FLAG
 				updateFAD = _updateFAD;
@@ -322,7 +331,8 @@ public class FrameProcessor {
 
 						// SEGMENT IMAGE
 						// (NO_SPEEDUP, MED_SPEEDUP, HIGH_SPEEDUP)
-							mySegm.Segment(pd.getSegSpatialRadius(), pd.getSegColorRadius(), pd.getSegMinRegion(), pd.getSegSpeedUp());
+							mySegm.Segment(pd.getEdisonPortVersion(), sd.getDisplayText(),
+								pd.getSegSpatialRadius(), pd.getSegColorRadius(), pd.getSegMinRegion(), pd.getSegSpeedUp());
 
 						// GET RESULTING SEGMENTED IMAGE (RGB) PIXELS
 							int segpixels[] = new int[pixelCount];
@@ -669,6 +679,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.33  2004/01/13 17:11:44  yoda2
+ * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
+ *
  * Revision 1.32  2003/12/31 19:38:24  yoda2
  * Fixed various thread synchronization issues.
  *

@@ -69,6 +69,11 @@ public class ParameterData {
 	private String tmpPath = "./ebla/";
 
 	/**
+	 * integer indicating which port of EDISON to use (0=04-25-2003; 1=04-14-2003)
+	 */
+	private int edisonPortVersion = 0;
+
+	/**
 	 * float containing the color radius for mean-shift analysis image segmentation
 	 *
 	 * The color radius is the number of pixels that constitute a "significant" color.
@@ -216,6 +221,7 @@ public class ParameterData {
 						}
 
 					// EXTRACT MEAN-SHIFT ANALYSIS IMAGE SEGMENTATION PARAMETERS
+						edisonPortVersion = paramRS.getInt("edison_port_version");
 						segColorRadius = paramRS.getFloat("seg_color_radius");
 						segSpatialRadius = paramRS.getInt("seg_spatial_radius");
 						segMinRegion = paramRS.getInt("seg_min_region");
@@ -316,6 +322,17 @@ public class ParameterData {
 	public String getTmpPath() {
 		return tmpPath;
 	} // end getTmpPath()
+
+
+
+	/**
+	 * Returns an integer indicating which port of EDISON to use.
+	 *
+	 * @return integer indicating which port of EDISON to use
+	 */
+	public int getEdisonPortVersion() {
+		return edisonPortVersion;
+	} // end getEdisonPortVersion()
 
 
 
@@ -531,6 +548,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.18  2003/12/31 15:45:51  yoda2
+ * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
+ *
  * Revision 1.17  2003/12/26 20:27:08  yoda2
  * Misc fixes required for renaming of Params.java to ParameterData.java and Session.java to SessionData.java.
  *
