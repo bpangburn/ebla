@@ -380,6 +380,9 @@ public class ParameterScreen extends JInternalFrame {
 		// DISABLE PRIMARY KEY
 			txtParameterID.setEnabled(false);
 
+		// DISABLE REDUCE COLOR DEPTH OPTION
+			cmbReduceColorCode.getComboBox().setEnabled(false);
+
 	} // end of ParameterScreen constructor
 
 
@@ -444,6 +447,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2004/01/07 21:18:15  yoda2
+ * Swapped location of Select Experiences and Start Session buttons.
+ *
  * Revision 1.11  2004/01/07 19:44:21  yoda2
  * Verified that primary key is displayed on each screen and is disabled.
  *
