@@ -374,6 +374,16 @@ public class FrameGrabber extends JFrame {
 
 				} // if (totalFrames > 0)
 
+			// CLOSE PLAYER
+				player.close();
+				player.deallocate();
+
+			// NULLIFY VARIABLES
+				ml = null;
+				player = null;
+				fpc = null;
+				fgc = null;
+
 	  	} catch (Exception e) {
 			System.out.println("\n--- FrameGrabber.ripFrames() Exception ---\n");
 			e.printStackTrace();
@@ -482,6 +492,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.11  2003/12/31 19:38:24  yoda2
+ * Fixed various thread synchronization issues.
+ *
  * Revision 1.10  2003/12/30 23:19:41  yoda2
  * Modified for more detailed updating of EBLA Status Screen.
  *

@@ -393,8 +393,11 @@ public class EBLA extends Thread {
 								frameCount = fg.ripFrames();
 
 							// DISPOSE OF FRAME GRABBER AND SET TO NULL
-							//	fg.dispose();
+								fg.dispose();
 								fg = null;
+
+							// RECOMMEND GARBAGE COLLECTION
+								System.gc();
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
@@ -419,6 +422,9 @@ public class EBLA extends Thread {
 								statusScreen.hideImage(1);
 								statusScreen.hideImage(2);
 								statusScreen.hideImage(3);
+
+							// RECOMMEND GARBAGE COLLECTION
+								System.gc();
 
 						} // end while (experienceRS.next())
 
@@ -547,6 +553,9 @@ public class EBLA extends Thread {
 								fg.dispose();
 								fg = null;
 
+							// RECOMMEND GARBAGE COLLECTION
+								System.gc();
+
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
 									expTmpPath, dbc, pd, updateFAD, statusScreen);
@@ -563,6 +572,9 @@ public class EBLA extends Thread {
 									+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 
 								tmpState.executeUpdate(sql);
+
+							// RECOMMEND GARBAGE COLLECTION
+								System.gc();
 
 						} else {
 							// VISION PROCESSING IS COMPLETE FOR ALL EXPERIENCES...
@@ -856,6 +868,9 @@ public class EBLA extends Thread {
 			// INDICATE COMPLETION OF EBLA ON STATUS SCREEN
 				statusScreen.indicateEBLACompletion();
 
+			// RECOMMEND GARBAGE COLLECTION
+				System.gc();
+
 		} catch (Exception e) {
 		// CHECK FOR CANCEL BUTTON
 			if (stopEBLA) {
@@ -1021,6 +1036,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.32  2003/12/31 19:38:24  yoda2
+ * Fixed various thread synchronization issues.
+ *
  * Revision 1.31  2003/12/30 23:19:41  yoda2
  * Modified for more detailed updating of EBLA Status Screen.
  *
