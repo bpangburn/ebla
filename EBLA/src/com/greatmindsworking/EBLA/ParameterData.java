@@ -43,7 +43,7 @@ import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
 
 
 /**
- * Params.java
+ * ParameterData.java
  *<p>
  * EBLA - Experience-Based Language Acquisition
  *<p>
@@ -52,7 +52,7 @@ import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
  * @author	$Author$
  * @version	$Revision$
  */
-public class Params {
+public class ParameterData {
 	/**
 	 * ID of parameter_data record
 	 */
@@ -139,7 +139,7 @@ public class Params {
 	private boolean reduceColor = false;
 
 	/**
-	 * string containing notes about current set of runtime parameters
+	 * string containing notes about current set of vision system parameters
 	 */
 	private String notes = "";
 
@@ -152,7 +152,7 @@ public class Params {
 	 * @param _dbc			connection to database containing parameter table
 	 * @param _parameterID	ID of parameter record to lookup
 	 */
-    public Params(DBConnector _dbc, long _parameterID) {
+    public ParameterData(DBConnector _dbc, long _parameterID) {
 
 		try {
 			// SET PARAMETER ID
@@ -162,16 +162,16 @@ public class Params {
 				lookupParams(_dbc);
 
 		} catch (Exception e) {
-			System.out.println("\n--- Params Constructor Exception ---\n");
+			System.out.println("\n--- ParameterData Constructor Exception ---\n");
 			e.printStackTrace();
 		}
 
-	} // end Params()
+	} // end ParameterData constructor
 
 
 
 	/**
-	 * Private method to lookup runtime parameters in a database
+	 * Private method to lookup vision system parameters from the database
 	 *
 	 * @param _dbc			connection to database containing parameter table
 	 */
@@ -265,7 +265,7 @@ public class Params {
 				paramState.close();
 
 		} catch (Exception e) {
-			System.out.println("\n--- Params.lookupParams() Exception ---\n");
+			System.out.println("\n--- ParameterData.lookupParams() Exception ---\n");
 			e.printStackTrace();
 		}
 
@@ -507,6 +507,9 @@ public class Params {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.16  2003/12/26 19:51:42  yoda2
+ * Renamed Params.java to ParameterData.java
+ *
  * Revision 1.15  2003/08/08 13:36:03  yoda2
  * Rewritten for use with new database structure.
  * Some new fields were added and many were migrated to the Session class.

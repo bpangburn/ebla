@@ -135,9 +135,9 @@ public class FrameProcessor {
 	private int lastFrameIndex;
 
 	/**
-	 * Params object containing runtime parameters
+	 * ParameterData object containing vision system parameters
 	 */
-	private Params p = null;
+	private ParameterData pd = null;
 
 	/**
 	 * boolean flag indicating whether or not to update the frame_analysis_data table
@@ -185,12 +185,12 @@ public class FrameProcessor {
 	 * @param _paramExpID			unique id of parameter_experience_data record
 	 * @param _expPath				processing path for experiences
 	 * @param _dbc					connection to EBLA database
-	 * @param _p					runtime parameters
+	 * @param _pd					vision system parameters
 	 * @param _updateFAD			boolean indicating whether or not to update frame_analysis_data
 	 * @param _statusScreen			EBLA status window where intermediate images should be displayed (if applicable)
 	 */
 	public FrameProcessor(int _firstFrameIndex, int _lastFrameIndex,
-		long _paramExpID, String _expPath, DBConnector _dbc, Params _p,
+		long _paramExpID, String _expPath, DBConnector _dbc, ParameterData _pd,
 		boolean _updateFAD, StatusScreen _statusScreen) {
 
 		try {
@@ -208,8 +208,8 @@ public class FrameProcessor {
 			// SET DATABASE CONNECTION
 				dbc = _dbc;
 
-			// SET RUNTIME PARAMETERS
-				p = _p;
+			// SET VISION PARAMETERS
+				pd = _pd;
 
 			// SET frame_analysis_update FLAG
 				updateFAD = _updateFAD;
@@ -232,15 +232,15 @@ public class FrameProcessor {
 	public void processFrames() {
 
 		// DECLARATIONS
-			String framePath = expPath + p.getFramePrefix();	// SOURCE PATH PREFIX FOR EXPERIENCE FRAMES
+			String framePath = expPath + pd.getFramePrefix();	// SOURCE PATH PREFIX FOR EXPERIENCE FRAMES
 			String frameFile = "";								// PATH AND FILE NAME FOR EXPERIENCE FRAMES
 			BufferedImage frameImage = null;					// EXPERIENCE FRAME IMAGE
 
-			String segPath = expPath + p.getSegPrefix();		// TARGET PATH PREFIX FOR SEGMENTED IMAGES
+			String segPath = expPath + pd.getSegPrefix();		// TARGET PATH PREFIX FOR SEGMENTED IMAGES
 			String segFile = "";								// PATH AND FILE NAME FOR SEGMENTED IMAGES
 			BufferedImage segImage = null;						// SEGMENTED IMAGE
 
-			String polyPath = expPath + p.getPolyPrefix();		// TARGET PATH PREFIX FOR POLYGON IMAGES
+			String polyPath = expPath + pd.getPolyPrefix();		// TARGET PATH PREFIX FOR POLYGON IMAGES
 			String polyFile = "";								// PATH AND FILE NAME FOR POLYGON IMAGES
 			BufferedImage polyImage = null;						// POLYGON IMAGE
 
@@ -293,7 +293,7 @@ public class FrameProcessor {
 						pixelCount = width * height;
 
 					// RECALCULATE MAX PIXELS (FOR SIGNIFICANT OBJECT) BASED ON PIXEL COUNT
-						maxArea = (int)((double)pixelCount * p.getBackgroundPixels() / 100);
+						maxArea = (int)((double)pixelCount * pd.getBackgroundPixels() / 100);
 
 					// STARTING INCORPORATION OF PORTED EDISION CODE....
 						// INITIALIZE ARRAYS FOR RGB PIXEL VALUES
@@ -308,7 +308,7 @@ public class FrameProcessor {
 
 						// SEGMENT IMAGE
 						// (NO_SPEEDUP, MED_SPEEDUP, HIGH_SPEEDUP)
-							mySegm.Segment(p.getSegSpatialRadius(), p.getSegColorRadius(), p.getSegMinRegion(), p.getSegSpeedUp());
+							mySegm.Segment(pd.getSegSpatialRadius(), pd.getSegColorRadius(), pd.getSegMinRegion(), pd.getSegSpeedUp());
 
 						// GET RESULTING SEGMENTED IMAGE (RGB) PIXELS
 							int segpixels[] = new int[pixelCount];
@@ -319,7 +319,7 @@ public class FrameProcessor {
 							segImage.setRGB(0, 0, width, height, segpixels, 0, width);
 
 						// BUILD ArrayList OF POLYGONS FROM SEGMENTATION RESULTING BOUNDRIES
-							polyList = RegionTracer.bugWalk(mySegm.GetRegions(), width, height, p.getMinPixelCount(), maxArea);
+							polyList = RegionTracer.bugWalk(mySegm.GetRegions(), width, height, pd.getMinPixelCount(), maxArea);
 
 						// IF ANY OBJECT TRACES FAIL, polyList WILL RETURN NULL - SKIP FRAME...
 							if (polyList != null) {
@@ -639,6 +639,11 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.28  2003/08/08 17:25:03  yoda2
+ * Modified to accomidate the new database structure (e.g. parameter_experience_data).
+ * Added logic to display frames to EBLA GUI during rip if applicable.
+ * Removed main() method for standalone testing (no longer applicable).
+ *
  * Revision 1.27  2002/12/11 22:52:54  yoda2
  * Initial migration to SourceForge.
  *

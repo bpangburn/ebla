@@ -43,7 +43,7 @@ import com.nqadmin.Utils.DBConnector;
 
 
 /**
- * Session.java
+ * SessionData.java
  *<p>
  * EBLA - Experience-Based Language Acquisition
  *<p>
@@ -52,7 +52,7 @@ import com.nqadmin.Utils.DBConnector;
  * @author	$Author$
  * @version	$Revision$
  */
-public class Session {
+public class SessionData {
 	/**
 	 * ID of session_data record
 	 */
@@ -135,19 +135,19 @@ public class Session {
 	private boolean caseSensitive = false;
 
 	/**
-	 * string containing notes about current set of runtime parameters
+	 * string containing notes about the current session
 	 */
 	private String notes = "";
 
 
 
 	/**
-	 * Class constructor that creates a session object with all of the required session parameters.
+	 * Class constructor that creates a SessionData object with all of the required session parameters.
 	 *
 	 * @param _dbc			connection to database containing parameter table
 	 * @param _parameterID	ID of parameter record to lookup
 	 */
-    public Session(DBConnector _dbc, long _parameterID, String _description, boolean _regenIntImages, boolean _logToFile,
+    public SessionData(DBConnector _dbc, long _parameterID, String _description, boolean _regenIntImages, boolean _logToFile,
     	boolean _randomizeExp, int _descToGenerate, int _minStdDevStart, int _minStdDevStop,
     	int _minStdDevStep, int _eblaLoopCount, boolean _fixedStdDev, boolean _displayMovie,
     	boolean _displayText, boolean _caseSensitive, String _notes) {
@@ -171,15 +171,15 @@ public class Session {
 				caseSensitive = _caseSensitive;
 				notes = _notes;
 
-			// WRITE DATAMEMBERS TO DATABASE
+			// WRITE DATA MEMBERS TO DATABASE
 				writeToDB(_dbc);
 
 		} catch (Exception e) {
-			System.out.println("\n--- Session Constructor Exception ---\n");
+			System.out.println("\n--- SessionData Constructor Exception ---\n");
 			e.printStackTrace();
 		}
 
-	} // end Session()
+	} // end SessionData constructor
 
 
 
@@ -278,7 +278,7 @@ public class Session {
 
 		} catch (Exception e) {
 			result = false;
-			System.out.println("\n--- Session.writeToDB() Exception ---\n");
+			System.out.println("\n--- SessionData.writeToDB() Exception ---\n");
 			e.printStackTrace();
 		}
 
@@ -321,7 +321,7 @@ public class Session {
 
 		} catch (Exception e) {
 			result = false;
-			System.out.println("\n--- Session.updateSessionStop() Exception ---\n");
+			System.out.println("\n--- SessionData.updateSessionStop() Exception ---\n");
 			e.printStackTrace();
 		}
 
@@ -523,6 +523,9 @@ public class Session {
 
 /*
  * $Log$
+ * Revision 1.2  2003/12/26 19:53:23  yoda2
+ * Renamed Session.java to SessionData.java
+ *
  * Revision 1.1  2003/08/08 13:38:48  yoda2
  * Added for use with new database structure.
  * Contains several data members originally in the Params class along with several new data members.

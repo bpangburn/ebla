@@ -87,14 +87,14 @@ public class EntityExtractor {
 	private long runID = -1;
 
 	/**
-	 * Session object containing runtime options
+	 * SessionData object containing runtime options
 	 */
-	private Session s = null;
+	private SessionData sd = null;
 
 	/**
-	 * Params object containing vision processing parameters
+	 * ParameterData object containing vision system parameters
 	 */
-	private Params p = null;
+	private ParameterData pd = null;
 
 	/**
 	 * ArrayList of all entities for the current experience (each with an ArrayList of attributes)
@@ -115,12 +115,12 @@ public class EntityExtractor {
 	 * @param _paramExpID	unique id of current parameter-experience combination
 	 * @param _runID		unique id of current calculation run
 	 * @param _dbc			connection to EBLA database
-	 * @param _s			session options
-	 * @param _p			vision processing parameters
+	 * @param _sd			calculation session options
+	 * @param _pp			vision system parameters
 	 * @param _minSD		minimum standard deviation (<1)
 	 */
     public EntityExtractor(long _expID, long _paramExpID, long _runID,
-    	DBConnector _dbc, Session _s, Params _p, double _minSD) {
+    	DBConnector _dbc, SessionData _sd, ParameterData _pd, double _minSD) {
 
 		try {
 
@@ -137,10 +137,10 @@ public class EntityExtractor {
 				dbc = _dbc;
 
 			// SET SESSION
-				s = _s;
+				sd = _sd;
 
 			// SET PARAMETERS
-				p = _p;
+				pd = _pd;
 
 			// SET MINIMUM STANDARD DEVIATION
 				minSD = _minSD;
@@ -249,7 +249,7 @@ public class EntityExtractor {
 					if (! frameAL.isEmpty()) {
 					// ADD TO objectAL
 					// ONLY PROCESS AN OBJECT IF IT EXISTS IN MORE THAN minFrameCount FRAMES
-						if (frameAL.size() > p.getMinFrameCount()) {
+						if (frameAL.size() > pd.getMinFrameCount()) {
 							objectAL.add(frameAL);
 						}
 
@@ -320,7 +320,7 @@ public class EntityExtractor {
 						}
 
 						// REDUCE COLOR DEPTH IF APPLICABLE
-						//	if (p.getReduceColor()) {
+						//	if (pd.getReduceColor()) {
 						//		colorAL.add(new Double(Math.abs(reduceColorDepth(tmpFAD.rgb))));
 						//	} else {
 						//		colorAL.add(new Double(Math.abs(tmpFAD.rgb)));
@@ -683,7 +683,7 @@ public class EntityExtractor {
 								Attribute tmpAtt = (Attribute)attributeAL.get(i);
 
 							// CALC RANGE
-								if (s.getFixedStdDev()) {
+								if (sd.getFixedStdDev()) {
 									if (tmpAtt.avgValue >= 0) {
 									// NON-NEGATIVE
 										max = tmpAtt.avgValue * (1.0 + minSD);
@@ -912,6 +912,10 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.22  2003/08/08 13:29:14  yoda2
+ * Rewritten for use with new database structure (e.g. session_data & parameter_experience_data).
+ * Also removed main() method for standalone testing - no longer applicable.
+ *
  * Revision 1.21  2002/12/11 22:50:27  yoda2
  * Initial migration to SourceForge.
  *
