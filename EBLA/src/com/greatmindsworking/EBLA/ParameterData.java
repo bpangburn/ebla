@@ -37,7 +37,7 @@ package com.greatmindsworking.EBLA;
 
 
 import java.sql.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
 
 
@@ -548,6 +548,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.21  2004/03/02 03:16:08  yoda2
+ * Fixed typo in comments for variable that determines version of EDISON port.
+ *
  * Revision 1.20  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

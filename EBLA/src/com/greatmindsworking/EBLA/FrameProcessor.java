@@ -45,7 +45,7 @@ import javax.swing.*;
 import java.util.*;
 import javax.imageio.ImageIO;
 import java.sql.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EDISON.segm.*;
 import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
@@ -679,6 +679,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.35  2004/02/25 21:58:09  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.34  2004/02/25 21:24:45  yoda2
  * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
  *

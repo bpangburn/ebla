@@ -39,7 +39,7 @@ package com.greatmindsworking.EBLA;
 import java.awt.*;
 import java.util.*;
 import java.sql.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -116,7 +116,7 @@ public class EntityExtractor {
 	 * @param _runID		unique id of current calculation run
 	 * @param _dbc			connection to EBLA database
 	 * @param _sd			calculation session options
-	 * @param _pp			vision system parameters
+	 * @param _pd			vision system parameters
 	 * @param _minSD		minimum standard deviation (<1)
 	 */
     public EntityExtractor(long _expID, long _paramExpID, long _runID,
@@ -922,6 +922,9 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.25  2004/08/02 18:22:52  yoda2
+ * Changed attribute value averaging such that existing average is always the denominator when updating score variable.
+ *
  * Revision 1.24  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

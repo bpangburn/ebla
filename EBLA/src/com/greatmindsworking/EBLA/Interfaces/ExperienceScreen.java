@@ -46,7 +46,7 @@ import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.nqadmin.swingSet.*;
 import com.nqadmin.swingSet.datasources.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -87,8 +87,8 @@ public class ExperienceScreen extends JInternalFrame {
 	/**
 	 * ExperienceScreen constructor.
 	 *
-	 * @param the container in which the screen has to showup.
-	 * @param _dbc connection to ebla_data database
+	 * @param _desktop    the container in which the screen has to showup.
+	 * @param _dbc    connection to ebla_data database
 	 */
 	public ExperienceScreen(Container _desktop, DBConnector _dbc) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN
@@ -107,14 +107,12 @@ public class ExperienceScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR EXPERIENCE DATA
-				rowset = new SSJdbcRowSetImpl(dbc.getConnection());
+				rowset = new SSJdbcRowSetImpl(dbc.getSSConnection());
 
 				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
 				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
 
-			} catch(SQLException se) {
-				se.printStackTrace();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -203,28 +201,28 @@ public class ExperienceScreen extends JInternalFrame {
 	/**
 	 * Adds the experience screen to the specified container at the specified position.
 	 *
-	 * @param the container in which the screen has to showup.
-	 * @param the x co-ordinate of the position where the screen has to showup.
-	 * @param the y co-ordinate of the position where the screen has to showup.
+	 * @param _container    the container in which the screen has to showup.
+	 * @param _positionX    the x coordinate of the position where the screen has to showup.
+	 * @param _positionY    the y coordinate of the position where the screen has to showup.
 	 */
-	public void showUp(Container container,double positionX, double positionY){
+	public void showUp(Container _container, double _positionX, double _positionY) {
 
 		// SET THE POSITION OF THE SCREEN.
-			this.setLocation((int)positionX, (int)positionY);
+			this.setLocation((int)_positionX, (int)_positionY);
 
 		// IF THE USER WANTS TO ADD A RECORD OR IF THERE ARE RECORDS IN DB SHOW THE SCREEN
-			Component[] components = container.getComponents();
+			Component[] components = _container.getComponents();
 			int i=0;
-			for(i=0; i< components.length;i++){
-				if(components[i] instanceof ExperienceScreen ) {
+			for (i=0; i< components.length;i++) {
+				if (components[i] instanceof ExperienceScreen) {
 					System.out.println("Already on desktop");
 					break;
 				}
 			}
 
 		// IF IT IS NOT THERE ADD THE SCREEN TO THE CONTAINER
-			if(i == components.length) {
-				container.add(this);
+			if (i == components.length) {
+				_container.add(this);
 			}
 
 		// MAKE SCREEN VISIBLE, MOVE TO FRONT, & REQUEST FOCUS
@@ -233,7 +231,7 @@ public class ExperienceScreen extends JInternalFrame {
 			this.requestFocus();
 
 		// MAKE THE SCREEN SELECTED SCREEN
-			try{
+			try {
 				this.setClosed(false);
 				this.setSelected(true);
 			} catch(PropertyVetoException pve) {
@@ -247,10 +245,10 @@ public class ExperienceScreen extends JInternalFrame {
 	/**
 	 * Shows the experience screen at the default location on the specified container.
 	 *
-	 * @param the container in which the screen has to showup.
+	 * @param _container    the container in which the screen has to showup.
 	 */
-	public void showUp(Container container) {
-		showUp(container, 30,30);
+	public void showUp(Container _container) {
+		showUp(_container, 30,30);
 	} // end showUp()
 
 
@@ -260,6 +258,9 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/16 02:36:06  yoda2
+ * Began updating EBLA GUI to work with SwingSet 1.0 RC.
+ *
  * Revision 1.11  2004/02/25 21:58:39  yoda2
  * Updated copyright notice.
  *

@@ -38,7 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.sql.*;
 import java.io.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
 
@@ -1065,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.40  2004/06/24 14:35:02  yoda2
+ * Replaced mistyped executeQuery with executeUpdate.  Also fixed bug that was causing all videos to be re-analyized based on date stamp not just videos marked as "checked out."
+ *
  * Revision 1.39  2004/02/25 21:58:09  yoda2
  * Updated copyright notice.
  *

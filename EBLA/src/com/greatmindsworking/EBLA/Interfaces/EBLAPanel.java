@@ -170,8 +170,6 @@ public class EBLAPanel extends JPanel {
 	 * @param _component widget to add to panel
 	 * @param _constraints (grid bag) constraints for widget
 	 * @param _setDimensions boolean indicating whether or not to use custom EBLA dimensions
-	 *
-	 * @return new component added to panel
 	 */
 	public void add(JComponent _component, java.lang.Object _constraints, boolean _setDimensions) {
 
@@ -344,6 +342,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.7  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.6  2003/12/24 19:15:02  yoda2
  * Added code to set TextField and TextArea focus when the mouse passes over the corresponding labels.
  * Added code to set Minimum and Preferred size for all widgets.

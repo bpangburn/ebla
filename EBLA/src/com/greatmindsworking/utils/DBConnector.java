@@ -222,7 +222,7 @@ public class DBConnector {
 
 		try {
 			
-			if (driver == null) {
+            if (driver == "" || driver ==null) {
 				driver = jdbcDriver;
 			}
 
@@ -385,4 +385,7 @@ public class DBConnector {
 
 /*
  * $Log$
+ * Revision 1.1  2005/02/17 19:48:12  yoda2
+ * Replacing utils.jar with com.greatmindsworking.utils.DBConnector.java
+ *
  */

@@ -37,7 +37,7 @@ package com.greatmindsworking.EBLA;
 
 
 import java.sql.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import java.net.InetAddress;
 
 
@@ -533,6 +533,9 @@ public class SessionData {
 
 /*
  * $Log$
+ * Revision 1.5  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.4  2004/01/13 17:11:03  yoda2
  * Added code to store local hostname & IP.
  *

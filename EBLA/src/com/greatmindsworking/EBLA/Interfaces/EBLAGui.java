@@ -43,7 +43,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
 import java.beans.PropertyVetoException;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -645,6 +645,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.13  2004/02/25 21:58:59  yoda2
+ * Updated copyright notice & version (0.7.0-alpha).
+ *
  * Revision 1.12  2004/01/13 18:33:22  yoda2
  * Fixed dialog behavior when database settings are missing.
  *

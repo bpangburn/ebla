@@ -38,7 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.util.*;
 import java.sql.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import java.io.*;
 
 
@@ -1406,6 +1406,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.25  2004/08/02 21:28:03  yoda2
+ * Remove non-standard characters from comments for Linux compatability.
+ *
  * Revision 1.24  2004/06/26 05:01:28  yoda2
  * Fixed various typos in comments.
  *

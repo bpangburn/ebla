@@ -99,7 +99,7 @@ public class FrameObject {
 	 * Class constructor that takes a polygon and extracts useful information about it
 	 *
 	 * @param _poly Java polygon object
-	 * @param _expID ID of experience record containing object
+	 * @param _frameIndex index of frame containing object
 	 * @param _rgb RGB color of object
 	 */
     public FrameObject(Polygon _poly, int _frameIndex, int _rgb) {
@@ -212,6 +212,9 @@ public class FrameObject {
 
 /*
  * $Log$
+ * Revision 1.9  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.8  2003/08/08 13:30:38  yoda2
  * Rewritten for use with new database structure (e.g. parameter_experience_data).
  *

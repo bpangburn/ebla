@@ -39,7 +39,7 @@ package com.greatmindsworking.EDISON.utils;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
-import com.nqadmin.Utils.DBConnector;
+import com.greatmindsworking.utils.DBConnector;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import com.greatmindsworking.EDISON.segm.*;
@@ -595,6 +595,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/03 19:07:17  yoda2
+ * Made addtions to select version of edision port and to control segmentation messages.
+ *
  * Revision 1.2  2004/02/25 22:14:57  yoda2
  * Made changes to allow different speedup options.
  *

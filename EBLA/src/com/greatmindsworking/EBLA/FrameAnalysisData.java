@@ -113,7 +113,7 @@ public class FrameAnalysisData {
 	/**
 	 * Class constructor that sets data members based on a record from the frame_analysis_data table
 	 *
-	 * @param _fasRS ResultSet with a current record for frame_analysis_data
+	 * @param _fadRS ResultSet with a current record for frame_analysis_data
 	 */
     public FrameAnalysisData(ResultSet _fadRS) {
 
@@ -198,6 +198,9 @@ public class FrameAnalysisData {
 
 /*
  * $Log$
+ * Revision 1.11  2004/08/02 18:20:29  yoda2
+ * Change "color" attribute calc from 256 grayscale to 16M -> 216 RGB color reduction.
+ *
  * Revision 1.10  2004/06/26 02:56:56  yoda2
  * Started conversion of 256 grayscale calc to 216 color calc for "color" attribute.  Still need to update other references and attribute name in database.
  *
