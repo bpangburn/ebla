@@ -63,137 +63,176 @@ import com.nqadmin.Utils.DBConnector;
  */
 public class ParameterScreen extends JInternalFrame {
 
-	SelectExperiencesScreen selectExperiencesScreen = null;
+	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR PARAMETER SCREEN
+		Container desktop = null;
 
-	JTabbedPane tabbedPane = new JTabbedPane();
+	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
+		DBConnector connector = null;
+		JdbcRowSetImpl rowset = null;
 
-	EBLAPanel generalPanel   = new EBLAPanel();
-	EBLAPanel entitiesPanel  = new EBLAPanel();
-	EBLAPanel lexemesPanel   = new EBLAPanel();
-	EBLAPanel visionPanel    = new EBLAPanel();
-	EBLAPanel resultsPanel   = new EBLAPanel();
-	EBLAPanel miscPanel      = new EBLAPanel();
+	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
+		JTabbedPane tabbedPane = new JTabbedPane();
 
-	DBConnector connector       = null;
-	SSDataNavigator dataNavigator = null;
-	JdbcRowSetImpl rowset           = null;
+	// INITIALIZE "GENERAL" TAB AND CONTENTS
+		EBLAPanel generalPanel   		= new EBLAPanel();
+
+		JLabel lblParameterID			= new JLabel("Paramter ID");
+		JTextField txtParameterID 		= new JTextField();
+
+		JLabel lblDescription 			= new JLabel("Description");
+		JTextField txtDescription 		= new JTextField();
+
+	// INITIALIZE "ENTITIES" TAB AND CONTENTS
+		EBLAPanel entitiesPanel  		= new EBLAPanel();
+
+	// INITIALIZE "LEXEMES" TAB AND CONTENTS
+		EBLAPanel lexemesPanel   		= new EBLAPanel();
+
+	// INITIALIZE "VISION PARAMETERS" TAB AND CONTENTS
+		EBLAPanel visionPanel    		= new EBLAPanel();
+
+		JLabel lblSegColorRadius  		= new JLabel("Segmentation Color Radius");
+		JTextField txtSegColorRadius 	= new JTextField();
+
+		JLabel lblSegSpatialRadius  	= new JLabel("Segmentation Spatial Radius");
+		JTextField txtSegSpatialRadius 	= new JTextField();
+
+		JLabel lblSegMinRegion  		= new JLabel("Segmentation Minimum Region");
+		JTextField txtSegMinRegion 		= new JTextField();
+
+		JLabel lblSegSpeedUpCode  		= new JLabel("Segmentation Speed Up");
+		SSComboBox cmbSegSpeedUpCode 	= new SSComboBox();
+
+		JLabel lblBackGroundPixels  	= new JLabel("Background Pixel Threshold");
+		JTextField txtBackGroundPixels 	= new JTextField();
+
+		JLabel lblMinPixelCount  		= new JLabel("Min Pixels for Object");
+		JTextField txtMinPixelCount 	= new JTextField();
+
+		JLabel lblMinFrameCount  		= new JLabel("Min Frames for Object");
+		JTextField txtMinFrameCount 	= new JTextField();
+
+		JLabel lblReduceColorCode  		= new JLabel("Reduce Color Depth?");
+		SSComboBox cmbReduceColorCode 	= new SSComboBox();
+
+	// INITIALIZE "RESULTS" TAB AND CONTENTS
+		EBLAPanel resultsPanel   		= new EBLAPanel();
+
+		JLabel lblTmpPath  				= new JLabel("Intermediate Results Path");
+		JTextField txtTmpPath 			= new JTextField();
+
+		JLabel lblFramePrefix 			= new JLabel("Frame Image File Prefix");
+		JTextField txtFramePrefix 		= new JTextField();
+
+		JLabel lblSegPrefix 			= new JLabel("Segmented Image File Prefix");
+		JTextField txtSegPrefix 		= new JTextField();
+
+		JLabel lblPolyPrefix  			= new JLabel("Polygon Image File Prefix");
+		JTextField txtPolyPrefix 		= new JTextField();
+
+	// INITIALIZE "MISC" TAB AND CONTENTS
+		EBLAPanel miscPanel      		= new EBLAPanel();
+
+		JLabel lblNotes  				= new JLabel("Notes");
+		JTextArea txtNotes 				= new JTextArea(30,15);
+
+	// INITIALIZE SCREENS CALLED FROM PARAMETER SCREEN AND CORRESPONDING BUTTONS
+		SelectExperiencesScreen selectExperiencesScreen = null;
+		JButton btnSelectExperiences = new JButton("Select\nExperiences");
+		SessionScreen sessionScreen = null;
+		JButton btnSetSession = new JButton("Start Session");
+
+	// INITIALIZE DATA NAVIGATOR
+		SSDataNavigator dataNavigator = null;
 
 
+	public ParameterScreen(Container _desktop) {
 
-	JLabel lblDescription 		= new JLabel("Description");
-	JTextField txtDescription 	= new JTextField();
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE VISION PARAMETER SCREEN
+			super("EBLA Vision Parameter Form",false,true,true,true);
 
-	JButton btnSelectExperiences = new JButton("Select \n Experiences");
-	JButton btnSetSession = new JButton("Start Session");
+		// SET SIZE
+			setSize(550,400);
 
-	JTextField txtParameterID = new JTextField();
+		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
+			desktop = _desktop;
 
-	//LABELS FOR VISION PANEL
-	JLabel lblSegColorRadius  		= new JLabel("Segmentation Color Radius");
-	JLabel lblSegSpatialRadius  	= new JLabel("Segmentation Spatial Radius");
-	JLabel lblSegMinRegion  		= new JLabel("Segmentation Minimum Region");
-	JLabel lblSegSpeedUpCode  		= new JLabel("Segmentation Speed Up");
-	JLabel lblBackGroundPixels  	= new JLabel("Background Pixel Threshold");
-	JLabel lblMinPixelCount  		= new JLabel("Min Pixels for Object");
-	JLabel lblMinFrameCount  		= new JLabel("Min Frames for Object");
-	JLabel lblReduceColorCode  		= new JLabel("Reduce Color Depth?");
+//btnSetSession.setToolTipText("Prasanth");
+		// DATABASE CONFIGURATION
+			try {
 
-	JTextField txtSegColorRadius 	= new JTextField();
-	JTextField txtSegSpatialRadius 	= new JTextField();
-	JTextField txtSegMinRegion 		= new JTextField();
-	SSComboBox cmbSegSpeedUpCode 	= new SSComboBox();
-	JTextField txtBackGroundPixels 	= new JTextField();
-	JTextField txtMinPixelCount 	= new JTextField();
-	JTextField txtMinFrameCount 	= new JTextField();
-	SSComboBox cmbReduceColorCode 	= new SSComboBox();
+			// INITIALIZE DATABASE CONNECTION
+				connector = new DBConnector(EBLAGui.dbFileName,true);
 
-	//LABELS FOR RESULTS PANEL
-	JLabel lblTmpPath  				= new JLabel("Intermediate Results Path");
-	JLabel lblFramePrefix 			= new JLabel("Frame Image File Prefix");
-	JLabel lblSegPrefix 			= new JLabel("Segmented Image File Prefix");
-	JLabel lblPolyPrefix  			= new JLabel("Polygon Image File Prefix");
+			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
+				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
 
-	JTextField txtTmpPath 			= new JTextField();
-	JTextField txtFramePrefix 		= new JTextField();
-	JTextField txtSegPrefix 		= new JTextField();
-	JTextField txtPolyPrefix 		= new JTextField();
-
-	JLabel lblNotes  				= new JLabel("Notes");
-	JTextArea txtNotes = new JTextArea(30,15);
-	Container desktop =null;
-
-	SessionScreen sessionScreen = null;
-
-	public ParameterScreen(Container _desktop){
-		super("EBLA Vision Parameter Form",false,true,true,true);
-		setSize(550,400);
-		desktop = _desktop;
-		btnSetSession.setToolTipText("Prasanth");
-		try{
-			connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-			String url = bufRead.readLine();
-			if (url == null) {
-				url = "";
-			}
-
-			String username = bufRead.readLine();
-			if (username == null) {
-				username = "";
-			}
-
-			String password = bufRead.readLine();
-			if (password == null) {
-				password = "";
-			}
-
-			rowset = new JdbcRowSetImpl(url, username, password);
-
-			rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
-			dataNavigator = new SSDataNavigator(rowset);
-			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
-		}catch(SQLException se){
-			se.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		btnSelectExperiences.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				long parameterID = -1;
-				if( txtParameterID.getText().trim().equals("") ){
+				String url = bufRead.readLine();
+				if (url == null) {
+					url = "";
 				}
-				else{
-					try{
-						parameterID = Long.parseLong(txtParameterID.getText());
-					}catch(NumberFormatException nfe){
-						nfe.printStackTrace();
-					}catch(Exception e){
-						e.printStackTrace();
+
+				String username = bufRead.readLine();
+				if (username == null) {
+					username = "";
+				}
+
+				String password = bufRead.readLine();
+				if (password == null) {
+					password = "";
+				}
+
+			// INITIALIZE ROWSET FOR PARAMETER DATA
+				rowset = new JdbcRowSetImpl(url, username, password);
+
+				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
+				dataNavigator = new SSDataNavigator(rowset);
+				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+
+			} catch(SQLException se) {
+				se.printStackTrace();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
+		// SETUP ACTION LISTENER FOR SELECT EXPERIENCES BUTTON
+			btnSelectExperiences.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					long parameterID = -1;
+					if (! txtParameterID.getText().trim().equals("")) {
+						try {
+							parameterID = Long.parseLong(txtParameterID.getText());
+						} catch(NumberFormatException nfe){
+							nfe.printStackTrace();
+						} catch(Exception e){
+							e.printStackTrace();
+						}
 					}
+					if (selectExperiencesScreen == null) {
+						selectExperiencesScreen = new SelectExperiencesScreen(parameterID);
+					} else {
+						selectExperiencesScreen.setParameterID(parameterID);
+					}
+					selectExperiencesScreen.showUp(desktop);
 				}
-				if(selectExperiencesScreen == null){
-					selectExperiencesScreen = new SelectExperiencesScreen(parameterID);
-				}else{
-					selectExperiencesScreen.setParameterID(parameterID);
-				}
-				selectExperiencesScreen.showUp(desktop);
-			}
-		});
+			});
 
-		btnSetSession.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				long parameterID = -1;
-				parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
+		// SETUP ACTION LISTENER FOR START SESSION BUTTON
+			btnSetSession.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					long parameterID = -1;
+					parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
 
-				if(sessionScreen == null){
-					sessionScreen = new SessionScreen(desktop,parameterID);
+					if(sessionScreen == null) {
+						sessionScreen = new SessionScreen(desktop,parameterID);
+					}
+					sessionScreen.showUp(desktop);
 				}
-				sessionScreen.showUp(desktop);
-			}
-		});
+			});
+
+
+// STOPPED HERE....
+
 
 		txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
 
@@ -337,7 +376,7 @@ public class ParameterScreen extends JInternalFrame {
 
 
 
-	}// END OF CONSTRUCTOR
+	} // END OF CONSTRUCTOR
 
 	/**
 	 * adds the census screen to the specified container at the specified position.
@@ -397,6 +436,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/25 23:07:46  yoda2
+ * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *
