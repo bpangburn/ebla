@@ -184,17 +184,13 @@ public class MSSystem {
 	 * This method should be altered if a special device either than stderr is desired
 	 * to be used as an output prompt.
 	 *
-	 * Usage: Prompt(PromptStr, varArgs)
+	 * Usage: Prompt(varArgs)
 	 *
 	 * Pre:
-	 *   - PromptStr is a string containing delimeters that is to be output to the user.
-	 *   - a variable set of arguments is also passed to this method that are used to
-	 *     replace the delimeters contained by PromptStr
+	 *   - a variable set of arguments
 	 * Post:
-	 *   - the delimeters of PromptStr have been replaced accordingly using the variable
-	 *     set of arguments and the resulting string has been output to the user.
+	 *   - string has been output to the user
 	 *
-	 * @param PromptStr	a string possibly containing delimeters that is to be output to the user
 	 * @param args		a variable set of arguments to be placed into the prompt string
 	 */
 	public void Prompt(String args) {
@@ -217,6 +213,9 @@ public class MSSystem {
 
 /*
  * $Log$
+ * Revision 1.10  2003/11/24 16:20:10  yoda2
+ * Updated copyright to 2002-2003.
+ *
  * Revision 1.9  2002/12/11 23:04:21  yoda2
  * Initial migration to SourceForge.
  *

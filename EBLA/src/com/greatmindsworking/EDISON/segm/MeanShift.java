@@ -674,8 +674,8 @@ public class MeanShift {
 	 *  - the height and width of a previous data set has been undefined.
 	 *
 	 * @param x		a floating point array
-	 * @param L		the number of data points stored by x
-	 * @param N		the dimension of the data points stored by x
+	 * @param L_	the number of data points stored by x
+	 * @param N_	the dimension of the data points stored by x
 	 */
 	public void DefineInput(float[] x, int L_, int N_) {
 
@@ -2970,6 +2970,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.15  2003/11/24 16:20:10  yoda2
+ * Updated copyright to 2002-2003.
+ *
  * Revision 1.14  2003/11/24 14:56:26  yoda2
  * Updated Java port to bring code in sync with 4-14-2003 release of original EDISON C++ code (had been based on 4-25-2002 version).  The major changes are:
  * 1. LUV image data is now stored in floating point format (was integer)

@@ -130,7 +130,7 @@ public class RegionList {
 	 *   - a region list object has been properly init
 	 *     ialized.
 	 *
-	 * @param maxRegions	the maximum amount of regions that can be classified by
+	 * @param maxRegions_	the maximum amount of regions that can be classified by
 	 *						the region list
 	 * @param L_			the length of the input data set being classified by the
 	 *						region list object
@@ -405,6 +405,9 @@ public class RegionList {
 
 /*
  * $Log$
+ * Revision 1.10  2003/11/24 16:20:10  yoda2
+ * Updated copyright to 2002-2003.
+ *
  * Revision 1.9  2002/12/11 23:06:15  yoda2
  * Initial migration to SourceForge.
  *

@@ -313,9 +313,9 @@ public class MSImageProcessor extends MeanShift {
 	 *      class to be segmented.
 	 *
 	 * @param data_		A one dimensional unsigned char array of RGB vectors
-	 * @param ImageType	specifies the image type: COLOR or GREYSCALE
-	 * @param height	the image height
-	 * @param width		the image width
+	 * @param type		specifies the image type: COLOR or GREYSCALE
+	 * @param height_	the image height
+	 * @param width_	the image width
 	 */
 	public void DefineImage(int[] data_, ImageType type, int height_, int width_) {
 
@@ -390,9 +390,9 @@ public class MSImageProcessor extends MeanShift {
 	 *      class to be segmented.
 	 *
 	 * @param data_		A one dimensional unsigned char array of RGB vectors
-	 * @param ImageType	specifies the image type: COLOR or GREYSCALE
-	 * @param height	the image height
-	 * @param width		the image width
+	 * @param type		specifies the image type: COLOR or GREYSCALE
+	 * @param height_	the image height
+	 * @param width_	the image width
 	 */
 	public void DefineBgImage(int[] data_, ImageType type, int height_, int width_) {
 //-bp- Not sure why this method is necessary as the code seems identical to the exiting
@@ -1102,9 +1102,9 @@ public class MSImageProcessor extends MeanShift {
 	 *     result has been stored in rgbVal.
 	 *
 	 * @param luvVal	a floating point array containing the LUV vector
-	 * @param rgbVal	an unsigned char array containing the RGB vector
+	 * @param offset	the offset in the luvVal array where the luv components are to be written
 	 *
-	 * @return integer values of RGB
+	 * @return integer value of RGB
 	 */
 	public int LUVtoRGB(float[] luvVal, int offset) {
 
@@ -1348,8 +1348,6 @@ public class MSImageProcessor extends MeanShift {
 	 *   - no memory has been allocated for labels_out, modes_out, and MPC_out.
 	 *   - -1 is returned for regionCount.
 	 *
-	 * @param regionCount	an integer that specifies the number of regions contained in
-	 *						the processed image
 	 * @param labels_out	a floating point array of length regionCount*N containing the
 	 *						feature space component of each region (e.g. LUV), and indexed
 	 * 						by region label
@@ -4920,6 +4918,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.13  2003/11/24 16:20:10  yoda2
+ * Updated copyright to 2002-2003.
+ *
  * Revision 1.12  2003/11/24 14:56:26  yoda2
  * Updated Java port to bring code in sync with 4-14-2003 release of original EDISON C++ code (had been based on 4-25-2002 version).  The major changes are:
  * 1. LUV image data is now stored in floating point format (was integer)
