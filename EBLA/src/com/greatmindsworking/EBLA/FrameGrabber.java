@@ -317,7 +317,7 @@ public class FrameGrabber extends JFrame {
 						for (int frameCounter=1; frameCounter<=totalFrames; frameCounter++) {
 							// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
 								if (statusScreen.getEBLACanceled()) {
-									return(0);
+									return(-1);
 								}
 
 							// SHOW FRAME BEING PROCESSED
@@ -492,6 +492,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.12  2004/01/05 23:35:57  yoda2
+ * Added code to recommend garbage collection following ripping of frames and frame analysis.
+ *
  * Revision 1.11  2003/12/31 19:38:24  yoda2
  * Fixed various thread synchronization issues.
  *

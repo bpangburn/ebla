@@ -229,7 +229,7 @@ public class FrameProcessor {
   	/**
 	 * Loops through each frame in an experience, extracting significant object data from each.
 	 */
-	public void processFrames() {
+	public boolean processFrames() {
 
 		// DECLARATIONS
 			String framePath = expPath + pd.getFramePrefix();	// SOURCE PATH PREFIX FOR EXPERIENCE FRAMES
@@ -249,6 +249,7 @@ public class FrameProcessor {
 			ArrayList polyList = null;							// ARRAYLIST CONTAINING POLYGONS FOUND IN SEGMENTED IMAGE
 
 			int sleepInterval = 1;
+			boolean processorResult = false;
 
 
 		try {
@@ -260,7 +261,7 @@ public class FrameProcessor {
 				for (int i=firstFrameIndex; i<=lastFrameIndex; i++) {
 					// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
 						if (statusScreen.getEBLACanceled()) {
-							return;
+							return processorResult;
 						}
 
 					// INITIALIZE PROGRESS BAR
@@ -372,10 +373,18 @@ public class FrameProcessor {
 
 				} // end for
 
+			// INDICATE SUCCESS
+				processorResult = true;
+
+
 		} catch (Exception e) {
 			System.out.println("\n--- FrameProcessor.processFrames() Exception ---\n");
 			e.printStackTrace();
 		}
+
+		// RETURN
+			return processorResult;
+
 
   	} // end processFrames()
 
@@ -660,6 +669,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.32  2003/12/31 19:38:24  yoda2
+ * Fixed various thread synchronization issues.
+ *
  * Revision 1.31  2003/12/31 15:45:51  yoda2
  * Added speed up factor for high speedup segmentation option in latest release of jEDISON.
  *

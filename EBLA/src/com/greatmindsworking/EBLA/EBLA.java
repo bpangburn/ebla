@@ -244,6 +244,7 @@ public class EBLA extends Thread {
 			int sleepInterval = 1;
 
 			boolean stopEBLA = false;
+			boolean processorResult = false;
 
 
 		try {
@@ -404,7 +405,7 @@ public class EBLA extends Thread {
 									expTmpPath, dbc, pd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
-								fp.processFrames();
+								processorResult = fp.processFrames();
 
 							// SET FRAME PROCESSOR TO NULL
 								fp = null;
@@ -412,8 +413,15 @@ public class EBLA extends Thread {
 							// IF UPDATING frame_analysis_data, INDICATE THAT CALCS FOR CURRENT EXPERIENCE
 							// HAVE BEEN COMPLETED IN parameter_experience_data
 								if (updateFAD) {
-									sql = "UPDATE parameter_experience_data SET calc_status_code=2"
-										+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+									if (frameCount>-1 && processorResult) {
+									// FRAME ANALYSIS DATA GENERATED
+										sql = "UPDATE parameter_experience_data SET calc_status_code=2"
+											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+									} else {
+									// SOMETHING WENT WRONG
+										sql = "UPDATE parameter_experience_data SET calc_status_code=0"
+											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+									}
 
 									tmpState.executeUpdate(sql);
 								}
@@ -561,17 +569,29 @@ public class EBLA extends Thread {
 									expTmpPath, dbc, pd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
-								fp.processFrames();
+								processorResult = fp.processFrames();
 
 							// SET FRAME PROCESSOR TO NULL
 								fp = null;
 
 							// INDICATE THAT CALCS FOR CURRENT EXPERIENCE
 							// HAVE BEEN COMPLETED IN parameter_experience_data
-								sql = "UPDATE parameter_experience_data SET calc_status_code=2"
-									+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+								if (frameCount>-1 && processorResult) {
+								// FRAME ANALYSIS DATA GENERATED
+									sql = "UPDATE parameter_experience_data SET calc_status_code=2"
+										+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+								} else {
+								// SOMETHING WENT WRONG
+									sql = "UPDATE parameter_experience_data SET calc_status_code=0"
+										+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
+								}
 
 								tmpState.executeUpdate(sql);
+
+							// HIDE INTERMEDIATE IMAGES
+								statusScreen.hideImage(1);
+								statusScreen.hideImage(2);
+								statusScreen.hideImage(3);
 
 							// RECOMMEND GARBAGE COLLECTION
 								System.gc();
@@ -1036,6 +1056,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.33  2004/01/05 23:35:57  yoda2
+ * Added code to recommend garbage collection following ripping of frames and frame analysis.
+ *
  * Revision 1.32  2003/12/31 19:38:24  yoda2
  * Fixed various thread synchronization issues.
  *
