@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import sun.jdbc.rowset.JdbcRowSet;
-import com.nqadmin.swingUtils.*;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.nqadmin.swingSet.*;
 import com.greatmindsworking.EBLA.Session;
 import com.nqadmin.Utils.DBConnector;
 
@@ -75,8 +75,8 @@ public class SessionScreen extends JInternalFrame {
 	EBLAPanel miscPanel      = new EBLAPanel();
 
 	DBConnector connector       = null;
-	DataNavigator dataNavigator = null;
-	JdbcRowSet rowset           = null;
+	SSDataNavigator dataNavigator = null;
+	JdbcRowSetImpl rowset           = null;
 
 
 
@@ -86,7 +86,7 @@ public class SessionScreen extends JInternalFrame {
 	JButton btnStartEBLA  = new JButton("Start EBLA");
 
 /*	JLabel lblParameterCode 		= new JLabel("Parameter Code");
-	MyDBComboBox cmbParameterCode 	= new MyDBComboBox();
+	SSDBComboBox cmbParameterCode 	= new SSDBComboBox();
 	JButton btnParameterScreen = new JButton("...");
 */
 	//LABELS FOR GENERAL PANEL
@@ -98,12 +98,12 @@ public class SessionScreen extends JInternalFrame {
 	JLabel lblRegenerateImages        = new JLabel("Regenerate Local Images?");
 
 	//COMBOS FOR THE GENERAL PANEL
-	MyComboBox cmbProcessVideosCode   = new MyComboBox();
-	MyComboBox cmbProcessEntitiesCode = new MyComboBox();
-	MyComboBox cmbProcessLexemesCode  = new MyComboBox();
-	MyComboBox cmbLogToFileCode       = new MyComboBox();
-	MyComboBox cmbRandomizeExpCode    = new MyComboBox();
-	MyComboBox cmbRegenerateImages    = new MyComboBox();
+	SSComboBox cmbProcessVideosCode   = new SSComboBox();
+	SSComboBox cmbProcessEntitiesCode = new SSComboBox();
+	SSComboBox cmbProcessLexemesCode  = new SSComboBox();
+	SSComboBox cmbLogToFileCode       = new SSComboBox();
+	SSComboBox cmbRandomizeExpCode    = new SSComboBox();
+	SSComboBox cmbRegenerateImages    = new SSComboBox();
 
 	//LABELS FOR THE ENTITIES PANEL
 	JLabel lblMinSDStart       = new JLabel("Starting Min. Std. Dev.");
@@ -117,7 +117,7 @@ public class SessionScreen extends JInternalFrame {
 	JTextField txtMinSDStop    = new JTextField();
 	JTextField txtMinSDStep    = new JTextField();
 	JTextField txtLoopCount    = new JTextField();
-	MyComboBox cmbFixedSDCode  = new MyComboBox();
+	SSComboBox cmbFixedSDCode  = new SSComboBox();
 
 	// LABELS FOR LEXEMES PANEL
 
@@ -125,15 +125,15 @@ public class SessionScreen extends JInternalFrame {
 	JLabel lblCaseSensitiveCode     = new JLabel("Are Lexemes Case Sensitive?");
 
 	JTextField txtDescToGenerate     = new JTextField();
-	MyComboBox cmbCaseSensitiveCode = new MyComboBox();
+	SSComboBox cmbCaseSensitiveCode = new SSComboBox();
 
 	JLabel lblDisplayMovieCode  		= new JLabel("Display Videos When Ripping?");
 	JLabel lblDisplayText  			= new JLabel("Display Detailed Messages");
 //	JLabel lblSaveImagesCode  		= new JLabel("Save Images Code");
 
-	MyComboBox cmbDisplayMovieCode 	= new MyComboBox();
-	MyComboBox cmbDisplayText 		= new MyComboBox();
-//	MyComboBox cmbSaveImagesCode	= new MyComboBox();
+	SSComboBox cmbDisplayMovieCode 	= new SSComboBox();
+	SSComboBox cmbDisplayText 		= new SSComboBox();
+//	SSComboBox cmbSaveImagesCode	= new SSComboBox();
 
 	JLabel lblNotes  				= new JLabel("Notes");
 	JTextArea txtNotes 				= new JTextArea(30,15);
@@ -148,36 +148,36 @@ public class SessionScreen extends JInternalFrame {
 		desktop = _desktop;
 		parameterID = _parameterID;
 
-		cmbLogToFileCode.setOption(MyComboBox.YES_NO_OPTION);
+		cmbLogToFileCode.setOption(SSComboBox.YES_NO_OPTION);
 
-//		cmbLogToFileCode.setDocument(new TextDocument(rowset,"log_to_file_code"));
+//		cmbLogToFileCode.setDocument(new SSTextDocument(rowset,"log_to_file_code"));
 
-		cmbRandomizeExpCode.setOption(MyComboBox.YES_NO_OPTION);
-		cmbRegenerateImages.setOption(MyComboBox.YES_NO_OPTION);
+		cmbRandomizeExpCode.setOption(SSComboBox.YES_NO_OPTION);
+		cmbRegenerateImages.setOption(SSComboBox.YES_NO_OPTION);
 
-//		cmbRandomizeExpCode.setDocument(new TextDocument(rowset,"randomize_exp_code"));
+//		cmbRandomizeExpCode.setDocument(new SSTextDocument(rowset,"randomize_exp_code"));
 
 /*
-		txtMinSDStart.setDocument(new TextDocument(rowset,"min_sd_start"));
-		txtMinSDStop.setDocument(new TextDocument(rowset,"min_sd_stop"));
-		txtMinSDStep.setDocument(new TextDocument(rowset,"min_sd_step"));
-		txtLoopCount.setDocument(new TextDocument(rowset,"loop_count"));
+		txtMinSDStart.setDocument(new SSTextDocument(rowset,"min_sd_start"));
+		txtMinSDStop.setDocument(new SSTextDocument(rowset,"min_sd_stop"));
+		txtMinSDStep.setDocument(new SSTextDocument(rowset,"min_sd_step"));
+		txtLoopCount.setDocument(new SSTextDocument(rowset,"loop_count"));
 */
-		cmbFixedSDCode.setOption(MyComboBox.YES_NO_OPTION);
-//		cmbFixedSDCode.setDocument(new TextDocument(rowset,"fixed_sd_code"));
+		cmbFixedSDCode.setOption(SSComboBox.YES_NO_OPTION);
+//		cmbFixedSDCode.setDocument(new SSTextDocument(rowset,"fixed_sd_code"));
 
 
 
-//		txtDescToGenerate.setDocument(new TextDocument(rowset,"desc_to_generate"));
-		cmbCaseSensitiveCode.setOption(MyComboBox.YES_NO_OPTION);
-//		cmbCaseSensitiveCode.setDocument(new TextDocument(rowset,"case_sensitive_code"));
+//		txtDescToGenerate.setDocument(new SSTextDocument(rowset,"desc_to_generate"));
+		cmbCaseSensitiveCode.setOption(SSComboBox.YES_NO_OPTION);
+//		cmbCaseSensitiveCode.setDocument(new SSTextDocument(rowset,"case_sensitive_code"));
 
-		cmbDisplayMovieCode.setOption(MyComboBox.YES_NO_OPTION);
-//		cmbDisplayMovieCode.setDocument(new TextDocument(rowset,"display_movie_code"));
-		cmbDisplayText.setOption(MyComboBox.YES_NO_OPTION);
-//		cmbDisplayText.setDocument(new TextDocument(rowset,"display_text_code"));
-//		cmbSaveImagesCode.setOption(MyComboBox.YES_NO_OPTION);
-//		cmbSaveImagesCode.setDocument(new TextDocument(rowset,"save_images_code"));
+		cmbDisplayMovieCode.setOption(SSComboBox.YES_NO_OPTION);
+//		cmbDisplayMovieCode.setDocument(new SSTextDocument(rowset,"display_movie_code"));
+		cmbDisplayText.setOption(SSComboBox.YES_NO_OPTION);
+//		cmbDisplayText.setDocument(new SSTextDocument(rowset,"display_text_code"));
+//		cmbSaveImagesCode.setOption(SSComboBox.YES_NO_OPTION);
+//		cmbSaveImagesCode.setDocument(new SSTextDocument(rowset,"save_images_code"));
 
 /*
 		btnParameterScreen.setPreferredSize(new Dimension(25,20));
@@ -452,4 +452,7 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */

@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import sun.jdbc.rowset.JdbcRowSet;
-import com.nqadmin.swingUtils.*;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -79,8 +79,8 @@ public class ExperienceScreen extends JInternalFrame {
 	JTextArea txtNotes = new JTextArea(20,10);
 
 	DBConnector connector       = null;
-	DataNavigator dataNavigator = null;
-	JdbcRowSet rowset           = null;
+	SSDataNavigator dataNavigator = null;
+	JdbcRowSetImpl rowset           = null;
 
 	int includeCode =-1;
 	Container desktop = null;
@@ -107,27 +107,41 @@ public class ExperienceScreen extends JInternalFrame {
 
 		try{
 			connector = new DBConnector(EBLAGui.dbFileName,true);
+
 			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-			rowset    = new JdbcRowSet();
-			rowset.setUrl(bufRead.readLine());
-			rowset.setUsername(bufRead.readLine());
-			rowset.setPassword(bufRead.readLine());
+
+			String url = bufRead.readLine();
+			if (url == null) {
+				url = "";
+			}
+
+			String username = bufRead.readLine();
+			if (username == null) {
+				username = "";
+			}
+
+			String password = bufRead.readLine();
+			if (password == null) {
+				password = "";
+			}
+
+			rowset = new JdbcRowSetImpl(url, username, password);
 
 			rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
-			dataNavigator = new DataNavigator(rowset);
-			dataNavigator.setDBNav(new DBNavImp(getContentPane()));
+			dataNavigator = new SSDataNavigator(rowset);
+			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
 		}catch(SQLException se){
 			se.printStackTrace();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 
-		txtDescription.setDocument(new TextDocument(rowset,"description"));
-		txtVideoPath.setDocument(new TextDocument(rowset,"video_path"));
-		txtTmpPath.setDocument(new TextDocument(rowset,"tmp_path"));
-		txtExperienceLexemes.setDocument(new TextDocument(rowset,"experience_lexemes"));
-		//txtMatchingCode.setDocument(new TextDocument(rowset,"include_code"));
-		txtNotes.setDocument(new TextDocument(rowset,"notes"));
+		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+		txtVideoPath.setDocument(new SSTextDocument(rowset,"video_path"));
+		txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+		txtExperienceLexemes.setDocument(new SSTextDocument(rowset,"experience_lexemes"));
+		//txtMatchingCode.setDocument(new SSTextDocument(rowset,"include_code"));
+		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
 
 		EBLAPanel panel  = new EBLAPanel();
 		panel.setLayout(new GridBagLayout());
@@ -229,4 +243,7 @@ public class ExperienceScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */

@@ -43,7 +43,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.nqadmin.swingUtils.*;
+import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -530,6 +530,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2003/09/23 03:01:30  yoda2
+ * Code cleanup & documentation.
+ *
  * Revision 1.1  2003/08/08 20:09:21  yoda2
  * Added preliminary version of new GUI for EBLA to SourceForge.
  *

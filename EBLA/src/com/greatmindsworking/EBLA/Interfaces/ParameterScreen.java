@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import sun.jdbc.rowset.JdbcRowSet;
-import com.nqadmin.swingUtils.*;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -75,8 +75,8 @@ public class ParameterScreen extends JInternalFrame {
 	EBLAPanel miscPanel      = new EBLAPanel();
 
 	DBConnector connector       = null;
-	DataNavigator dataNavigator = null;
-	JdbcRowSet rowset           = null;
+	SSDataNavigator dataNavigator = null;
+	JdbcRowSetImpl rowset           = null;
 
 
 
@@ -101,11 +101,11 @@ public class ParameterScreen extends JInternalFrame {
 	JTextField txtSegColorRadius 	= new JTextField();
 	JTextField txtSegSpatialRadius 	= new JTextField();
 	JTextField txtSegMinRegion 		= new JTextField();
-	MyComboBox cmbSegSpeedUpCode 	= new MyComboBox();
+	SSComboBox cmbSegSpeedUpCode 	= new SSComboBox();
 	JTextField txtBackGroundPixels 	= new JTextField();
 	JTextField txtMinPixelCount 	= new JTextField();
 	JTextField txtMinFrameCount 	= new JTextField();
-	MyComboBox cmbReduceColorCode 	= new MyComboBox();
+	SSComboBox cmbReduceColorCode 	= new SSComboBox();
 
 	//LABELS FOR RESULTS PANEL
 	JLabel lblTmpPath  				= new JLabel("Intermediate Results Path");
@@ -131,22 +131,29 @@ public class ParameterScreen extends JInternalFrame {
 		btnSetSession.setToolTipText("Prasanth");
 		try{
 			connector = new DBConnector(EBLAGui.dbFileName,true);
+
 			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-			rowset = new JdbcRowSet();
-			rowset.setUrl(bufRead.readLine());
+
+			String url = bufRead.readLine();
+			if (url == null) {
+				url = "";
+			}
+
 			String username = bufRead.readLine();
 			if (username == null) {
 				username = "";
 			}
-			rowset.setUsername(username);
+
 			String password = bufRead.readLine();
 			if (password == null) {
 				password = "";
 			}
-			rowset.setPassword(password);
+
+			rowset = new JdbcRowSetImpl(url, username, password);
+
 			rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
-			dataNavigator = new DataNavigator(rowset);
-			dataNavigator.setDBNav(new DBNavImp(getContentPane()));
+			dataNavigator = new SSDataNavigator(rowset);
+			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
 		}catch(SQLException se){
 			se.printStackTrace();
 		}catch(Exception e){
@@ -188,29 +195,29 @@ public class ParameterScreen extends JInternalFrame {
 			}
 		});
 
-		txtParameterID.setDocument(new TextDocument(rowset,"parameter_id"));
+		txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
 
-		txtDescription.setDocument(new TextDocument(rowset,"description"));
+		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
-		txtSegColorRadius.setDocument(new TextDocument(rowset,"seg_color_radius"));
-		txtSegSpatialRadius.setDocument(new TextDocument(rowset,"seg_spatial_radius"));
-		txtSegMinRegion.setDocument(new TextDocument(rowset,"seg_min_region"));
+		txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
+		txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
+		txtSegMinRegion.setDocument(new SSTextDocument(rowset,"seg_min_region"));
 		String[] tmpString = {"None", "Medium", "High"};
 		cmbSegSpeedUpCode.setOption(tmpString);
-		cmbSegSpeedUpCode.setDocument(new TextDocument(rowset,"seg_speed_up_code"));
-		txtBackGroundPixels.setDocument(new TextDocument(rowset,"background_pixels"));
-		txtMinPixelCount.setDocument(new TextDocument(rowset,"min_pixel_count"));
-		txtMinFrameCount.setDocument(new TextDocument(rowset,"min_frame_count"));
-		cmbReduceColorCode.setOption(MyComboBox.YES_NO_OPTION);
-		cmbReduceColorCode.setDocument(new TextDocument(rowset,"reduce_color_code"));
+		cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
+		txtBackGroundPixels.setDocument(new SSTextDocument(rowset,"background_pixels"));
+		txtMinPixelCount.setDocument(new SSTextDocument(rowset,"min_pixel_count"));
+		txtMinFrameCount.setDocument(new SSTextDocument(rowset,"min_frame_count"));
+		cmbReduceColorCode.setOption(SSComboBox.YES_NO_OPTION);
+		cmbReduceColorCode.setDocument(new SSTextDocument(rowset,"reduce_color_code"));
 
 
-		txtTmpPath.setDocument(new TextDocument(rowset,"tmp_path"));
-		txtFramePrefix.setDocument(new TextDocument(rowset,"frame_prefix"));
-		txtSegPrefix.setDocument(new TextDocument(rowset,"seg_prefix"));
-		txtPolyPrefix.setDocument(new TextDocument(rowset,"poly_prefix"));
+		txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+		txtFramePrefix.setDocument(new SSTextDocument(rowset,"frame_prefix"));
+		txtSegPrefix.setDocument(new SSTextDocument(rowset,"seg_prefix"));
+		txtPolyPrefix.setDocument(new SSTextDocument(rowset,"poly_prefix"));
 
-		txtNotes.setDocument(new TextDocument(rowset,"notes"));
+		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
 
 
 		Container contentPane = getContentPane();
@@ -390,6 +397,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */
 
 

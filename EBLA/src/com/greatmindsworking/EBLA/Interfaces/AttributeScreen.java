@@ -44,8 +44,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import sun.jdbc.rowset.JdbcRowSet;
-import com.nqadmin.swingUtils.*;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -77,8 +77,8 @@ public class AttributeScreen extends JInternalFrame {
 
 	Container desktop = null;
 	DBConnector connector       = null;
-	DataNavigator dataNavigator = null;
-	JdbcRowSet rowset           = null;
+	SSDataNavigator dataNavigator = null;
+	JdbcRowSetImpl rowset           = null;
 
 	public AttributeScreen(Container _desktop){
 
@@ -89,26 +89,40 @@ public class AttributeScreen extends JInternalFrame {
 
 		try{
 			connector = new DBConnector(EBLAGui.dbFileName,true);
+
 			BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-			rowset    = new JdbcRowSet();
-			rowset.setUrl(bufRead.readLine());
-			rowset.setUsername(bufRead.readLine());
-			rowset.setPassword(bufRead.readLine());
+
+			String url = bufRead.readLine();
+			if (url == null) {
+				url = "";
+			}
+
+			String username = bufRead.readLine();
+			if (username == null) {
+				username = "";
+			}
+
+			String password = bufRead.readLine();
+			if (password == null) {
+				password = "";
+			}
+
+			rowset = new JdbcRowSetImpl(url, username, password);
 
 			rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
-			dataNavigator = new DataNavigator(rowset);
-			dataNavigator.setDBNav(new DBNavImp(getContentPane()));
+			dataNavigator = new SSDataNavigator(rowset);
+			dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
 		}catch(SQLException se){
 			se.printStackTrace();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 
-		txtDescription.setDocument(new TextDocument(rowset,"description"));
-		txtIncludeCode.setDocument(new TextDocument(rowset,"include_code"));
-		txtTypeCode.setDocument(new TextDocument(rowset,"type_code"));
-		txtClassName.setDocument(new TextDocument(rowset,"class_name"));
-		txtNotes.setDocument(new TextDocument(rowset,"notes"));
+		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+		txtIncludeCode.setDocument(new SSTextDocument(rowset,"include_code"));
+		txtTypeCode.setDocument(new SSTextDocument(rowset,"type_code"));
+		txtClassName.setDocument(new SSTextDocument(rowset,"class_name"));
+		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
 
 		EBLAPanel panel = new EBLAPanel();
 		panel.setLayout(new GridBagLayout());
@@ -207,4 +221,7 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */

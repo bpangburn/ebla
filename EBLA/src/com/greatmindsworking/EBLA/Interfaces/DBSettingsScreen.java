@@ -44,7 +44,7 @@ import javax.swing.event.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import java.util.StringTokenizer;
-import com.nqadmin.swingUtils.*;
+import com.nqadmin.swingSet.*;
 
 
 
@@ -264,4 +264,7 @@ public class DBSettingsScreen extends JDialog {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */

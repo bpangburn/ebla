@@ -45,8 +45,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
-import sun.jdbc.rowset.JdbcRowSet;
-import com.nqadmin.swingUtils.*;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -348,4 +348,7 @@ public class SelectExperiencesScreen extends JDialog {
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */
