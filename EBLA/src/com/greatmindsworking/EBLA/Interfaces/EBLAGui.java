@@ -125,10 +125,10 @@ public class EBLAGui extends JFrame {
 			super("Experience Based Language Acquisition -- " + eblaVersion);
 
 		// SET DIMENSIONS
-			setSize(650, 500);
+			setSize(800, 600);
 
 		// SET APPLICATION NAME
-			setTitle("Experience Based Language Acquistion");
+			setTitle("Experience Based Language Acquistion -- " + eblaVersion);
 
 		// MAKE THE FRAME VISIBLE
 			setVisible(true);
@@ -529,6 +529,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/02 03:53:22  yoda2
+ * Misc. code formatting changes.
+ *
  * Revision 1.3  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *
