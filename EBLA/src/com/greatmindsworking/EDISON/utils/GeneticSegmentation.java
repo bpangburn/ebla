@@ -49,7 +49,7 @@ import com.greatmindsworking.EDISON.segm.*;
 public class GeneticSegmentation {
 
 	// GENE POOL SIZE
-		final static int poolSize = 200;
+		final static int poolSize = 100;
 
 	// TOTAL NUMBER OF GENERATIONS
 		final static int totalGenerations = 25;
@@ -60,18 +60,21 @@ public class GeneticSegmentation {
     // MAXIMUM NUMBER OF EXCESS REGIONS PER FRAME TO REMAIN IN GENE POOL
     	final static int maxExcessRegionsPerFrame = 10;
 
+    // VERSION OF EDISON PORT TO USE FOR SEGMENTATION 0=04-25-2002; 1=04-14-2003
+    	final static int edisonPortVersion = 0;
+
     // SPEEDUP LEVEL
     	final static int speedUpLevel = 1;
 
     // NUMBER OF IMAGES TO EVALUATE FROM TOTAL IMAGE POOL
-    	final static int imageSampleSize = 200;
+    	final static int imageSampleSize = 100;
 
     // PENALTY FACTOR FOR DROPPED FRAMES
     	final static int dropPenaltyFactor = 3;
 
     // VERBOSE MODE
-    	final static boolean verbose = true;
-
+    	final static boolean verboseGenerations = true;
+    	final static boolean verboseSegmentation = false;
 
 	// INITIALIZE WORST ACCEPTABLE ERROR FOR STAYING IN THE GENE POOL
 		int maxAcceptableRegions = imageSampleSize * maxExcessRegionsPerFrame;
@@ -499,11 +502,14 @@ public class GeneticSegmentation {
 
 			// SEGMENT IMAGE
 				if (_sp.speedUp == 0) {
-					mySegm.Segment(_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.NO_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, verboseSegmentation,
+						_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.NO_SPEEDUP);
 				} else if (_sp.speedUp == 1) {
-					mySegm.Segment(_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.MED_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, verboseSegmentation,
+					_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.MED_SPEEDUP);
 				} else {
-					mySegm.Segment(_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.HIGH_SPEEDUP);
+					mySegm.Segment(edisonPortVersion, verboseSegmentation,
+					_sp.spatialRadius, _sp.colorRadius, _sp.minRegion, SpeedUpLevel.HIGH_SPEEDUP);
 				}
 
 			// DETERMINE # REGIONS
@@ -541,7 +547,7 @@ public class GeneticSegmentation {
 			runNumber++;
 
 		// DISPLAY SCORE
-			if (verbose) {
+			if (verboseGenerations) {
 				System.out.println("\nRun # " + runNumber + " - Total Excess Regions = "
 					+ excessRegions);
 				_sp.printParameters(null);
@@ -589,6 +595,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/25 22:14:57  yoda2
+ * Made changes to allow different speedup options.
+ *
  * Revision 1.1  2004/01/21 19:40:30  yoda2
  * Added experimental jEDISON genetic training algorithm for determining "optimal" segmentation parameters for a given set of images.
  *
