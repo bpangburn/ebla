@@ -75,8 +75,6 @@ public class EBLAPanel extends JPanel {
 	 */
 	public EBLAPanel() {
 
-		setPreferredSize(EBLADims.getPanelAreaDimension());
-
 	} // end EBLAPanel constructor
 
 
@@ -96,33 +94,29 @@ public class EBLAPanel extends JPanel {
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
-					_component.setMaximumSize(EBLADims.getMediumLabelDimension());
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumLabelDimension());
 			} else if (_component instanceof JTextField) {
 			// SINGLE-LINE TEXTBOX
 				// border
 				//	_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
-					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JButton){
 			// BUTTON
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumButtonDimension());
-					_component.setMaximumSize  (EBLADims.getMediumButtonDimension());
+				// minimum dimension
+					_component.setMinimumSize  (EBLADims.getMediumButtonDimension());
 			} else if (_component instanceof JComboBox) {
 			// COMBOBOX
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
-					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+				// minimum dimension
+					_component.setMinimumSize  (EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
@@ -197,33 +191,31 @@ public class EBLAPanel extends JPanel {
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumLabelDimension());
 					_component.setPreferredSize(EBLADims.getMediumLabelDimension());
-					_component.setMaximumSize(EBLADims.getMediumLabelDimension());
 			} else if (_component instanceof JTextField) {
 			// SINGLE-LINE TEXTBOX
 				// border
 				//	_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
 					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
-					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JButton){
 			// BUTTON
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumButtonDimension());
-					_component.setMaximumSize  (EBLADims.getMediumButtonDimension());
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumButtonDimension());
 			} else if (_component instanceof JComboBox) {
 			// COMBOBOX
 				// border
 					_component.setBorder(softBevelBorder);
 
-				// preferred and maximum dimensions
-					_component.setPreferredSize(EBLADims.getMediumTextFieldDimension());
-					_component.setMaximumSize  (EBLADims.getMediumTextFieldDimension());
+				// minimum dimension
+					_component.setMinimumSize(EBLADims.getMediumTextFieldDimension());
 			} else if (_component instanceof JTextArea) {
 			// MULTI-LINE TEXTBOX
 				// border
@@ -257,12 +249,41 @@ public class EBLAPanel extends JPanel {
 
 	} // end public void add
 
+
+
+	/**
+	 * Method to add a component and corresponding label to the specified grid row of a panel
+	 *
+	 * @param _component widget to add to panel
+	 * @param _row panel row (1st row is 0) to add widget and label to
+	 * @param _labelText text for label
+	 */
+	public void addRow(JComponent _component, int _row, String _labelText) {
+
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = _row;
+
+		JLabel tmpLabel	= new JLabel(_labelText);
+
+		add(tmpLabel, constraints);
+
+		constraints.gridx++;
+		add(_component, constraints);
+
+	} // end public void addRow
+
+
+
 } // end EBLAPanel class
 
 
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/03 02:04:21  yoda2
+ * Widget border tweaks.
+ *
  * Revision 1.3  2003/12/02 04:24:46  yoda2
  * JavaDoc and code cleanup.
  *

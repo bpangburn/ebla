@@ -76,10 +76,10 @@ public class ParameterScreen extends JInternalFrame {
 	// INITIALIZE "GENERAL" TAB AND CONTENTS
 		EBLAPanel generalPanel   		= new EBLAPanel();
 
-		JLabel lblParameterID			= new JLabel("Paramter ID");
+		//JLabel lblParameterID			= new JLabel("Paramter ID");
 		JTextField txtParameterID 		= new JTextField();
 
-		JLabel lblDescription 			= new JLabel("Description");
+		//JLabel lblDescription 			= new JLabel("Description");
 		JTextField txtDescription 		= new JTextField();
 
 	// INITIALIZE "ENTITIES" TAB AND CONTENTS
@@ -147,17 +147,15 @@ public class ParameterScreen extends JInternalFrame {
 
 
 	public ParameterScreen(Container _desktop) {
-
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE VISION PARAMETER SCREEN
 			super("EBLA Vision Parameter Form",false,true,true,true);
 
 		// SET SIZE
-			setSize(550,400);
+			setSize(650,450);
 
 		// SET APPLICATION WINDOW THAT WILL SERVE AS PARENT
 			desktop = _desktop;
 
-//btnSetSession.setToolTipText("Prasanth");
 		// DATABASE CONFIGURATION
 			try {
 
@@ -231,38 +229,77 @@ public class ParameterScreen extends JInternalFrame {
 			});
 
 
-// STOPPED HERE....
+		// SET DATABASE COLUMNS FOR EACH PANEL'S WIDGETS ALONG WITH ANY COMBOBOX ITEMS
+			// "GENERAL" TAB
+				txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
+
+				txtDescription.setDocument(new SSTextDocument(rowset,"description"));
+
+			// "VISION PARAMETERS" TAB
+				txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
+
+				txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
+
+				txtSegMinRegion.setDocument(new SSTextDocument(rowset,"seg_min_region"));
+
+				String[] tmpString = {"None", "Medium", "High"};
+				cmbSegSpeedUpCode.setOption(tmpString);
+				cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
+
+				txtBackGroundPixels.setDocument(new SSTextDocument(rowset,"background_pixels"));
+
+				txtMinPixelCount.setDocument(new SSTextDocument(rowset,"min_pixel_count"));
+
+				txtMinFrameCount.setDocument(new SSTextDocument(rowset,"min_frame_count"));
+
+				cmbReduceColorCode.setOption(SSComboBox.YES_NO_OPTION);
+				cmbReduceColorCode.setDocument(new SSTextDocument(rowset,"reduce_color_code"));
+
+			// "RESULTS" TAB
+				txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
+
+				txtFramePrefix.setDocument(new SSTextDocument(rowset,"frame_prefix"));
+
+				txtSegPrefix.setDocument(new SSTextDocument(rowset,"seg_prefix"));
+
+				txtPolyPrefix.setDocument(new SSTextDocument(rowset,"poly_prefix"));
+
+			// "MISC" TAB
+				txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+
+		// LAYOUT EACH TAB
+			// CREATE ROW COUNTER
+				int currentRow = 0;
+
+			// "GENERAL" TAB
+				// SET LAYOUT
+					generalPanel.setLayout(new GridBagLayout());
+
+				// ADD WIDGETS
+					currentRow=0;
+
+					generalPanel.addRow(txtParameterID, currentRow++, "Parameter ID");
+					generalPanel.addRow(txtDescription, currentRow++, "Description");
 
 
-		txtParameterID.setDocument(new SSTextDocument(rowset,"parameter_id"));
-
-		txtDescription.setDocument(new SSTextDocument(rowset,"description"));
-
-		txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
-		txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
-		txtSegMinRegion.setDocument(new SSTextDocument(rowset,"seg_min_region"));
-		String[] tmpString = {"None", "Medium", "High"};
-		cmbSegSpeedUpCode.setOption(tmpString);
-		cmbSegSpeedUpCode.setDocument(new SSTextDocument(rowset,"seg_speed_up_code"));
-		txtBackGroundPixels.setDocument(new SSTextDocument(rowset,"background_pixels"));
-		txtMinPixelCount.setDocument(new SSTextDocument(rowset,"min_pixel_count"));
-		txtMinFrameCount.setDocument(new SSTextDocument(rowset,"min_frame_count"));
-		cmbReduceColorCode.setOption(SSComboBox.YES_NO_OPTION);
-		cmbReduceColorCode.setDocument(new SSTextDocument(rowset,"reduce_color_code"));
+			// "VISION PARAMETERS" TAB
 
 
-		txtTmpPath.setDocument(new SSTextDocument(rowset,"tmp_path"));
-		txtFramePrefix.setDocument(new SSTextDocument(rowset,"frame_prefix"));
-		txtSegPrefix.setDocument(new SSTextDocument(rowset,"seg_prefix"));
-		txtPolyPrefix.setDocument(new SSTextDocument(rowset,"poly_prefix"));
 
-		txtNotes.setDocument(new SSTextDocument(rowset,"notes"));
+			// "RESULTS" TAB
+
+
+
+			// "MISC" TAB
+
+
+
 
 
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new GridBagLayout());
 
-		generalPanel.setLayout(new GridBagLayout());
+
 		entitiesPanel.setLayout(new GridBagLayout());
 		lexemesPanel.setLayout(new GridBagLayout());
 		visionPanel.setLayout(new GridBagLayout());
@@ -270,6 +307,8 @@ public class ParameterScreen extends JInternalFrame {
 		miscPanel.setLayout(new GridBagLayout());
 
 		GridBagConstraints constraints = new GridBagConstraints();
+
+		constraints.gridwidth = 1;
 
 		constraints.gridx =0;
 		constraints.gridy =0;
@@ -339,17 +378,11 @@ public class ParameterScreen extends JInternalFrame {
 		constraints.gridx = 1;
 		miscPanel.add(txtNotes, constraints);
 
+		tabbedPane.addTab("General", generalPanel);
+
 		tabbedPane.addTab("Vision",visionPanel);
 		tabbedPane.addTab("Results",resultsPanel);
 		tabbedPane.addTab("Misc",miscPanel);
-
-		EBLAPanel panel = new EBLAPanel();
-		panel.setLayout(new GridBagLayout());
-		constraints.gridx =0;
-		constraints.gridy =0;
-		panel.add(lblDescription,constraints);
-		constraints.gridx =1;
-		panel.add(txtDescription,constraints);
 
 		EBLAPanel btnPanel = new EBLAPanel();
 		btnPanel.setLayout(new GridBagLayout());
@@ -365,8 +398,6 @@ public class ParameterScreen extends JInternalFrame {
 		constraints.gridwidth = 2;
 		constraints.gridx =0;
 
-		constraints.gridy =0;
-		contentPane.add(panel,constraints);
 		constraints.gridy =1;
 		contentPane.add(tabbedPane,constraints);
 		constraints.gridy =2;
@@ -436,6 +467,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/04 04:47:11  yoda2
+ * Started code cleanup/documentation.
+ *
  * Revision 1.2  2003/09/25 23:07:46  yoda2
  * Updates GUI code to use new SwingSet toolkit and latest Java RowSet reference implementation.
  *
