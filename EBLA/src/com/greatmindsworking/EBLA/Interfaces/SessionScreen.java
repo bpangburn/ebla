@@ -81,9 +81,6 @@ public class SessionScreen extends JInternalFrame {
 		EBLAPanel generalPanel   			= new EBLAPanel();
 
 		JTextField txtDescription 			= new JTextField();
-//		SSComboBox cmbProcessVideosCode   	= new SSComboBox();
-//		SSComboBox cmbProcessEntitiesCode 	= new SSComboBox();
-//		SSComboBox cmbProcessLexemesCode  	= new SSComboBox();
 		SSComboBox cmbLogToFileCode       	= new SSComboBox();
 		SSComboBox cmbRandomizeExpCode    	= new SSComboBox();
 		SSComboBox cmbRegenerateImages    	= new SSComboBox();
@@ -138,45 +135,6 @@ public class SessionScreen extends JInternalFrame {
 
 		// SET ID OF PARENT VISION PARAMETER RECORD
 			parameterID = _parameterID;
-
-/*
-		// DATABASE CONFIGURATION
-			try {
-
-			// INITIALIZE DATABASE CONNECTION
-				connector = new DBConnector(EBLAGui.dbFileName,true);
-
-			// EXTRACT DATABASE LOGIN INFO FROM DATABASE CONFIG FILE
-				BufferedReader bufRead = new BufferedReader(new FileReader(EBLAGui.dbFileName));
-
-				String url = bufRead.readLine();
-				if (url == null) {
-					url = "";
-				}
-
-				String username = bufRead.readLine();
-				if (username == null) {
-					username = "";
-				}
-
-				String password = bufRead.readLine();
-				if (password == null) {
-					password = "";
-				}
-
-			// INITIALIZE ROWSET FOR PARAMETER DATA
-				rowset = new JdbcRowSetImpl(url, username, password);
-
-				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
-				dataNavigator = new SSDataNavigator(rowset);
-				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
-
-			} catch(SQLException se) {
-				se.printStackTrace();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-*/
 
 		// SETUP ACTION LISTENER FOR START EBLA BUTTON
 			btnStartEBLA.addActionListener(new StartEBLAListener());
@@ -489,6 +447,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/30 23:21:20  yoda2
+ * Modified screens so that they are nullifed upon closing and a "fresh" screen is created if a screen is re-opened.
+ *
  * Revision 1.5  2003/12/29 23:20:27  yoda2
  * Added close button.
  *
