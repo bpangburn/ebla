@@ -40,8 +40,6 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import java.sql.*;
 import java.beans.PropertyVetoException;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -79,7 +77,7 @@ public class ParameterScreen extends JInternalFrame {
 		JTextField txtParameterID 		= new JTextField();
 		JTextField txtDescription 		= new JTextField();
 
-	// INITIALIZE "VISION PARAMETERS" TAB AND CONTENTS
+	// INITIALIZE "VISION" TAB AND CONTENTS
 		EBLAPanel visionPanel    		= new EBLAPanel();
 
 		JTextField txtSegColorRadius 	= new JTextField();
@@ -121,8 +119,8 @@ public class ParameterScreen extends JInternalFrame {
 	 * @param the container in which the screen has to showup.
 	 */
 	public ParameterScreen(Container _desktop) {
-		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE VISION PARAMETER SCREEN
-			super("EBLA Vision Parameter Form",false,true,true,true);
+		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE PARAMETER SCREEN
+			super("EBLA - Parameter Screen",false,true,true,true);
 
 		// SET SIZE
 			setSize(640,480);
@@ -209,7 +207,7 @@ public class ParameterScreen extends JInternalFrame {
 
 				txtDescription.setDocument(new SSTextDocument(rowset,"description"));
 
-			// "VISION PARAMETERS" TAB
+			// "VISION" TAB
 				txtSegColorRadius.setDocument(new SSTextDocument(rowset,"seg_color_radius"));
 
 				txtSegSpatialRadius.setDocument(new SSTextDocument(rowset,"seg_spatial_radius"));
@@ -259,7 +257,7 @@ public class ParameterScreen extends JInternalFrame {
 					generalPanel.addRow(txtDescription, currentRow++, "Description");
 
 
-			// "VISION PARAMETERS" TAB
+			// "VISION" TAB
 				// SET LAYOUT
 					visionPanel.setLayout(new GridBagLayout());
 
@@ -283,7 +281,7 @@ public class ParameterScreen extends JInternalFrame {
 				// ADD WIDGETS
 					currentRow=0;
 
-					resultsPanel.addRow(txtTmpPath, currentRow++, "ntermediate Results Path");
+					resultsPanel.addRow(txtTmpPath, currentRow++, "Intermediate Results Path");
 					resultsPanel.addRow(txtFramePrefix, currentRow++, "Frame Image File Prefix");
 					resultsPanel.addRow(txtSegPrefix, currentRow++, "Segmented Image File Prefix");
 					resultsPanel.addRow(txtPolyPrefix, currentRow++, "Polygon Image File Prefix");
@@ -301,9 +299,9 @@ public class ParameterScreen extends JInternalFrame {
 
 		// ADD TABS TO TABBED PANE
 			tabbedPane.addTab("General", generalPanel);
-			tabbedPane.addTab("Vision",visionPanel);
-			tabbedPane.addTab("Results",resultsPanel);
-			tabbedPane.addTab("Misc",miscPanel);
+			tabbedPane.addTab("Vision System", visionPanel);
+			tabbedPane.addTab("Intermediate Results", resultsPanel);
+			tabbedPane.addTab("Misc", miscPanel);
 
 		// CREATE PANEL FOR BUTTONS
 			EBLAPanel btnPanel = new EBLAPanel();
@@ -335,7 +333,7 @@ public class ParameterScreen extends JInternalFrame {
 
 
 	/**
-	 * Adds the vision parameter screen to the specified container at the specified position.
+	 * Adds the parameter screen to the specified container at the specified position.
 	 *
 	 * @param the container in which the screen has to showup.
 	 * @param the x co-ordinate of the position where the screen has to showup.
@@ -379,7 +377,7 @@ public class ParameterScreen extends JInternalFrame {
 
 
 	/**
-	 * Shows the vision parameter screen at the default location on the specified container.
+	 * Shows the parameter screen at the default location on the specified container.
 	 *
 	 * @param the container in which the screen has to showup.
 	 */
@@ -394,6 +392,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/24 19:15:52  yoda2
+ * General clean up.  Added JavaDoc and removed explicit coding of labels in favor of automatic labels via EBLAPanel.addRow().
+ *
  * Revision 1.4  2003/12/23 23:18:47  yoda2
  * Continued code cleanup.
  * Discovered that both PreferredSize and MinimumSize must be set to generate consistent widget widths across all tabs on a given screen.

@@ -40,10 +40,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.sql.*;
 import java.beans.PropertyVetoException;
-import com.nqadmin.swingSet.*;
 import com.nqadmin.Utils.DBConnector;
 
 
@@ -529,6 +526,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/24 19:14:00  yoda2
+ * Small JavaDoc fixes, added version to titlebar, and set application size to 800x600.
+ *
  * Revision 1.4  2003/12/02 03:53:22  yoda2
  * Misc. code formatting changes.
  *
