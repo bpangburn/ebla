@@ -93,10 +93,17 @@ public class Dimensions {
 		return new Dimension(275,80);
 	}
 
+	public Dimension getPanelAreaDimension() {
+		return new Dimension(450,300);
+	}
+
 } // end of Dimensions class
 
 
 
 /*
  * $Log$
+ * Revision 1.1  2003/08/08 20:09:21  yoda2
+ * Added preliminary version of new GUI for EBLA to SourceForge.
+ *
  */
