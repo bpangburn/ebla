@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-# $Id$
-#
-# LINUX EXECUTION SCRIPT FOR EBLA
-#
-java -classpath .;./jars/rowset.jar;./jars/pg74.1jdbc3.jar;./jars/jmf.jar;./jars/swingset-bin_0.7.0_beta.jar;./jars/utils.jar com.greatmindsworking.EBLA.Interfaces.EBLAGui

@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-# $Id$
-#
-# LINUX JAVADOC GENERATION SCRIPT FOR EBLA
-#
-javadoc -d javadoc ./com/greatmindsworking/EBLA/*.java ./com/greatmindsworking/EBLA/Interfaces/*.java ./com/greatmindsworking/EDISON/segm/*.java
