@@ -468,7 +468,7 @@ public class EBLA extends Thread {
 							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
 							+ "		WHERE parameter_id=" + sd.getParameterID()
 // check next line...
-							+ " 	AND calc_status_code=0 or (now()-calc_timestamp)>" + maxCalcMS + " LIMIT 1);";
+							+ " 	AND (calc_status_code=0 OR (now()-calc_timestamp)>" + maxCalcMS + ") LIMIT 1);";
 
 					// CREATE STATEMENT FOR EXPERIENCES
 						experienceState = dbc.getStatement();
@@ -813,6 +813,7 @@ public class EBLA extends Thread {
 
 							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS lex_count FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id;");
 							tmpRS.next();
 							int totalLex = tmpRS.getInt("lex_count");
@@ -820,6 +821,7 @@ public class EBLA extends Thread {
 
 							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS ent_count FROM experience_run_data, experience_entity_data"
 								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_entity_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id;");
 							tmpRS.next();
 							int totalEnt = tmpRS.getInt("ent_count");
@@ -827,6 +829,7 @@ public class EBLA extends Thread {
 
 							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_lex_count FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id"
 								  + " AND experience_lexeme_data.resolution_code=0;");
 							tmpRS.next();
@@ -835,6 +838,7 @@ public class EBLA extends Thread {
 
 							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_ent_count FROM experience_run_data, experience_entity_data"
 								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_entity_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id"
 								  + " AND experience_entity_data.resolution_code=0;");
 							tmpRS.next();
@@ -848,6 +852,7 @@ public class EBLA extends Thread {
 						// NEED: loopCount, experienceIndex, (resolutionIndex-experienceIndex)
 							tmpRS = tmpState.executeQuery("SELECT * FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
+								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id = experience_lexeme_data.experience_id"
 								  + " AND experience_lexeme_data.resolution_code = 1"
 								  + " ORDER BY experience_run_data.experience_index;");
@@ -1056,6 +1061,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.34  2004/01/13 17:11:44  yoda2
+ * Added logic to reset calc_status_code in parameter_experience_data to zero if user cancels processing.
+ *
  * Revision 1.33  2004/01/05 23:35:57  yoda2
  * Added code to recommend garbage collection following ripping of frames and frame analysis.
  *
