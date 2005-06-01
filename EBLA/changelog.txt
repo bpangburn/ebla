@@ -4,6 +4,18 @@ ChangeLog file for the Experience-Based Language Acquisition (EBLA) system.
 
 $Id$
 
+==============================================================================
+(NEXT RELEASE)
+==============================================================================
+
+1. Restructured source tree such that all source code is now in /EBLA/src
+
+2. Fixed misc Linux/Windows issues among compilation, execution, etc. scripts
+
+3. Updated GUI to use SwingSet 1.0.0-PR2
+
+4. Updated JDBC driver to postgresql-8.0-311.jdbc3.jar
+
 
 ==============================================================================
 Version 0.7.0-alpha
