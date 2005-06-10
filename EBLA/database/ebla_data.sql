@@ -2,7 +2,7 @@
  *
  * Tab Spacing = 4
  *
- * Copyright (c) 2002-2004, Brian E. Pangburn
+ * Copyright (c) 2002-2005, Brian E. Pangburn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -162,7 +162,8 @@ CREATE TABLE session_data (
     /* ID OF PARENT PARAMETER DATA RECORD */
     parameter_id            INTEGER             REFERENCES parameter_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* DESCRIPTION OF SESSION SET */
     description             VARCHAR(100),
     /* START DATE/TIME FOR CURRENT SESSION */
@@ -231,11 +232,13 @@ CREATE TABLE parameter_experience_data (
     /* ID OF PARENT PARAMETER DATA RECORD */
     parameter_id            INTEGER             REFERENCES parameter_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
     experience_id           INTEGER             REFERENCES experience_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* STATUS OF frame_analysis_data CALCULATIONS FOR PARAMETER-EXPERIENCE COMBO:
         0 = NOT CALCULATED
         1 = CALCULATIONS IN PROGRESS
@@ -264,7 +267,8 @@ CREATE TABLE frame_analysis_data (
     /* ID OF PARENT EXPERIENCE RECORD */
     parameter_experience_id INTEGER             REFERENCES parameter_experience_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* NUMBER OF CURRENT FRAME */
     frame_number            INTEGER             DEFAULT 0
                                                 NOT NULL,
@@ -311,7 +315,8 @@ CREATE TABLE run_data (
     /* ID OF PARENT SESSION DATA RECORD */
     session_id              INTEGER             REFERENCES session_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ORDER THAT RUN OCCURS IN CURRENT SESSION */
     run_index               INTEGER             DEFAULT 0
                                                 NOT NULL,
@@ -339,7 +344,8 @@ CREATE TABLE entity_data (
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* NUMBER OF TIMES THAT ENTITY HAS BEEN RECOGNIZED WHEN PROCESSING EBLA
        EXPERIENCES */
     occurance_count         INTEGER             DEFAULT 1
@@ -363,7 +369,8 @@ CREATE TABLE lexeme_data (
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* LEXICAL ITEM / WORD */
     lexeme                  VARCHAR(50)         NOT NULL,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
@@ -389,11 +396,13 @@ CREATE TABLE experience_run_data (
     /* ID OF PARENT EXPERIENCE DATA RECORD */
     experience_id           INTEGER             REFERENCES experience_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ORDER THAT EXPERIENCE IS PROCESSED DURING CURRENT RUN
        (USED FOR DETERMINING HOW LONG IT TAKES TO RESOLVE EACH LEXEME) */
     experience_index        INTEGER             DEFAULT 0
@@ -420,11 +429,13 @@ CREATE TABLE entity_lexeme_data (
     /* ID OF PARENT ENTITY DATA RECORD */
     entity_id               INTEGER             REFERENCES entity_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT LEXEME DATA RECORD */
     lexeme_id               INTEGER             REFERENCES lexeme_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
        EBLA EXPERIENCES */
     occurance_count         INTEGER             DEFAULT 1
@@ -449,15 +460,18 @@ CREATE TABLE experience_entity_data (
     /* ID OF PARENT EXPERIENCE DATA RECORD */
     experience_id           INTEGER             REFERENCES experience_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT ENTITY DATA RECORD */
     entity_id               INTEGER             REFERENCES entity_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
     resolution_code         INT2                DEFAULT 0
@@ -483,15 +497,18 @@ CREATE TABLE experience_lexeme_data (
     /* ID OF PARENT EXPERIENCE DATA RECORD */
     experience_id           INTEGER             REFERENCES experience_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT LEXEME DATA RECORD */
     lexeme_id               INTEGER             REFERENCES lexeme_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
     resolution_code         INT2                DEFAULT 0
@@ -521,15 +538,18 @@ CREATE TABLE attribute_value_data (
     /* ID OF PARENT ATTRIBUTE LIST DATA RECORD */
     attribute_list_id       INTEGER             REFERENCES attribute_list_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
     run_id                  INTEGER             REFERENCES run_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* ID OF PARENT ENTITY DATA RECORD */
     entity_id               INTEGER             REFERENCES entity_data
                                                 ON UPDATE CASCADE
-                                                ON DELETE CASCADE,
+                                                ON DELETE CASCADE
+                                                NOT NULL,
     /* AVERAGE VALUE OF ATTRIBUTE */
     avg_value               FLOAT               DEFAULT 0
                                                 NOT NULL,
@@ -540,6 +560,3 @@ CREATE TABLE attribute_value_data (
 CREATE INDEX att_val_attribute_list_id_idx ON attribute_value_data (attribute_list_id);
 CREATE INDEX att_val_run_id_idx ON attribute_value_data (run_id);
 CREATE INDEX att_val_entity_id_idx ON attribute_value_data (entity_id);
-
-
-
