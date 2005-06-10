@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002-2004, Brian E. Pangburn
+Copyright (c) 2002-2005, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -86,56 +86,50 @@ CODE EXECUTION, DOCUMENTATION, & COMPILATION
 ==============================================================================
 
 This code has been tested on both Windows and Linux platforms using
-the Java 2 SDK 1.4 and 1.5 beta available from http://java.sun.com/j2se/
+the Java 2 SDK 1.4 and 1.5 available from http://java.sun.com/j2se/
 
 Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
 early versions of Sun's ImageIO class.
 
-EBLA uses the following JAR files: which have been included in the /jars
+EBLA uses the following JAR files, which should be in or added to the /jars
 subdirectory:
- jmf.jar	  Java Media Framework
-                  http://java.sun.com/products/java-media/jmf/
- pg74.1jdbc3.jar  PostgreSQL JDBC driver
-                  http://jdbc.postgresql.org
- rowset.jar       Sun's JDBC RowSet implementation
-                  http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
- swingset-bin_0.7.0_beta.jar
-                  The open source SwingSet toolkit for making Swing DB-Aware
-                  http://swingset.sourceforge.net
- utils.jar	  The Pangburn Company's misc Java utilities
-                  (no URL available)
-  
-All of these files EXCEPT rowset.jar have been included in the EBLA
-SourceForge release file.  To install EBLA, simply download the release file
-to the desired folder/directory and type:
-  jar -xf ebla-0.6.0-alpha.jar
-  
-This will create an "EBLA" folder/directory containing the entire EBLA system.
+ jmf.jar
+                Java Media Framework
+                http://java.sun.com/products/java-media/jmf/
+                (MUST BE DOWNLOADED REGARDLESS OF JDK)
+                
+ rowset.jar
+                Sun's JDBC RowSet implementation
+                http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
+                (MUST BE DOWNLOADED FOR JDK 1.4, INCLUDED IN 1.5)
+                
+ postgresql-8.0-311.jdbc3.jar
+                PostgreSQL JDBC driver
+                http://jdbc.postgresql.org
+                (INCLUDED)
 
-For the Java 2 SDK 1.4, Sun's JDBC Rowset Implementation is available from
-(free registration required):
-http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
+ swingset-bin.jar
+                The open source SwingSet toolkit for making Swing DB-Aware
+                http://swingset.sourceforge.net
+                (INCLUDED)
 
-It should be placed in the ./jars/ subdirectory of the EBLA installation
-directory.
-
-Note that the rowset.jar file is not required for Java 2 SDK 1.5 because it
-has beenadded to the SDK.
-  
 To run EBLA:
-  1. change to the directory containing this file (./EBLA/ by default)
+  1. download the binary release file to the desired folder/directory and type:
+     jar -xf ebla-bin_0.7.1-alpha.jar
   2. type "linrun" (Linux platforms)
      OR
      type "winrun" (Windows platforms)
   
 To generate the JavaDoc documentation for EBLA:
-  1. change to the directory containing this file (./EBLA/ by default)
+  1. download the JavaDoc release file to the desired folder/directory and type:
+     jar -xf ebla-docs_0.7.1-alpha.jar
   2. type "lindocs" (Linux platforms)
      OR
      type "windocs" (Windows platforms)
      
 To recompile EBLA:
-  1. change to the directory containing this file (./EBLA/ by default)
+  1. download the source release file to the desired folder/directory and type:
+     jar -xf ebla-src_0.7.1-alpha.jar
   2. type "lincompile" (Linux platforms)
      OR
      type "wincompile" (Windows platforms)     
@@ -176,17 +170,20 @@ Method 1 (from a command prompt on the database server type):
   1. createdb ebla_data (creates database)
   2. psql ebla_data (starts command line interface for ebla_data)
   3. \i ebla_data.sql (loads SQL to create database table structure)
-     *** note that the file, ebla_data.sql, from the ./data/ subdirectory of
+     *** note that the file, ebla_data.sql, from the ./database/ subdirectory of
          the EBLA installation directory must be on the machine running
          the database server ***
   4. \q (quits psql interface)
   
 Method 2 (from a command prompt on the database server type):
-  1. createdb ebla_data    (creates database)
-  2. gunzip -c ebla_data.sql.gz | psql ebla_data (loads SQL and data)
-     *** note that the file, ebla_data.sql, from the ./data/ subdirectory of
-         the EBLA installation directory must be on the machine running
-         the database server ***
+  1. createdb ebla_data (creates database)
+  2. psql ebla_data (starts command line interface for ebla_data)
+  3. \i ebla_data_with_experiences.sql (loads SQL to create database table
+     structure and populates parameters, experiences, & attributes)
+     *** note that the file, ebla_data_with_experiences.sql, from the
+         ./database/ subdirectory of the EBLA installation directory must be on
+         the machine running the database server ***
+  4. \q (quits psql interface)
          
 Until you are comfortable with how EBLA operates and are ready to create your
 own experiences, it is recommended that you setup the database WITH the sample
@@ -205,13 +202,26 @@ GUI interfaces for both Windows and Linux:
   2. PGAccess (Linux): http://www.pgaccess.org
   
 Finally, if you are interested in install PostgreSQL, but only have access
-to a Windows machine, EBLA will work with PostgreSQL installed as part of the
-Cygwin Linux emulation layer (http://www.cygwin.com).  Note that it is
-generally easiest to install the ebla_data database under Cygwin as the 
-current Windows user.  In order to do this, all references to the "postgres"
-user in the ebla_data SQL must be replaced with the current Windows username.
-More information for the various versions of PostgreSQL available under Cygwin
-is available from http://www.tishler.net/jason/software/postgresql/
+to a Windows machine, EBLA will work with the PostgreSQL 8.0.X "win32"
+distribution.  A general overview of this install process follows below:
+  1. Go to http://www.postgresql.org/ftp
+  2. Click on the "win32" link
+  3. Download postgresql-X.Y.Z.zip
+  4. Unzip the file downloaded in step #3
+  5. From the directory into which you Unzipped the installation files, right-
+     click the ".msi" file to install PostgreSQL.
+  6. Choose any custom options that you want, but note that the default
+     installation options appear to work fine.  Also note that the default
+     installation options DO NOT seem allow outside connections meaning that
+     EBLA will have to be run locally.
+  7. Either add the PostgreSQL "bin" subdirectory to your path or from a
+     command prompt, change to the "bin" subdirectory (e.g. "c:\Program Files\
+     PostgreSQL\8.0\bin\"
+  8. Type "createdb -U postgres ebla_data"
+  9. Type "psql -U postgres ebla_data"
+ 10. Type "\i {path to .sql file to load per Method 1 or 2 above}"
+     Note that to load ebla_data.sql from the "tmp" directory on your "d" drive,
+     you would enter "\i d:/tmp/ebla_data.sql" NOT "\i d:\tmp\ebla_data.sql"
 
 
 ==============================================================================
@@ -224,9 +234,9 @@ the files were delivered to EBLA as AVI files.
      
 The set of animations are contained in ./experiences/ subdirectory of
 the installation directory.  The full set of real videos used to
-evaluate EBLA is just over 150MB (compressed JAR file).  It is available 
+evaluate EBLA is just over 326MB (compressed JAR file).  It is available 
 from the following link:
-http://prdownloads.sourceforge.net/ebla/ebla_experiences.jar?download
+http://www.greatmindsworking.com/downloads/ebla_experiences.jar
 
 To install the full test set, simply download the release file
 ebla_experiences.jar to the EBLA installation directory and type:
