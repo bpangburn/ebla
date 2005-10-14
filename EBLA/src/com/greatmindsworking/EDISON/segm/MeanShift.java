@@ -122,7 +122,7 @@ public class MeanShift {
 	/**
 	 * Define class state structure
 	 */
-	private class ClassStateStruct {
+	protected class ClassStateStruct {
 		boolean	KERNEL_DEFINED;
 		boolean	INPUT_DEFINED;
 		boolean	LATTICE_DEFINED;
@@ -2983,6 +2983,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.18  2004/02/25 21:59:22  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.17  2004/02/25 21:25:14  yoda2
  * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
  *
