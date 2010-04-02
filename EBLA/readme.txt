@@ -103,7 +103,7 @@ subdirectory:
                 http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
                 (MUST BE DOWNLOADED FOR JDK 1.4, INCLUDED IN 1.5)
                 
- postgresql-8.0-311.jdbc3.jar
+ postgresql-8.4-701.jdbc4.jar
                 PostgreSQL JDBC driver
                 http://jdbc.postgresql.org
                 (INCLUDED)

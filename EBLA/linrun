@@ -4,4 +4,4 @@
 #
 # LINUX EXECUTION SCRIPT FOR EBLA
 #
-java -classpath ./bin:./jars/postgresql-8.0-311.jdbc3.jar:./jars/jmf.jar:./jars/swingset-bin.jar com.greatmindsworking.EBLA.Interfaces.EBLAGui
+java -classpath ./bin:./jars/postgresql-8.4-701.jdbc4.jar:./jars/jmf.jar:./jars/swingset-bin.jar com.greatmindsworking.EBLA.Interfaces.EBLAGui

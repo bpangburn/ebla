@@ -28,10 +28,10 @@ mkdir ./release_jars/src/com/greatmindsworking/EDISON/segm
 #mkdir ./release_jars/src/com/greatmindsworking/EDISON/utils
 
 # RECOMPILE EBLA
-javac -source 1.4 -target 1.4 -Xlint:deprecation -Xlint:unchecked -d ./release_jars/bin -classpath .:./jars/postgresql-8.0-311.jdbc3.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
+javac -source 1.4 -target 1.4 -Xlint:deprecation -Xlint:unchecked -d ./release_jars/bin -classpath .:./jars/postgresql-8.4-701.jdbc4.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
 
 # REBUILD JAVADOCS
-javadoc -d ./release_jars/docs -classpath .:./jars/postgresql-8.0-311.jdbc3.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./src/com/greatmindsworking/EDISON/segm/*.java
+javadoc -d ./release_jars/docs -classpath .:./jars/postgresql-8.4-701.jdbc4.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./src/com/greatmindsworking/EDISON/segm/*.java
 
 # COPY SOURCE CODE
 cp ./src/com/greatmindsworking/EBLA/*.java ./release_jars/src/com/greatmindsworking/EBLA/
@@ -61,7 +61,7 @@ cp ./experiences/cube_up1.avi ./release_jars/experiences/
 
 # COPY JARS
 cp ./jars/swingset-bin.jar ./release_jars/jars/
-cp ./jars/postgresql-8.0-311.jdbc3.jar ./release_jars/jars/
+cp ./jars/postgresql-8.4-701.jdbc4.jar ./release_jars/jars/
 
 # BUILD BIN JAR
 jar -cvf ./release_jars/ebla-bin_current.jar -C ./release_jars bin -C ./release_jars experiences -C ./release_jars jars changelog.txt linrun readme.txt winrun.bat
