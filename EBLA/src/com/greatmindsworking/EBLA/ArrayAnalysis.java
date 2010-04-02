@@ -84,7 +84,7 @@ public class ArrayAnalysis {
 	 *
 	 * @param _al array list of doubles for statistical analysis
 	 */
-    public ArrayAnalysis(ArrayList _al) {
+    public ArrayAnalysis(ArrayList<Double> _al) {
 
 		// DECLARATIONS
 			double total = 0;				// RUNNING TOTAL FOR AVERAGE
@@ -98,7 +98,7 @@ public class ArrayAnalysis {
 				Object doubleA[] = _al.toArray();
 
 			// INITIALIZE VALUES
-				initialValue = ((Double)doubleA[0]).doubleValue();
+				initialValue = (Double)doubleA[0];
 				minValue = initialValue;
 				maxValue = initialValue;
 				total = initialValue;
@@ -109,7 +109,7 @@ public class ArrayAnalysis {
 			// LOOP THROUGH ARRAY TO DETERMINE MIN, MAX, & TOTAL
 				for (int i=1; i<count; i++) {
 					// "CURRENT" VALUE
-						current = ((Double)doubleA[i]).doubleValue();
+						current = (Double)doubleA[i];
 
 					// MIN & MAX
 						if (current < minValue) {
@@ -129,7 +129,7 @@ public class ArrayAnalysis {
 			// CALCULATE TOTAL VARIANCE (REQUIRES 2ND PASS THROUGH ARRAY)
 				for (int i=0; i<count; i++) {
 					// "CURRENT" VALUE
-						current = ((Double)doubleA[i]).doubleValue() - avgValue;
+						current = (Double)doubleA[i] - avgValue;
 
 					// RUNNING TOTAL OF VARIANCE
 						variance += current * current;
@@ -220,12 +220,12 @@ public class ArrayAnalysis {
 		try {
 
 			// INITIALIZE AN ARRAY LIST
-				ArrayList al = new ArrayList();
+				ArrayList<Double> al = new ArrayList<Double>();
 
 			// ADD A FEW DATA ELEMENTS
 				al.add(new Double(26));
 				al.add(new Double(33));
-				al.add(new Double(16));
+				al.add(new Double(16));	
 				al.add(new Double(22));
 				al.add(new Double(18));
 
@@ -261,6 +261,9 @@ public class ArrayAnalysis {
 
 /*
  * $Log$
+ * Revision 1.7  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.6  2002/12/11 22:47:06  yoda2
  * Initial migration to SourceForge.
  *
