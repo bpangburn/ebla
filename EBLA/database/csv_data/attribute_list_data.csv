@@ -1,0 +1,13 @@
+attribute_list_id, description, include_code, type_code, class_name, notes
+2,grayscale,1,0,,grayscale value (0-255)
+3,edges,1,0,,# edges in polygon
+4,relativeCGX,1,0,,"x coordinate of centroid relative to bounding rectangle, normalized by rectangle width"
+5,relativeCGY,1,0,,"y coordinate of centroid relative to bounding rectangle, normalized by rectangle height"
+6,contact,1,0,,"0 if bounding rectangles of polygons overlap, 1 otherwise"
+7,x relation,1,0,,"-1=o1 left (west) of o2, 0=o1 has same x-coord as o2, 1=o1 right (east) of o2"
+8,y relation,1,0,,"-1=o1 over (north) o2, 0=o1 has same y-coord as o2, 1=o1 below (south) o2"
+9,delta x,1,0,,"-1=delta x is decreasing, 0=delta x is unchanged, 1=delta x is increasing"
+10,delta y,1,0,,"-1=delta y is decreasing, 0=delta y is unchanged, 1=delta y is increasing"
+11,x travel,1,0,,add 1 for each object moving right and subtract 1 for each object moving left
+12,y travel,1,0,,add 1 for each object moving down and subtract 1 for each object moving up
+1,area,1,0,,# pixels in polygon

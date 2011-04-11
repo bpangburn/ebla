@@ -1,0 +1,4 @@
+parameter_id, description, tmp_path, seg_color_radius, seg_spatial_radius, seg_min_region, seg_speed_up_code, frame_prefix, seg_prefix, poly_prefix, background_pixels, min_pixel_count, min_frame_count, reduce_color_code, notes, seg_speed_up_factor, edison_port_version
+9,Animations,./images/animations/,6.5,7,20,1,/frame,/seg,/poly,20,500,7,0,All eight animations.,1,0
+13,Videos-Best (Used for Descriptions),./images/videos-best/,13,7,500,1,/frame,/seg,/poly,20,500,7,0,167 of 319 videos used to evaluate description performance.,0.5,0
+11,Videos-OK (Used for Acquisition),./images/videos-ok/,13,7,500,1,/frame,/seg,/poly,20,500,7,0,226 of 319 videos used to evaluate acquisition performance.,0.5,0
