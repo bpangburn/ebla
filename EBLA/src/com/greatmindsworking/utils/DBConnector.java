@@ -56,22 +56,26 @@ public class DBConnector {
 	/**
 	 * constant string containing database driver
 	 */
-	private final static String jdbcDriver = "org.postgresql.Driver";
+	//private final static String jdbcDriver = "org.postgresql.Driver";
+	private final static String jdbcDriver = "org.h2.Driver";
 
 	/**
 	 * constant string containing path to database 
 	 */
-    private static String eblaPath = "jdbc:postgresql://pgserver.greatmindsworking.com:5432/ebla_data";
+    //private static String eblaPath = "jdbc:postgresql://pgserver.greatmindsworking.com:5432/ebla_data";
+	private static String eblaPath = "jdbc:h2:~/ebla";
 
 	/**
 	 * constant string containing database username
 	 */
-    private static String eblaUser = "eblauser";
+    //private static String eblaUser = "eblauser";
+	private static String eblaUser = "sa";
 
     /**
 	 * constant string containing database password
 	 */
-    private static String eblaPass = "guest";
+    //private static String eblaPass = "guest";
+	private static String eblaPass = "";
     	
     /**
      * string containing database driver
@@ -337,54 +341,13 @@ public class DBConnector {
 
 	} // end closeConnection()
 
-    /**
-     * Method to load database connection info from a text file.
-     *
-     * @param _fileName name of file containing database connection info
-     */
-	public static boolean setGasServerInfo(String _fileName) {
-        
-		try {
-            
-			BufferedReader buf = new BufferedReader(new FileReader(new File(_fileName)));
-			eblaPath = buf.readLine();
-			eblaUser = buf.readLine();
-			eblaPass = buf.readLine();
-			
-			return true;
-
-		} catch(IOException ioe) {
-			System.out.println(" DBConnection Exception while reading input file");
-			return false;
-		}
-	}
-
-    /**
-     * Method to load database connection info from an input stream.
-     *
-     * @param _is   name of input stream containing database connection info
-     */    
-	public static boolean setGasServerInfo(InputStream _is) {
-        
-		try {
-
-			BufferedReader  buf = new BufferedReader(new InputStreamReader(_is));
-			eblaPath = buf.readLine();
-			eblaUser = buf.readLine();
-			eblaPass = buf.readLine();
-			
-			return true;
-
-		} catch(IOException ioe) {
-			System.out.println(" DBConnection Exception while reading input file");
-			return false;
-		}
-	}
-
 } // end DBConnector class
 
 /*
  * $Log$
+ * Revision 1.2  2005/02/17 23:34:16  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.1  2005/02/17 19:48:12  yoda2
  * Replacing utils.jar with com.greatmindsworking.utils.DBConnector.java
  *
