@@ -153,13 +153,13 @@ public class FrameProcessor {
 	 * ArrayList of FrameObjects containing properties for a each "significant"
 	 * object in the "current" frame
 	 */
-	private ArrayList cfoArrayList = null;
+	private ArrayList<FrameObject> cfoArrayList = null;
 
 	/**
 	 * ArrayList of FrameObjects containing properties for a each "significant"
 	 * object in the "prior" frame
 	 */
-	private ArrayList pfoArrayList = null;
+	private ArrayList<FrameObject> pfoArrayList = null;
 
 	/**
 	 * Boolean that allows FrameProcessor to be run in a stand-alone mode without
@@ -433,11 +433,11 @@ public class FrameProcessor {
 
 			// INITIALIZE ARRAY LIST OF PRIOR FRAME OBJECTS
 				if (! firstFrame) {
-					pfoArrayList = new ArrayList(cfoArrayList);
+					pfoArrayList = new ArrayList<FrameObject>(cfoArrayList);
 				}
 
 			// INITIALIZE ARRAY LIST OF CURRENT FRAME OBJECTS
-				cfoArrayList = new ArrayList();
+				cfoArrayList = new ArrayList<FrameObject>();
 
 			// LOOP THROUGH ALL POLYGONS IN ArrayList, CALCULATE OBJECT PROPERTIES FOR EACH
 			//  1. NUMBER OF POINTS
@@ -478,7 +478,7 @@ public class FrameProcessor {
 			//	-- I.E. LOGIC CAN'T CORRELATE OVER NON-CONSECUTIVE FRAMES
 				if (! firstFrame) {
 				// INITIALIZE ARRAY LIST OF MATCH SCORE OBJECTS
-					ArrayList msArrayList = new ArrayList();
+					ArrayList<MatchScore> msArrayList = new ArrayList<MatchScore>();
 
 				// LOOP THROUGH PRIOR FRAME OBJECTS
 					for (int i=0; i < pfoArrayList.size(); i++) {
@@ -679,6 +679,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.36  2005/02/17 23:33:15  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.35  2004/02/25 21:58:09  yoda2
  * Updated copyright notice.
  *

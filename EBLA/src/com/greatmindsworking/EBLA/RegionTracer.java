@@ -182,8 +182,8 @@ public class RegionTracer {
 											// ((_minPixels ^ (1/2)) * 4) - 4)
 			int curX = 0;					// "CURRENT" X POSITION
 			int curY = 0;					// "CURRENT" Y POSITION
-			ArrayList polygonList
-				= new ArrayList();			// POLYGON TRACES OF SEGMENTED REGIONS
+			ArrayList<Polygon> polygonList
+				= new ArrayList<Polygon>();	// POLYGON TRACES OF SEGMENTED REGIONS
 			int neigh4[] = new int[4];		// N, S, E, & W PIXEL NEIGHBORS
 			REGION curRegion = null;		// "CURRENT" SEGMENTED REGION
 			int pixelCount
@@ -527,6 +527,9 @@ public class RegionTracer {
 
 /*
  * $Log$
+ * Revision 1.7  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.6  2002/12/11 22:56:58  yoda2
  * Initial migration to SourceForge.
  *

@@ -164,7 +164,7 @@ public class LexemeResolver {
 	/**
 	 * ArrayList of all lexemes for the current experience
 	 */
-	private ArrayList lexemeAL = null;
+	private ArrayList<Long> lexemeAL = null;
 
 	/**
 	 * String of lexemes from experience_data table in ebla_data
@@ -195,11 +195,11 @@ public class LexemeResolver {
 					StringTokenizer st = new StringTokenizer(_lexemes);
 
 				// INITIALIZE LEXEME ARRAYLIST
-					lexemeAL = new ArrayList();
+					lexemeAL = new ArrayList<Long>();
 
 				// LOOP THROUGH TOKENS AND ADD TO VECTOR
 					while (st.hasMoreTokens()) {
-						lexemeAL.add(st.nextToken());
+						lexemeAL.add(Long.valueOf(st.nextToken()));
 					}
 
 			// SET EXPERIENCE ID
@@ -402,8 +402,8 @@ public class LexemeResolver {
 	public void resolveLexemes() {
 
 		// DECLARATIONS
-			ArrayList curLex = null;		// UNRESOLVED LEXEMES FROM THE CURRENT EXPERIENCE
-			ArrayList curEnt = null;		// UNRESOLVED ENTITIES FROM THE CURRENT EXPERIENCE
+			ArrayList<Long> curLex = null;	// UNRESOLVED LEXEMES FROM THE CURRENT EXPERIENCE
+			ArrayList<Long> curEnt = null;	// UNRESOLVED ENTITIES FROM THE CURRENT EXPERIENCE
 			Iterator itt;					// USED TO TRAVERSE ARRAYLISTS OF LEXEMES AND ENTITIES
 
 			Statement tmpState = null;		// DATABASE STATEMENT USED TO EXECUTE QUERIES AGAINST THE DATABASE
@@ -454,8 +454,8 @@ public class LexemeResolver {
 				tmpState2 = dbc.getStatement();
 
 			// INITIALIZE CURRENT UNRESOLVED LEXEME & ENTITY SETS
-				curLex = new ArrayList();
-				curEnt = new ArrayList();
+				curLex = new ArrayList<Long>();
+				curEnt = new ArrayList<Long>();
 
 			// FILL CURRENT ENTITY SET
 				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID
@@ -1114,8 +1114,8 @@ public class LexemeResolver {
 
 			// QUERY # OF TIMES THAT ENTITY AND LEXEME EXIST FOR CURRENT QUERY AND USE SMALLER COUNT
 			// UPDATE OCCURANCE COUNT ACCORDINGLY
-				ArrayList tmpEED = new ArrayList();
-				ArrayList tmpELD = new ArrayList();
+				ArrayList<Long> tmpEED = new ArrayList<Long>();
+				ArrayList<Long> tmpELD = new ArrayList<Long>();
 
 				sql = "SELECT * FROM experience_entity_data"
 					+ " WHERE experience_id = " + _expID
@@ -1406,6 +1406,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.26  2005/02/17 23:33:54  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.25  2004/08/02 21:28:03  yoda2
  * Remove non-standard characters from comments for Linux compatability.
  *

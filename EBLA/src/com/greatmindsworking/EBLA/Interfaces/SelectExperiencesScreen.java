@@ -288,9 +288,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	 */
 	private class AvailableExperiencesListModel implements ListModel {
 
-		DBConnector connector  = null;
-		Vector experienceName = new Vector();
-		Vector experienceID   = new Vector();
+		DBConnector connector = null;
+		Vector<String> experienceName = new Vector<String>();
+		Vector<Long> experienceID = new Vector<Long>();
 
 		public AvailableExperiencesListModel(){
 
@@ -347,8 +347,8 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	private class SelectedExperiencesListModel implements ListModel {
 
 		DBConnector connector  = null;
-		Vector experienceName = new Vector();
-		Vector parameterExperienceID   = new Vector();
+		Vector<String> experienceName = new Vector<String>();
+		Vector<Long> parameterExperienceID   = new Vector<Long>();
 
 		public SelectedExperiencesListModel(long parameterID){
 
@@ -459,6 +459,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/17 23:33:45  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.6  2004/02/25 21:58:39  yoda2
  * Updated copyright notice.
  *
