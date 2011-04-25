@@ -47,7 +47,7 @@ package com.greatmindsworking.EBLA;
  * @author	$Author$
  * @version	$Revision$
  */
-public class MatchScore implements Comparable {
+public class MatchScore implements Comparable<MatchScore> {
 	/**
 	 * correlation index of object from prior frame
 	 */
@@ -72,13 +72,13 @@ public class MatchScore implements Comparable {
 	 *
 	 * @return integer indicating whether passed object is less than, equal to or greater than current object
 	 */
-    public int compareTo(Object _o) {
+    public int compareTo(MatchScore _ms) {
 
-    	MatchScore ms = (MatchScore)_o;
+    	//MatchScore ms = (MatchScore)_o;
 
-      	if (score < ms.score) {
+      	if (score < _ms.score) {
         	return -1;
-      	} else if (ms.score < score) {
+      	} else if (_ms.score < score) {
         	return 1;
       	}
       	return 0;
@@ -91,6 +91,9 @@ public class MatchScore implements Comparable {
 
 /*
  * $Log$
+ * Revision 1.6  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.5  2002/12/11 22:55:04  yoda2
  * Initial migration to SourceForge.
  *

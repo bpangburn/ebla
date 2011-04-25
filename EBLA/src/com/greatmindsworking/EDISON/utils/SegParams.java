@@ -36,12 +36,11 @@ package com.greatmindsworking.EDISON.utils;
 
 
 
-import java.io.*;
-import java.util.*;
+import java.io.FileWriter;
 
 
 
-public class SegParams implements Comparable {
+public class SegParams implements Comparable<SegParams> {
 
 	/**
 	 * float containing the color radius for mean-shift analysis image segmentation
@@ -106,21 +105,21 @@ public class SegParams implements Comparable {
 
   // IMPLEMENT COMPARETO METHOD FOR SORTING SO THAT JAVA WILL KNOW HOW TO SORT
   //  AN ARRAY OF SegParams
-    public int compareTo(Object _o) {
+    public int compareTo(SegParams _sp) {
 
-		SegParams sp = (SegParams)_o;
+		//SegParams sp = (SegParams)_o;
 
 		// compare excess regions (lower is better)
-			if (excessRegions < sp.excessRegions) {
+			if (excessRegions < _sp.excessRegions) {
 				return -1;
-			} else if (sp.excessRegions < excessRegions) {
+			} else if (_sp.excessRegions < excessRegions) {
 				return 1;
 			}
 
 		// compare speedup factor (higher is better)
-			if (excessRegions > sp.excessRegions) {
+			if (excessRegions > _sp.excessRegions) {
 				return -1;
-			} else if (sp.excessRegions > excessRegions) {
+			} else if (_sp.excessRegions > excessRegions) {
 				return 1;
 			}
 
@@ -172,4 +171,7 @@ public class SegParams implements Comparable {
 
 /*
  * $Log$
+ * Revision 1.1  2004/01/21 19:40:30  yoda2
+ * Added experimental jEDISON genetic training algorithm for determining "optimal" segmentation parameters for a given set of images.
+ *
  */

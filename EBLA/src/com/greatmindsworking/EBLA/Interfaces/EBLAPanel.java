@@ -36,12 +36,21 @@ package com.greatmindsworking.EBLA.Interfaces;
 
 
 
-import java.io.*;
-import java.sql.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.border.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.SoftBevelBorder;
 
 
 
@@ -57,6 +66,11 @@ import javax.swing.border.*;
  * @version	$Revision$
  */
 public class EBLAPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5167125185772937155L;
 
 	/**
 	 * custom widget dimensions for EBLA
@@ -342,6 +356,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.8  2005/02/17 23:33:45  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.7  2004/02/25 21:58:39  yoda2
  * Updated copyright notice.
  *

@@ -295,7 +295,7 @@ public class MeanShift {
 	/**
 	 * implementing user defined weight function with Java Map(key/value pairs)
 	 */
-	private TreeMap userWFMap;
+	private TreeMap<Object, Object> userWFMap;
 
 	/**
 	 * root of kdBST used to store input
@@ -372,7 +372,7 @@ public class MeanShift {
 
 		// initialize weight function linked list...
 		// initialize user defined weight function as Java Map
-			userWFMap = new TreeMap();
+			userWFMap = new TreeMap<Object, Object>();
 
 		// intialize mean shift processing data structures...
 			uv = null;
@@ -588,8 +588,8 @@ public class MeanShift {
 			userWF.sampleNumber = sampleNumber;
 			userWF.subspace = subspace;
 
-		// Add newly defined fuction to userWeightMap (using put(key, value))
-			userWFMap.put((Object)new Integer(subspace), (Object)userWF);
+		// Add newly defined function to userWeightMap (using put(key, value))
+			userWFMap.put(subspace, userWF);
 
 /*
 		// Declare Variables
@@ -2983,6 +2983,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.19  2005/10/14 00:08:28  yoda2
+ * Fixed inaccessible class or interface error by making ClassStateStruct a protected rather than private class.
+ *
  * Revision 1.18  2004/02/25 21:59:22  yoda2
  * Updated copyright notice.
  *

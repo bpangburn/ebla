@@ -99,7 +99,7 @@ public class EntityExtractor {
 	/**
 	 * ArrayList of all entities for the current experience (each with an ArrayList of attributes)
 	 */
-	private ArrayList entityAL = null;
+	private ArrayList<ArrayList<Attribute>> entityAL = null;
 
 	/**
 	 * Minimum standard deviation for entity comparisions
@@ -161,45 +161,46 @@ public class EntityExtractor {
 
 		// DECLARATIONS
 			// DATABASE
-				Statement tmpState = null;			// USED TO EXECUTE STATEMENTS AGAINST THE ebla_data DATABASE
-				ResultSet fadRS = null;				// RESULTSET FOR frame_analysis_data
-				ResultSet aldRS = null;				// RESULTSET FOR attribute_list_data
-				String sql = "";					// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
+				Statement tmpState = null;				// USED TO EXECUTE STATEMENTS AGAINST THE ebla_data DATABASE
+				ResultSet fadRS = null;					// RESULTSET FOR frame_analysis_data
+				ResultSet aldRS = null;					// RESULTSET FOR attribute_list_data
+				String sql = "";						// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 
 			// OBJECT ATTRIBUTES...
-				ArrayList areaAL = null;			// HOLDS AREA ATTRIBUTE VALUES
-				//ArrayList colorAL = null;			// HOLDS COLOR ATTRIBUTE VALUES
-				//ArrayList redAL = null;			// HOLDS RED COMPONENT ATTRIBUTE VALUES
-				//ArrayList greenAL = null;			// HOLDS GREEN COMPONENT ATTRIBUTE VALUES
-				//ArrayList blueAL = null;			// HOLDS BLUE COMPONENT ATTRIBUTE VALUES
-				ArrayList grayAL = null;			// HOLDS GRAYSCALE ATTRIBUTE VALUES
-				ArrayList edgesAL = null;			// HOLDS EDGE COUNT ATTRIBUTE VALUES
-				ArrayList relativeCGXAL = null;		// HOLDS RELATIVE CENTROID (X) ATTRIBUTE VALUES
-				ArrayList relativeCGYAL = null;		// HOLDS RELATIVE CENTROID (Y) ATTRIBUTE VALUES
+				ArrayList<Double> areaAL = null;		// HOLDS AREA ATTRIBUTE VALUES
+				//ArrayList colorAL = null;				// HOLDS COLOR ATTRIBUTE VALUES
+				//ArrayList redAL = null;				// HOLDS RED COMPONENT ATTRIBUTE VALUES
+				//ArrayList greenAL = null;				// HOLDS GREEN COMPONENT ATTRIBUTE VALUES
+				//ArrayList blueAL = null;				// HOLDS BLUE COMPONENT ATTRIBUTE VALUES
+				ArrayList<Double> grayAL = null;		// HOLDS GRAYSCALE ATTRIBUTE VALUES
+				ArrayList<Double> edgesAL = null;		// HOLDS EDGE COUNT ATTRIBUTE VALUES
+				ArrayList<Double> relativeCGXAL = null;	// HOLDS RELATIVE CENTROID (X) ATTRIBUTE VALUES
+				ArrayList<Double> relativeCGYAL = null;	// HOLDS RELATIVE CENTROID (Y) ATTRIBUTE VALUES
 
 			// RELATION ATTRIBUTES
-				ArrayList contactAL = null;			// 0=CONTACT, 1=NO CONTACT
-				ArrayList xRelationAL = null;		// -1=O1 LEFT OF O2, 0=O1 HAS SAME X-COORD AS O2, 1=O1 RIGHT OF O2
-				ArrayList yRelationAL = null;		// -1=O1 OVER O2, 0=O1 HAS SAME Y-COORD AS O2, 1=O1 BELOW O2
-				ArrayList xDeltaAL = null;			// -1=DELTA X IS DECREASING, 0=DELTA X IS UNCHANGED, 1=DELTA X IS INCREASING
-				ArrayList yDeltaAL = null;			// -1=DELTA Y IS DECREASING, 0=DELTA Y IS UNCHANGED, 1=DELTA Y IS INCREASING
-				ArrayList xTravelAL = null;			// ADD 1 FOR EACH OBJECT MOVING RIGHT AND SUBTRACT 1 FOR EACH OBJECT MOVING LEFT
-				ArrayList yTravelAL = null;			// ADD 1 FOR EACH OBJECT MOVING DOWN AND SUBTRACT 1 FOR EACH OBJECT MOVING UP
+				ArrayList<Double> contactAL = null;		// 0=CONTACT, 1=NO CONTACT
+				ArrayList<Double> xRelationAL = null;	// -1=O1 LEFT OF O2, 0=O1 HAS SAME X-COORD AS O2, 1=O1 RIGHT OF O2
+				ArrayList<Double> yRelationAL = null;	// -1=O1 OVER O2, 0=O1 HAS SAME Y-COORD AS O2, 1=O1 BELOW O2
+				ArrayList<Double> xDeltaAL = null;		// -1=DELTA X IS DECREASING, 0=DELTA X IS UNCHANGED, 1=DELTA X IS INCREASING
+				ArrayList<Double> yDeltaAL = null;		// -1=DELTA Y IS DECREASING, 0=DELTA Y IS UNCHANGED, 1=DELTA Y IS INCREASING
+				ArrayList<Double> xTravelAL = null;		// ADD 1 FOR EACH OBJECT MOVING RIGHT AND SUBTRACT 1 FOR EACH OBJECT MOVING LEFT
+				ArrayList<Double> yTravelAL = null;		// ADD 1 FOR EACH OBJECT MOVING DOWN AND SUBTRACT 1 FOR EACH OBJECT MOVING UP
 
 			// MISC
-				boolean stopLoop = false;			// INDICATES WHEN ALL OBJECTS IN frame_analysis_data HAVE BEEN PROCESSED
+				boolean stopLoop = false;				// INDICATES WHEN ALL OBJECTS IN frame_analysis_data HAVE BEEN PROCESSED
 
-				ArrayList objectAL = null;			// ARRAYLIST OF OBJECTS
-				int objectIndex = 0;				// COUNTER FOR OBJECTS
+				ArrayList<ArrayList<FrameAnalysisData>> objectAL 
+					= null;								// ARRAYLIST OF OBJECTS
+				int objectIndex = 0;					// COUNTER FOR OBJECTS
 
-				ArrayAnalysis aa = null;			// OBJECT TO CALCULATE STATISTICS FOR ArrayLists
+				ArrayAnalysis aa = null;				// OBJECT TO CALCULATE STATISTICS FOR ArrayLists
 
-				ArrayList attributeAL = null;		// ARRAYLIST OF ATTRIBUTES TO HOLD ATTRIBUTE VALUES FOR EACH ENTITY
+				ArrayList<Attribute> attributeAL = null;// ARRAYLIST OF ATTRIBUTES TO HOLD ATTRIBUTE VALUES FOR EACH ENTITY
 
 
 		try {
 			// INITIALIZE OBJECT ARRAY LIST
-				objectAL = new ArrayList();
+				objectAL = new ArrayList<ArrayList<FrameAnalysisData>>();
 
 			// CREATE STATEMENT
 				tmpState = dbc.getStatement();
@@ -233,7 +234,7 @@ public class EntityExtractor {
 					fadRS = tmpState.executeQuery(sql);
 
 				// INITIALIZE TreeMap TO HOLD FRAME FOR CURRENT OBJECT
-					ArrayList frameAL = new ArrayList();
+					ArrayList<FrameAnalysisData> frameAL = new ArrayList<FrameAnalysisData>();
 
 				// LOOP THROUGH RESULTSET
 					while (fadRS.next()) {
@@ -261,27 +262,27 @@ public class EntityExtractor {
 				} // end while (! stopLoop)
 
 			// INITIALIZE ENTITY ARRAY LIST
-				entityAL = new ArrayList();
+				entityAL = new ArrayList<ArrayList<Attribute>>();
 
 			// CALCULATE OBJECT ENTITY ATTRIBUTES IN OUTER LOOP & RELATION ENTITY ATTRIBUTES IN INNER LOOP
 				for (int i=0; i<objectAL.size(); i++) {
 					// EXTRACT CURRENT OBJECT MAP
-						ArrayList firstObj = (ArrayList)objectAL.get(i);
+						ArrayList<?> firstObj = objectAL.get(i);
 
 					// INITIALIZE ARRAYS
 					// 	- AREA=1, COLOR=2, EDGES=3, RELATIVE CG X=4, RELATIVE CG Y=5
-						areaAL = new ArrayList();
+						areaAL = new ArrayList<Double>();
 						//colorAL = new ArrayList();
 						//redAL = new ArrayList();
 						//greenAL = new ArrayList();
 						//blueAL = new ArrayList();
-						grayAL = new ArrayList();
-						edgesAL = new ArrayList();
-						relativeCGXAL = new ArrayList();
-						relativeCGYAL = new ArrayList();
+						grayAL = new ArrayList<Double>();
+						edgesAL = new ArrayList<Double>();
+						relativeCGXAL = new ArrayList<Double>();
+						relativeCGYAL = new ArrayList<Double>();
 
 					// ITERATE THROUGH FRAMES FOR FIRST OBJECT AND CALCULATE OBJECT ENTITY ATTRIBUTES
-						Iterator itt = firstObj.iterator();
+						Iterator<?> itt = firstObj.iterator();
 						while (itt.hasNext()) {
 							// EXTRACT frame_analysis_data RECORD DATA INTO tmpFAD OBJECT
 								FrameAnalysisData tmpFAD = (FrameAnalysisData)itt.next();
@@ -305,7 +306,7 @@ public class EntityExtractor {
 						}
 
 					// INITIALIZE ATTRIBUTE ARRAY LIST
-						attributeAL = new ArrayList();
+						attributeAL = new ArrayList<Attribute>();
 
 
 					// PERFORM ARRAY ANALYSIS ON EACH ARRAY LIST
@@ -347,7 +348,7 @@ public class EntityExtractor {
 					// CREATE INNER LOOP TO COMPARE EACH OBJECT TO OTHER OBJECTS
 						for (int j=(i+1); j<objectAL.size(); j++) {
 							// EXTRACT CURRENT OBJECT MAP
-								ArrayList secondObj = (ArrayList)objectAL.get(j);
+								ArrayList<?> secondObj = objectAL.get(j);
 
 							// INITILIZE CONTACT INDICATOR
 								boolean contact = false;
@@ -355,13 +356,13 @@ public class EntityExtractor {
 							// INITIALIZE ARRAY LISTS FOR EACH RELATION ATTRIBUTE
 							// 	- CONTACT=6, X RELATION=7, Y RELATION=8, DELTA X=9
 							//	- DELTA Y=10, TRAVEL X=11, AND TRAVEL Y=12
-								contactAL = new ArrayList();	// 0=CONTACT, 1=NO CONTACT
-								xRelationAL = new ArrayList();	// -1=O1 LEFT OF O2, 0=O1 HAS SAME X-COORD AS O2, 1=O1 RIGHT OF O2
-								yRelationAL = new ArrayList();	// -1=O1 OVER O2, 0=O1 HAS SAME Y-COORD AS O2, 1=O1 BELOW O2
-								xDeltaAL = new ArrayList();		// -1=DELTA X IS DECREASING, 0=DELTA X IS UNCHANGED, 1=DELTA X IS INCREASING
-								yDeltaAL = new ArrayList();		// -1=DELTA Y IS DECREASING, 0=DELTA Y IS UNCHANGED, 1=DELTA Y IS INCREASING
-								xTravelAL = new ArrayList();	// ADD 1 FOR EACH OBJECT MOVING RIGHT AND SUBTRACT 1 FOR EACH OBJECT MOVING LEFT
-								yTravelAL = new ArrayList();	// ADD 1 FOR EACH OBJECT MOVING DOWN AND SUBTRACT 1 FOR EACH OBJECT MOVING UP
+								contactAL = new ArrayList<Double>();	// 0=CONTACT, 1=NO CONTACT
+								xRelationAL = new ArrayList<Double>();	// -1=O1 LEFT OF O2, 0=O1 HAS SAME X-COORD AS O2, 1=O1 RIGHT OF O2
+								yRelationAL = new ArrayList<Double>();	// -1=O1 OVER O2, 0=O1 HAS SAME Y-COORD AS O2, 1=O1 BELOW O2
+								xDeltaAL = new ArrayList<Double>();		// -1=DELTA X IS DECREASING, 0=DELTA X IS UNCHANGED, 1=DELTA X IS INCREASING
+								yDeltaAL = new ArrayList<Double>();		// -1=DELTA Y IS DECREASING, 0=DELTA Y IS UNCHANGED, 1=DELTA Y IS INCREASING
+								xTravelAL = new ArrayList<Double>();	// ADD 1 FOR EACH OBJECT MOVING RIGHT AND SUBTRACT 1 FOR EACH OBJECT MOVING LEFT
+								yTravelAL = new ArrayList<Double>();	// ADD 1 FOR EACH OBJECT MOVING DOWN AND SUBTRACT 1 FOR EACH OBJECT MOVING UP
 
 							// DETERMINE FIRST & LAST FRAME FOR EACH OBJECT
 								int o1FirstFrame = ((FrameAnalysisData)firstObj.get(0)).frameIndex;
@@ -511,7 +512,7 @@ public class EntityExtractor {
 							// IF OBJECT CONTACT THEN PERFORM ARRAY ANALYSIS FOR EACH ATTRIBUTE (IF VALUE EXIST)
 								if (contact) {
 									// INITIALIZE ATTRIBUTE ARRAY LIST
-										attributeAL = new ArrayList();
+										attributeAL = new ArrayList<Attribute>();
 
 									// CALCUALTE AVERAGE & STANDARD DEVIATION FOR EACH NON-EMPTY ATTRIBUTE ARRAY LIST
 										if (! contactAL.isEmpty() && (attInclusion[6])) {
@@ -667,14 +668,14 @@ public class EntityExtractor {
 			// 	3. if no match is found, generate new entity in entity_data and write attributes to
 			//     attribute_value_data
 			// 	4. write entity_id to experience_entity_data
-				Iterator itt = entityAL.iterator();
+				Iterator<ArrayList<Attribute>> itt = entityAL.iterator();
 				while (itt.hasNext()) {
 
 					// DETERMINE IF A SIMILAR ENTITY HAS ALREADY BEEN DISCOVERED
 					//  - INITIALLY MUST MATCH ALL ATTRIBUTES TO WITHIN A SINGLE STANDARD DEVIATION OF CURRENT AVERAGE
 
 					// EXTRACT ATTRIBUTE ARRAY LIST
-						ArrayList attributeAL = (ArrayList)itt.next();
+						ArrayList<?> attributeAL = itt.next();
 
 					// INITIALIZE QUERY
 
@@ -752,7 +753,7 @@ public class EntityExtractor {
 						entityRS = tmpState.executeQuery(sql);
 
 					// CREATE NEW AttributeScore ArrayList
-						ArrayList asArrayList = new ArrayList();
+						ArrayList<AttributeScore> asArrayList = new ArrayList<AttributeScore>();
 
 					// IF RECORDS EXIST, EXTRACT ATTRIBUTE VALUE FOR EACH AND COMPARE TO CURRENT ENTITY
 						while (entityRS.next()) {
@@ -768,7 +769,7 @@ public class EntityExtractor {
 							// BUILD SCORE...
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES, EXTRACTING EXISTING ATTRIBUTE VALUES
 							// FOR CURRENT ENTITY
-								Iterator itt2 = attributeAL.iterator();
+								Iterator<?> itt2 = attributeAL.iterator();
 								while (itt2.hasNext()) {
 									// EXTRACT ATTRIBUTE VALUES
 										Attribute tmpAtt = (Attribute)itt2.next();
@@ -821,7 +822,7 @@ public class EntityExtractor {
 								Collections.sort(asArrayList);
 
 							// GET OBJECT WITH LOWEST SCORE
-								AttributeScore as = (AttributeScore)asArrayList.get(0);
+								AttributeScore as = asArrayList.get(0);
 
 							// EXTRACT ENTITY ID
 								entityID = as.entityID;
@@ -838,7 +839,7 @@ public class EntityExtractor {
 								tmpState.executeUpdate(sql);
 
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES, UPDATING AVERAGE VALUES FOR EACH
-								Iterator itt2 = attributeAL.iterator();
+								Iterator<?> itt2 = attributeAL.iterator();
 								while (itt2.hasNext()) {
 									// EXTRACT ATTRIBUTE VALUES
 										Attribute tmpAtt = (Attribute)itt2.next();
@@ -880,7 +881,7 @@ public class EntityExtractor {
 								tmpState.executeUpdate(sql);
 
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES
-								Iterator itt2 = attributeAL.iterator();
+								Iterator<?> itt2 = attributeAL.iterator();
 								while (itt2.hasNext()) {
 									// EXTRACT ATTRIBUTE VALUES
 										Attribute tmpAtt = (Attribute)itt2.next();
@@ -922,6 +923,9 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.26  2005/02/17 23:33:15  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.25  2004/08/02 18:22:52  yoda2
  * Changed attribute value averaging such that existing average is always the denominator when updating score variable.
  *

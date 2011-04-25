@@ -47,7 +47,7 @@ package com.greatmindsworking.EBLA;
  * @author	$Author$
  * @version	$Revision$
  */
-public class AttributeScore implements Comparable {
+public class AttributeScore implements Comparable<AttributeScore> {
 	/**
 	 * id of entity
 	 */
@@ -72,13 +72,13 @@ public class AttributeScore implements Comparable {
 	 *
 	 * @return integer indicating whether passed object is less than, equal to or greater than current object
 	 */
-    public int compareTo(Object _o) {
+    public int compareTo(AttributeScore _as) {
 
-    	AttributeScore ms = (AttributeScore)_o;
+    	//AttributeScore ms = (AttributeScore)_o;
 
-      	if (score < ms.score) {
+      	if (score < _as.score) {
         	return -1;
-      	} else if (ms.score < score) {
+      	} else if (_as.score < score) {
         	return 1;
       	}
       	return 0;
@@ -91,6 +91,9 @@ public class AttributeScore implements Comparable {
 
 /*
  * $Log$
+ * Revision 1.5  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.4  2002/12/11 22:48:28  yoda2
  * Initial migration to SourceForge.
  *

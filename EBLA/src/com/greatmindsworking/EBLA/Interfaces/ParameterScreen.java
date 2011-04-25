@@ -36,17 +36,29 @@ package com.greatmindsworking.EBLA.Interfaces;
 
 
 
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import java.sql.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import com.nqadmin.swingSet.*;
-import com.nqadmin.swingSet.datasources.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.border.Border;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
 import com.greatmindsworking.utils.DBConnector;
+import com.nqadmin.swingSet.SSComboBox;
+import com.nqadmin.swingSet.SSDBNavImp;
+import com.nqadmin.swingSet.SSDataNavigator;
+import com.nqadmin.swingSet.SSTextArea;
+import com.nqadmin.swingSet.SSTextField;
+import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
 
 
 
@@ -434,6 +446,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.19  2005/02/17 23:33:45  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.18  2005/02/16 02:36:06  yoda2
  * Began updating EBLA GUI to work with SwingSet 1.0 RC.
  *

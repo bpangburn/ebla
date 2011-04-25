@@ -164,7 +164,7 @@ public class LexemeResolver {
 	/**
 	 * ArrayList of all lexemes for the current experience
 	 */
-	private ArrayList<Long> lexemeAL = null;
+	private ArrayList<String> lexemeAL = null;
 
 	/**
 	 * String of lexemes from experience_data table in ebla_data
@@ -195,11 +195,11 @@ public class LexemeResolver {
 					StringTokenizer st = new StringTokenizer(_lexemes);
 
 				// INITIALIZE LEXEME ARRAYLIST
-					lexemeAL = new ArrayList<Long>();
+					lexemeAL = new ArrayList<String>();
 
 				// LOOP THROUGH TOKENS AND ADD TO VECTOR
 					while (st.hasMoreTokens()) {
-						lexemeAL.add(Long.valueOf(st.nextToken()));
+						lexemeAL.add(st.nextToken());
 					}
 
 			// SET EXPERIENCE ID
@@ -404,7 +404,6 @@ public class LexemeResolver {
 		// DECLARATIONS
 			ArrayList<Long> curLex = null;	// UNRESOLVED LEXEMES FROM THE CURRENT EXPERIENCE
 			ArrayList<Long> curEnt = null;	// UNRESOLVED ENTITIES FROM THE CURRENT EXPERIENCE
-			Iterator itt;					// USED TO TRAVERSE ARRAYLISTS OF LEXEMES AND ENTITIES
 
 			Statement tmpState = null;		// DATABASE STATEMENT USED TO EXECUTE QUERIES AGAINST THE DATABASE
 			Statement tmpState2 = null;		// NEED A 2ND STATEMENT BECAUSE YOU CAN'T USE THE SAME STATEMENT
@@ -487,13 +486,13 @@ public class LexemeResolver {
 			//		1. ADD RECORD TO lexeme_data WITH occurance_count = 1
 			//		2. GET ID AND ADD TO curLex
 			//		3. ADD RECORD TO experience_lexeme_data WITH resolution_code = 0
-				itt = lexemeAL.iterator();
-				while (itt.hasNext()) {
+				Iterator<String> lexemeIT = lexemeAL.iterator();
+				while (lexemeIT.hasNext()) {
 					// INITIALIZE FLAG INDICATING IF LEXEME ALREADY EXISTS IN DATABASE
 						lexemeExists = false;
 
 					// EXTRACT CURRENT LEXEME
-						String tmpLex = (String)itt.next();
+						String tmpLex = lexemeIT.next();
 
 					// QUERY lexeme_data FOR CURRENT LEXEME
 						sql = "SELECT * FROM lexeme_data"
@@ -565,11 +564,11 @@ public class LexemeResolver {
 
 			// CHECK FOR EXISTING LEXEMES THAT MAP TO AN ENTITY
 				// BUILD ENTITY STRING FOR QUERY
-					itt = curEnt.iterator();
+					Iterator<Long> entityIT = curEnt.iterator();
 					tmpFirst = true;
-					while (itt.hasNext()) {
+					while (entityIT.hasNext()) {
 					// EXTRACT CURRENT ENTITY ID
-						long tmpEnt = ((Long)itt.next()).longValue();
+						long tmpEnt = entityIT.next();
 
 					// ADD TO STRING
 						if (tmpFirst) {
@@ -582,11 +581,11 @@ public class LexemeResolver {
 					entityString += ")";
 
 				// BUILD LEXEME STRING FOR QUERY
-					itt = curLex.iterator();
+					Iterator<Long>lexemeIDIT = curLex.iterator();
 					tmpFirst = true;
-					while (itt.hasNext()) {
+					while (lexemeIDIT.hasNext()) {
 					// EXTRACT CURRENT ENTITY ID
-						long tmpLex = ((Long)itt.next()).longValue();
+						long tmpLex = lexemeIDIT.next();
 
 					// ADD TO STRING
 						if (tmpFirst) {
@@ -1406,6 +1405,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.27  2011/04/25 02:34:51  yoda2
+ * Coding for Java Generics.
+ *
  * Revision 1.26  2005/02/17 23:33:54  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

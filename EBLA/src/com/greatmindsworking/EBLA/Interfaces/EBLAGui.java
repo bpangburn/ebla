@@ -60,6 +60,12 @@ import com.greatmindsworking.utils.DBConnector;
  */
 public class EBLAGui extends JFrame {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2914270816554999394L;
+
 	/**
 	 * EBLA version string
 	 */
@@ -496,6 +502,8 @@ public class EBLAGui extends JFrame {
 	 */
 	private class EBLAMenuBar extends JMenuBar {
 
+		private static final long serialVersionUID = -8156953510977685939L;
+		
 		// MENUS FOR THE EBLA MENU BAR.
 			JMenu menuFile = new JMenu("File");
 			JMenu menuEdit = new JMenu("Edit");
@@ -633,6 +641,7 @@ public class EBLAGui extends JFrame {
 
 		System.out.println("Starting EBLA...");
 
+		@SuppressWarnings("unused")
 		EBLAGui mainFrame = new EBLAGui();
 
 	} // end main()
@@ -645,6 +654,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/17 23:33:45  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.13  2004/02/25 21:58:59  yoda2
  * Updated copyright notice & version (0.7.0-alpha).
  *

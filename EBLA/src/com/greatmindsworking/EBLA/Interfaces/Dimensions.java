@@ -36,7 +36,6 @@ package com.greatmindsworking.EBLA.Interfaces;
 
 
 
-import java.io.*;
 import java.awt.Dimension;
 
 
@@ -103,6 +102,9 @@ public class Dimensions {
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/25 21:58:39  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.2  2003/12/02 04:09:27  yoda2
  * Added default panel dimensions.
  *

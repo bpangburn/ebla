@@ -38,6 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.util.*;
 import java.awt.*;
+
 import com.greatmindsworking.EDISON.segm.*;
 
 
@@ -174,7 +175,7 @@ public class RegionTracer {
 	 *
 	 * @return ArrayList of bounding polygons
 	 */
-	static public ArrayList bugWalk(REGION[] _regionArray, int _width, int _height,
+	static public ArrayList<Polygon> bugWalk(REGION[] _regionArray, int _width, int _height,
 		int _minPixels, int _maxPixels) {
 
 		// DECLARATIONS
@@ -527,6 +528,9 @@ public class RegionTracer {
 
 /*
  * $Log$
+ * Revision 1.8  2011/04/25 02:34:51  yoda2
+ * Coding for Java Generics.
+ *
  * Revision 1.7  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

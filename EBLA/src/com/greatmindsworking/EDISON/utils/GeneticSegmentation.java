@@ -80,7 +80,7 @@ public class GeneticSegmentation {
 		int maxAcceptableRegions = imageSampleSize * maxExcessRegionsPerFrame;
 
 	// INITIALIZE LIST OF ALL IMAGES TO PROCESS
-		ArrayList fileList = new ArrayList();
+		ArrayList<String> fileList = new ArrayList<String>();
 
 	// INITIALIZE TOTAL NUMBER OF IMAGES PROCESSED
 		int runNumber = 0;
@@ -595,6 +595,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/17 23:34:01  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.3  2004/03/03 19:07:17  yoda2
  * Made addtions to select version of edision port and to control segmentation messages.
  *

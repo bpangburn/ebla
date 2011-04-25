@@ -36,18 +36,24 @@ package com.greatmindsworking.EBLA;
 
 
 
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.color.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
 import javax.imageio.ImageIO;
-import java.sql.*;
-import com.greatmindsworking.utils.DBConnector;
-import com.greatmindsworking.EDISON.segm.*;
+
 import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
+import com.greatmindsworking.EDISON.segm.ImageType;
+import com.greatmindsworking.EDISON.segm.MSImageProcessor;
+import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -165,7 +171,7 @@ public class FrameProcessor {
 	 * Boolean that allows FrameProcessor to be run in a stand-alone mode without
 	 * the ebla_data database
 	 */
-	private boolean useDataBase = true;
+	//private boolean useDataBase = true;
 
 	/**
 	 * Integer containing the number of pixels an object must contain to be
@@ -255,7 +261,7 @@ public class FrameProcessor {
 
 			String fileExt = "0000.png";						// DEFAULT FILE EXTENSION
 
-			ArrayList polyList = null;							// ARRAYLIST CONTAINING POLYGONS FOUND IN SEGMENTED IMAGE
+			ArrayList<?> polyList = null;							// ARRAYLIST CONTAINING POLYGONS FOUND IN SEGMENTED IMAGE
 
 			int sleepInterval = 1;
 			boolean processorResult = false;
@@ -407,13 +413,13 @@ public class FrameProcessor {
 	 * @param _segImage		BufferedImage containing frame segmentation into significant regions
 	 * @param _frameNumber	index of the current frame
 	 */
-	protected void analyzeFrame(ArrayList _polyList, BufferedImage _segImage,
+	protected void analyzeFrame(ArrayList<?> _polyList, BufferedImage _segImage,
 		int _frameNumber, boolean _updateFAD) {
 
 		// DECLARATIONS
 			Statement tmpState = null;	// USED TO EXECUTE DELETE AND INSERT STATEMENTS AGAINT frame_analysis_data
 			int rgb = 0;				// RGB COLOR OF "CURRENT" REGION
-			String sql;					// USED TO BUILD QUERY AGAINST frame_analysis_data TABLE
+			//String sql;					// USED TO BUILD QUERY AGAINST frame_analysis_data TABLE
 			double score = 0.0;			// CORRELATION SCORE COMPARING AN OBJECT IN CURRENT FRAME TO OBJECT IN PRIOR FRAME
 			boolean firstFrame = false; // INDICATES IF FIRST FRAME WITH TRACIBLE OBJECTS IS BEING PROCESSED  (FIRST
 										// TRACIBLE FRAME MAY NOT BE FIRST FRAME IF RegionTracer HAS PROBLEMS
@@ -483,12 +489,12 @@ public class FrameProcessor {
 				// LOOP THROUGH PRIOR FRAME OBJECTS
 					for (int i=0; i < pfoArrayList.size(); i++) {
 					// INITIALIZE PRIOR FRAME OBJECT
-						FrameObject pfo = (FrameObject)pfoArrayList.get(i);
+						FrameObject pfo = pfoArrayList.get(i);
 
 					// LOOP THROUGH CURRENT FRAME OBJECTS
 						for (int j=0; j < cfoArrayList.size(); j++) {
 						// INITIALIZE CURRENT FRAME OBJECT
-							FrameObject cfo = (FrameObject)cfoArrayList.get(j);
+							FrameObject cfo = cfoArrayList.get(j);
 
 						// CALCULATE SCORE
 							score = Math.abs(cfo.area-pfo.area);
@@ -526,10 +532,10 @@ public class FrameProcessor {
 				//		C. REMOVE ANY OTHER ENTRIES IN LIST WITH SAME CORRELATION INDEX (CURRENT OR PRIOR)
 					while (! msArrayList.isEmpty()) {
 						// GET OBJECT WITH LOWEST SCORE
-							MatchScore ms = (MatchScore)msArrayList.get(0);
+							MatchScore ms = msArrayList.get(0);
 
 						// SET CORRELATION INDEX
-							FrameObject cfo = (FrameObject)cfoArrayList.get(ms.arrayIndex);
+							FrameObject cfo = cfoArrayList.get(ms.arrayIndex);
 							cfo.correlationIndex = ms.correlationIndex;
 							cfoArrayList.set(ms.arrayIndex, cfo);
 
@@ -537,10 +543,10 @@ public class FrameProcessor {
 							msArrayList.remove(0);
 
 						// ITERATE THROUGH REMAINING ITEMS & REMOVE ANY CORRELATED OBJECTS
-							Iterator itr = msArrayList.iterator();
+							Iterator<MatchScore> itr = msArrayList.iterator();
 
 							while (itr.hasNext()) {
-								MatchScore tmpMS = (MatchScore)itr.next();
+								MatchScore tmpMS = itr.next();
 								if ((tmpMS.correlationIndex == ms.correlationIndex) || (tmpMS.arrayIndex == ms.arrayIndex)) {
 									//msArrayList.remove(tmpMS);
 									itr.remove();
@@ -552,7 +558,7 @@ public class FrameProcessor {
 				//		-- IF FOUND, INCREMENT objectCount & SET correlationIndex = objectCount
 					for (int i=0; i < cfoArrayList.size(); i++) {
 					// INITIALIZE CURRENT FRAME OBJECT
-						FrameObject cfo = (FrameObject)cfoArrayList.get(i);
+						FrameObject cfo = cfoArrayList.get(i);
 
 					// CHECK FOR CORRELATION INDEX = 0
 						if (cfo.correlationIndex == 0) {
@@ -569,12 +575,12 @@ public class FrameProcessor {
 			// WRITE ALL OBJECTS IN cfoArrayList TO DATABASE
 				if (_updateFAD) {
 
-					Iterator itr = cfoArrayList.iterator();
+					Iterator<FrameObject> itr = cfoArrayList.iterator();
 
 					while (itr.hasNext()) {
 
 						// EXTRACT CURRENT FRAME OBJECT
-							FrameObject fo = (FrameObject)itr.next();
+							FrameObject fo = itr.next();
 
 						// WRITE TO DATABASE
 							fo.writeToDB(tmpState, paramExpID);
@@ -607,7 +613,7 @@ public class FrameProcessor {
 	 */
 
 // CHANGE THIS TO USE cfoArrayList RATHER THAN _polyList
-	protected BufferedImage drawPolys(ArrayList _polyList, BufferedImage _segImage, int _width, int _height) {
+	protected BufferedImage drawPolys(ArrayList<?> _polyList, BufferedImage _segImage, int _width, int _height) {
 
 		// DECLARATIONS
 			BufferedImage polyImage = null;		// IMAGE TO BE RETURNED BY drawPolys()
@@ -628,12 +634,12 @@ public class FrameProcessor {
 				g.setStroke(new BasicStroke(3));
 
 			// LOOP THROUGH ALL POLYGONS IN ARRAYLIST OF CURRENT FRAME OBJECTS, EXTRACTING AND DRAWING EACH
-				Iterator itr = cfoArrayList.iterator();
+				Iterator<FrameObject> itr = cfoArrayList.iterator();
 
 				while (itr.hasNext()) {
 
 					// EXTRACT CURRENT FRAME OBJECT
-						FrameObject fo = (FrameObject)itr.next();
+						FrameObject fo = itr.next();
 
 					// SET COLOR FOR CURRENT POLYGON
 						Color c = new Color(fo.rgb);
@@ -679,6 +685,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.37  2011/04/25 02:34:51  yoda2
+ * Coding for Java Generics.
+ *
  * Revision 1.36  2005/02/17 23:33:15  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *
