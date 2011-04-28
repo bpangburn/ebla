@@ -5,6 +5,23 @@ ChangeLog file for the Experience-Based Language Acquisition (EBLA) system.
 $Id$
 
 ==============================================================================
+Version 0.8 - Released 06-10-2011
+==============================================================================
+
+1. Added support for Generics throughout
+
+2. Compiling for Java 1.6
+
+3. Addressed all -Xlint warnings (some via @SuppressWarnings)
+
+4. Adding screen default values for new records (TO DO)
+
+5. Switched database from PostgreSQL to H2 embedded database
+
+6. Added Eclipse .project & .classpath files to CVS
+
+
+==============================================================================
 Version 0.7.1-alpha - Released 06-10-2005
 ==============================================================================
 
