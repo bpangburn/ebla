@@ -42,8 +42,8 @@ SET MODE postgresql;
 
 /* This table is used to initialize the run-time parameters for EBLA */
 
-CREATE SEQUENCE parameter_data_seq;
-CREATE TABLE parameter_data (
+CREATE SEQUENCE IF NOT EXISTS parameter_data_seq;
+CREATE TABLE IF NOT EXISTS parameter_data (
     /* UNIQUE ID FOR EACH PARAMETER RECORD */
     parameter_id            INTEGER             DEFAULT nextval('parameter_data_seq')
     						NOT NULL
@@ -103,8 +103,8 @@ CREATE TABLE parameter_data (
 /* This table contains information about the multimedia file representing an
    EBLA perceptual experience along with a description of the experience */
 
-CREATE SEQUENCE experience_data_seq;
-CREATE TABLE experience_data (
+CREATE SEQUENCE IF NOT EXISTS experience_data_seq;
+CREATE TABLE IF NOT EXISTS experience_data (
     /* UNIQUE ID FOR EACH EXPERIENCE DATA RECORD */
     experience_id           INTEGER             DEFAULT nextval('experience_data_seq')
     						NOT NULL
@@ -130,8 +130,8 @@ CREATE TABLE experience_data (
 
 /* This table contains a list of the attributes that can be detected by EBLA */
 
-CREATE SEQUENCE attribute_list_data_seq;
-CREATE TABLE attribute_list_data (
+CREATE SEQUENCE IF NOT EXISTS attribute_list_data_seq;
+CREATE TABLE IF NOT EXISTS attribute_list_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE LIST DATA RECORD */
     attribute_list_id       INTEGER             DEFAULT nextval('attribute_list_data_seq')
     						NOT NULL
@@ -151,7 +151,7 @@ CREATE TABLE attribute_list_data (
     /* NOTES ABOUT THE EXPERIENCE */
     notes                   VARCHAR(255)
     );
-CREATE INDEX att_list_description_idx ON attribute_list_data (description);
+CREATE INDEX IF NOT EXISTS att_list_description_idx ON attribute_list_data (description);
     
     
     
@@ -159,8 +159,8 @@ CREATE INDEX att_list_description_idx ON attribute_list_data (description);
 
 /* This table is used to store information about each session of EBLA calculation runs */
 
-CREATE SEQUENCE session_data_seq;
-CREATE TABLE session_data (
+CREATE SEQUENCE IF NOT EXISTS session_data_seq;
+CREATE TABLE IF NOT EXISTS session_data (
     /* UNIQUE ID FOR EACH SESSION RECORD */
     session_id              INTEGER             DEFAULT nextval('session_data_seq')
     						NOT NULL
@@ -220,7 +220,7 @@ CREATE TABLE session_data (
     /* NOTES ABOUT THE SESSION */
     notes                   VARCHAR(255)
     ); 
-CREATE INDEX session_parameter_id_idx ON session_data (parameter_id);
+CREATE INDEX IF NOT EXISTS session_parameter_id_idx ON session_data (parameter_id);
 
     
     
@@ -229,8 +229,8 @@ CREATE INDEX session_parameter_id_idx ON session_data (parameter_id);
 /* This table determines which experiences should be included with each set
    of parameters */
 
-CREATE SEQUENCE parameter_experience_data_seq;
-CREATE TABLE parameter_experience_data (
+CREATE SEQUENCE IF NOT EXISTS parameter_experience_data_seq;
+CREATE TABLE IF NOT EXISTS parameter_experience_data (
     /* UNIQUE ID FOR EACH PARAMETER-EXPERIENCE RECORD */
     parameter_experience_id INTEGER             DEFAULT nextval('parameter_experience_data_seq')
     						NOT NULL
@@ -254,8 +254,8 @@ CREATE TABLE parameter_experience_data (
     calc_timestamp          TIMESTAMP           DEFAULT now()
                                                 NOT NULL
     );
-CREATE INDEX para_exp_parameter_id_idx ON parameter_experience_data (parameter_id);
-CREATE INDEX para_exp_experience_id_idx ON parameter_experience_data (experience_id);    
+CREATE INDEX IF NOT EXISTS para_exp_parameter_id_idx ON parameter_experience_data (parameter_id);
+CREATE INDEX IF NOT EXISTS para_exp_experience_id_idx ON parameter_experience_data (experience_id);    
     
     
         
@@ -264,8 +264,8 @@ CREATE INDEX para_exp_experience_id_idx ON parameter_experience_data (experience
 /* This table contains the preliminary information about the "significant"
    objects encountered in an EBLA experience */
 
-CREATE SEQUENCE frame_analysis_data_seq;
-CREATE TABLE frame_analysis_data (
+CREATE SEQUENCE IF NOT EXISTS frame_analysis_data_seq;
+CREATE TABLE IF NOT EXISTS frame_analysis_data (
     /* UNIQUE ID FOR EACH FRAME ANALYSIS RECORD */
     frame_analysis_id       INTEGER             DEFAULT nextval('frame_analysis_data_seq')
     						NOT NULL
@@ -303,9 +303,9 @@ CREATE TABLE frame_analysis_data (
     area                    FLOAT               DEFAULT 0
                                                 NOT NULL
     );
-CREATE INDEX fra_ana_para_exp_id_idx ON frame_analysis_data (parameter_experience_id);
-CREATE INDEX fra_ana_frame_number_idx ON frame_analysis_data (frame_number);
-CREATE INDEX fra_ana_object_number_idx ON frame_analysis_data (object_number);    
+CREATE INDEX IF NOT EXISTS fra_ana_para_exp_id_idx ON frame_analysis_data (parameter_experience_id);
+CREATE INDEX IF NOT EXISTS fra_ana_frame_number_idx ON frame_analysis_data (frame_number);
+CREATE INDEX IF NOT EXISTS fra_ana_object_number_idx ON frame_analysis_data (object_number);    
     
     
     
@@ -313,8 +313,8 @@ CREATE INDEX fra_ana_object_number_idx ON frame_analysis_data (object_number);
 
 /* This table tracks each EBLA calculation run */
 
-CREATE SEQUENCE run_data_seq;
-CREATE TABLE run_data (
+CREATE SEQUENCE IF NOT EXISTS run_data_seq;
+CREATE TABLE IF NOT EXISTS run_data (
     /* UNIQUE ID FOR EACH RUN DATA RECORD */
     run_id                  INTEGER             DEFAULT nextval('run_data_seq')
     						NOT NULL
@@ -343,8 +343,8 @@ CREATE TABLE run_data (
 
 /* This table contains all of the entities that have been detected by EBLA */
 
-CREATE SEQUENCE entity_data_seq;
-CREATE TABLE entity_data (
+CREATE SEQUENCE IF NOT EXISTS entity_data_seq;
+CREATE TABLE IF NOT EXISTS entity_data (
     /* UNIQUE ID FOR EACH ENTITY DATA RECORD */
     entity_id               INTEGER             DEFAULT nextval('entity_data_seq')
     						NOT NULL
@@ -359,7 +359,7 @@ CREATE TABLE entity_data (
     occurance_count         INTEGER             DEFAULT 1
                                                 NOT NULL
     );
-CREATE INDEX entity_run_id_idx ON entity_data (run_id); 
+CREATE INDEX IF NOT EXISTS entity_run_id_idx ON entity_data (run_id); 
 
 
 
@@ -369,8 +369,8 @@ CREATE INDEX entity_run_id_idx ON entity_data (run_id);
    EBLA. A lexical item can occur in the table multiple times if multiple
    senses of the word are encountered */
 
-CREATE SEQUENCE lexeme_data_seq;
-CREATE TABLE lexeme_data (
+CREATE SEQUENCE IF NOT EXISTS lexeme_data_seq;
+CREATE TABLE IF NOT EXISTS lexeme_data (
     /* UNIQUE ID FOR EACH LEXICAL ITEM RECORD */
     lexeme_id               INTEGER             DEFAULT nextval('lexeme_data_seq')
     						NOT NULL
@@ -387,8 +387,8 @@ CREATE TABLE lexeme_data (
     occurance_count         INTEGER             DEFAULT 1
                                                 NOT NULL
     );
-CREATE INDEX lexeme_run_id_idx ON lexeme_data (run_id); 
-CREATE INDEX lexeme_lexeme_idx ON lexeme_data (lexeme);
+CREATE INDEX IF NOT EXISTS lexeme_run_id_idx ON lexeme_data (run_id); 
+CREATE INDEX IF NOT EXISTS lexeme_lexeme_idx ON lexeme_data (lexeme);
 
 
 
@@ -396,8 +396,8 @@ CREATE INDEX lexeme_lexeme_idx ON lexeme_data (lexeme);
 
 /* This table stores run results for each experience */
 
-CREATE SEQUENCE experience_run_data_seq;
-CREATE TABLE experience_run_data (
+CREATE SEQUENCE IF NOT EXISTS experience_run_data_seq;
+CREATE TABLE IF NOT EXISTS experience_run_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-RUN RECORD */
     experience_run_id       INTEGER             DEFAULT nextval('experience_run_data_seq')
     						NOT NULL
@@ -420,8 +420,8 @@ CREATE TABLE experience_run_data (
        PRIOR EXPERIENCES */
     experience_description  VARCHAR(100)
     );
-CREATE INDEX exp_run_experience_id_idx ON experience_run_data (experience_id);
-CREATE INDEX exp_run_run_id_idx ON experience_run_data (run_id); 
+CREATE INDEX IF NOT EXISTS exp_run_experience_id_idx ON experience_run_data (experience_id);
+CREATE INDEX IF NOT EXISTS exp_run_run_id_idx ON experience_run_data (run_id); 
 
 
 
@@ -429,8 +429,8 @@ CREATE INDEX exp_run_run_id_idx ON experience_run_data (run_id);
 
 /* This table contains a record with the entity-lexeme mappings */
 
-CREATE SEQUENCE entity_lexeme_data_seq;
-CREATE TABLE entity_lexeme_data (
+CREATE SEQUENCE IF NOT EXISTS entity_lexeme_data_seq;
+CREATE TABLE IF NOT EXISTS entity_lexeme_data (
     /* UNIQUE ID FOR EACH ENTITY-LEXEME RECORD */
     entity_lexeme_id        INTEGER             DEFAULT nextval('entity_lexeme_data_seq')
     						NOT NULL
@@ -450,8 +450,8 @@ CREATE TABLE entity_lexeme_data (
     occurance_count         INTEGER             DEFAULT 1
                                                 NOT NULL
     );
-CREATE INDEX ent_lex_entity_id_idx ON entity_lexeme_data (entity_id);
-CREATE INDEX ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);    
+CREATE INDEX IF NOT EXISTS ent_lex_entity_id_idx ON entity_lexeme_data (entity_id);
+CREATE INDEX IF NOT EXISTS ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);    
 
 
 
@@ -460,8 +460,8 @@ CREATE INDEX ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);
 /* This table contains a record with the ID of each entity record in an EBLA
    experience for each run */
 
-CREATE SEQUENCE experience_entity_data_seq;
-CREATE TABLE experience_entity_data (
+CREATE SEQUENCE IF NOT EXISTS experience_entity_data_seq;
+CREATE TABLE IF NOT EXISTS experience_entity_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-ENTITY RECORD */
     experience_entity_id    INTEGER             DEFAULT nextval('experience_entity_data_seq')
     						NOT NULL
@@ -486,9 +486,9 @@ CREATE TABLE experience_entity_data (
     resolution_code         INT2                DEFAULT 0
                                                 NOT NULL                        
     );
-CREATE INDEX exp_ent_exp_id_idx ON experience_entity_data (experience_id);
-CREATE INDEX exp_ent_run_id_idx ON experience_entity_data (run_id);
-CREATE INDEX exp_ent_entity_id_idx ON experience_entity_data (entity_id);
+CREATE INDEX IF NOT EXISTS exp_ent_exp_id_idx ON experience_entity_data (experience_id);
+CREATE INDEX IF NOT EXISTS exp_ent_run_id_idx ON experience_entity_data (run_id);
+CREATE INDEX IF NOT EXISTS exp_ent_entity_id_idx ON experience_entity_data (entity_id);
 
 
 
@@ -497,8 +497,8 @@ CREATE INDEX exp_ent_entity_id_idx ON experience_entity_data (entity_id);
 /* This table contains a record with the ID of each lexeme record in an EBLA
    experience for each run */
 
-CREATE SEQUENCE experience_lexeme_data_seq;
-CREATE TABLE experience_lexeme_data (
+CREATE SEQUENCE IF NOT EXISTS experience_lexeme_data_seq;
+CREATE TABLE IF NOT EXISTS experience_lexeme_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-LEXEME RECORD */
     experience_lexeme_id    INTEGER             DEFAULT nextval('experience_lexeme_data_seq')
     						NOT NULL
@@ -527,9 +527,9 @@ CREATE TABLE experience_lexeme_data (
     resolution_index        INTEGER             DEFAULT 0
                                                 NOT NULL
     );
-CREATE INDEX exp_lex_exp_id_idx ON experience_lexeme_data (experience_id);
-CREATE INDEX exp_lex_run_id_idx ON experience_lexeme_data (run_id);
-CREATE INDEX exp_lex_lexeme_id_idx ON experience_lexeme_data (lexeme_id);
+CREATE INDEX IF NOT EXISTS exp_lex_exp_id_idx ON experience_lexeme_data (experience_id);
+CREATE INDEX IF NOT EXISTS exp_lex_run_id_idx ON experience_lexeme_data (run_id);
+CREATE INDEX IF NOT EXISTS exp_lex_lexeme_id_idx ON experience_lexeme_data (lexeme_id);
 
 
 
@@ -538,8 +538,8 @@ CREATE INDEX exp_lex_lexeme_id_idx ON experience_lexeme_data (lexeme_id);
 /* This table contains the attribute values for each entity encountered 
    in an EBLA experience */
 
-CREATE SEQUENCE attribute_value_data_seq;
-CREATE TABLE attribute_value_data (
+CREATE SEQUENCE IF NOT EXISTS attribute_value_data_seq;
+CREATE TABLE IF NOT EXISTS attribute_value_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE-VALUE RECORD */
     attribute_value_id      INTEGER             DEFAULT nextval('attribute_value_data_seq')
     						NOT NULL
@@ -566,32 +566,36 @@ CREATE TABLE attribute_value_data (
     std_deviation           FLOAT               DEFAULT 0
                                                 NOT NULL
     );
-CREATE INDEX att_val_attribute_list_id_idx ON attribute_value_data (attribute_list_id);
-CREATE INDEX att_val_run_id_idx ON attribute_value_data (run_id);
-CREATE INDEX att_val_entity_id_idx ON attribute_value_data (entity_id);
+CREATE INDEX IF NOT EXISTS att_val_attribute_list_id_idx ON attribute_value_data (attribute_list_id);
+CREATE INDEX IF NOT EXISTS att_val_run_id_idx ON attribute_value_data (run_id);
+CREATE INDEX IF NOT EXISTS att_val_entity_id_idx ON attribute_value_data (entity_id);
 
 /* LOAD parameter_data */
 DELETE FROM parameter_data;
 INSERT INTO parameter_data (parameter_id, description, tmp_path, seg_color_radius, seg_spatial_radius, seg_min_region, seg_speed_up_code, frame_prefix, seg_prefix, poly_prefix, background_pixels, min_pixel_count, min_frame_count, reduce_color_code, notes, seg_speed_up_factor, edison_port_version)
-	SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_data.csv');
+	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/parameter_data.csv');
+	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_data.csv');
 SELECT * FROM parameter_data;
 
 
 /* LOAD experience_data */
 DELETE FROM experience_data;
 INSERT INTO experience_data (experience_id, description, video_path, tmp_path, experience_lexemes, notes)
-	SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\experience_data.csv');
+	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/experience_data.csv');
+	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\experience_data.csv');
 SELECT * FROM experience_data;
 
 /* LOAD attribute_list_data */
 DELETE FROM attribute_list_data;
 INSERT INTO attribute_list_data (attribute_list_id, description, include_code, type_code, class_name, notes)
-	SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\attribute_list_data.csv');
+	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/attribute_list_data.csv');
+	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\attribute_list_data.csv');
 SELECT * FROM attribute_list_data;
 
 
 /* LOAD parameter_experience_data */
 DELETE FROM parameter_experience_data;
 INSERT INTO parameter_experience_data (parameter_experience_id, parameter_id, experience_id, calc_status_code, calc_timestamp)
-	SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_experience_data.csv');
+	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/parameter_experience_data.csv');
+	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_experience_data.csv');
 SELECT * FROM parameter_experience_data;
