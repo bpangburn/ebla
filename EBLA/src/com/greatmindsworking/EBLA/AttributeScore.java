@@ -68,7 +68,7 @@ public class AttributeScore implements Comparable<AttributeScore> {
 	/**
 	 * Public method to compare two attributeScore objects.  Allows use of Java's native sorting.
 	 *
-	 * @param _o	AttributeScore object to perform comparision against
+	 * @param _as	AttributeScore object to perform comparison against
 	 *
 	 * @return integer indicating whether passed object is less than, equal to or greater than current object
 	 */
@@ -91,6 +91,9 @@ public class AttributeScore implements Comparable<AttributeScore> {
 
 /*
  * $Log$
+ * Revision 1.6  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.5  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *
