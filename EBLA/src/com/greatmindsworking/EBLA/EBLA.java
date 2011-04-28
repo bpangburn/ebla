@@ -113,17 +113,17 @@ public class EBLA extends Thread {
 	/**
 	 * name of semi-colon separated text file for performance results
 	 */
-	private final static String performanceFN = "performance.ssv";
+	//private final static String performanceFN = "performance.ssv";
 
 	/**
 	 * name of semi-colon separated text file for mapping results
 	 */
-	private final static String mappingFN = "mapping.ssv";
+	//private final static String mappingFN = "mapping.ssv";
 
 	/**
 	 * name of semi-colon separated text file for generated descriptions
 	 */
-	private final static String descriptionFN = "description.ssv";
+	//private final static String descriptionFN = "description.ssv";
 
 	/**
 	 * maximum time (in milliseconds) allowed for a client to perform
@@ -686,7 +686,8 @@ public class EBLA extends Thread {
 									+ " WHERE parameter_experience_data.parameter_id = " + sd.getParameterID()
 									+ " AND parameter_experience_data.experience_id = experience_data.experience_id"
 									+ " AND parameter_experience_data.calc_status_code = 2"
-									+ " ORDER BY random();";
+									//+ " ORDER BY random();";
+									+ " ORDER BY rand();";
 							} else {
 								sql = "SELECT * FROM parameter_experience_data, experience_data"
 									+ " WHERE parameter_experience_data.parameter_id = " + sd.getParameterID()
@@ -1065,6 +1066,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.41  2005/02/17 23:33:04  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.40  2004/06/24 14:35:02  yoda2
  * Replaced mistyped executeQuery with executeUpdate.  Also fixed bug that was causing all videos to be re-analyized based on date stamp not just videos marked as "checked out."
  *
