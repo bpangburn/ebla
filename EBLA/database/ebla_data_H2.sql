@@ -42,11 +42,12 @@ SET MODE postgresql;
 
 /* This table is used to initialize the run-time parameters for EBLA */
 
---CREATE SEQUENCE parameter_data_seq;
+CREATE SEQUENCE parameter_data_seq;
 CREATE TABLE parameter_data (
     /* UNIQUE ID FOR EACH PARAMETER RECORD */
-    parameter_id            INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('parameter_data_seq'),
+    parameter_id            INTEGER             DEFAULT nextval('parameter_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* DESCRIPTION OF PARAMETER SET */
     description             VARCHAR(100),
     /* DIRECTORY PATH FOR STORAGE OF TEMPORARY FILES DURING PROCESSING */
@@ -102,11 +103,12 @@ CREATE TABLE parameter_data (
 /* This table contains information about the multimedia file representing an
    EBLA perceptual experience along with a description of the experience */
 
---CREATE SEQUENCE experience_data_seq;
+CREATE SEQUENCE experience_data_seq;
 CREATE TABLE experience_data (
     /* UNIQUE ID FOR EACH EXPERIENCE DATA RECORD */
-    experience_id           INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('experience_data_seq'),
+    experience_id           INTEGER             DEFAULT nextval('experience_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* DESCRIPTION OF EXPERIENCE */
     description             VARCHAR(50)         NOT NULL,
 
@@ -128,12 +130,12 @@ CREATE TABLE experience_data (
 
 /* This table contains a list of the attributes that can be detected by EBLA */
 
---CREATE SEQUENCE attribute_list_data_seq;
+CREATE SEQUENCE attribute_list_data_seq;
 CREATE TABLE attribute_list_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE LIST DATA RECORD */
-    attribute_list_id       INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('attribute_list_data_seq'),
+    attribute_list_id       INTEGER             DEFAULT nextval('attribute_list_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ATTRIBUTE DESCRIPTION */
     description             VARCHAR(50)         NOT NULL,
     /* 0=NO; 1=YES (INCLUDE ATTRIBUTE WHEN ANALYZING EXPERIENCES) */
@@ -157,16 +159,17 @@ CREATE INDEX att_list_description_idx ON attribute_list_data (description);
 
 /* This table is used to store information about each session of EBLA calculation runs */
 
---CREATE SEQUENCE session_data_seq;
+CREATE SEQUENCE session_data_seq;
 CREATE TABLE session_data (
     /* UNIQUE ID FOR EACH SESSION RECORD */
-    session_id              INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('session_data_seq'),
+    session_id              INTEGER             DEFAULT nextval('session_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT PARAMETER DATA RECORD */
-    parameter_id            INTEGER             REFERENCES parameter_data
+    parameter_id            INTEGER             NOT NULL
+    						REFERENCES parameter_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* DESCRIPTION OF SESSION SET */
     description             VARCHAR(100),
     /* START DATE/TIME FOR CURRENT SESSION */
@@ -226,22 +229,22 @@ CREATE INDEX session_parameter_id_idx ON session_data (parameter_id);
 /* This table determines which experiences should be included with each set
    of parameters */
 
---CREATE SEQUENCE parameter_experience_data_seq;
+CREATE SEQUENCE parameter_experience_data_seq;
 CREATE TABLE parameter_experience_data (
     /* UNIQUE ID FOR EACH PARAMETER-EXPERIENCE RECORD */
-    parameter_experience_id INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('parameter_experience_data_seq'),
+    parameter_experience_id INTEGER             DEFAULT nextval('parameter_experience_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT PARAMETER DATA RECORD */
-    parameter_id            INTEGER             REFERENCES parameter_data
+    parameter_id            INTEGER             NOT NULL
+    						REFERENCES parameter_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER             REFERENCES experience_data
+    experience_id           INTEGER             NOT NULL
+    						REFERENCES experience_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* STATUS OF frame_analysis_data CALCULATIONS FOR PARAMETER-EXPERIENCE COMBO:
         0 = NOT CALCULATED
         1 = CALCULATIONS IN PROGRESS
@@ -261,17 +264,17 @@ CREATE INDEX para_exp_experience_id_idx ON parameter_experience_data (experience
 /* This table contains the preliminary information about the "significant"
    objects encountered in an EBLA experience */
 
---CREATE SEQUENCE frame_analysis_data_seq;
+CREATE SEQUENCE frame_analysis_data_seq;
 CREATE TABLE frame_analysis_data (
     /* UNIQUE ID FOR EACH FRAME ANALYSIS RECORD */
-    frame_analysis_id       INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('frame_analysis_data_seq'),
+    frame_analysis_id       INTEGER             DEFAULT nextval('frame_analysis_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT EXPERIENCE RECORD */
-    parameter_experience_id INTEGER             REFERENCES parameter_experience_data
+    parameter_experience_id INTEGER             NOT NULL
+    						REFERENCES parameter_experience_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* NUMBER OF CURRENT FRAME */
     frame_number            INTEGER             DEFAULT 0
                                                 NOT NULL,
@@ -310,16 +313,17 @@ CREATE INDEX fra_ana_object_number_idx ON frame_analysis_data (object_number);
 
 /* This table tracks each EBLA calculation run */
 
---CREATE SEQUENCE run_data_seq;
+CREATE SEQUENCE run_data_seq;
 CREATE TABLE run_data (
     /* UNIQUE ID FOR EACH RUN DATA RECORD */
-    run_id                  INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('run_data_seq'),
+    run_id                  INTEGER             DEFAULT nextval('run_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT SESSION DATA RECORD */
-    session_id              INTEGER             REFERENCES session_data
+    session_id              INTEGER             NOT NULL
+    						REFERENCES session_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ORDER THAT RUN OCCURS IN CURRENT SESSION */
     run_index               INTEGER             DEFAULT 0
                                                 NOT NULL,
@@ -339,16 +343,17 @@ CREATE TABLE run_data (
 
 /* This table contains all of the entities that have been detected by EBLA */
 
---CREATE SEQUENCE entity_data_seq;
+CREATE SEQUENCE entity_data_seq;
 CREATE TABLE entity_data (
     /* UNIQUE ID FOR EACH ENTITY DATA RECORD */
-    entity_id               INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('entity_data_seq'),
+    entity_id               INTEGER             DEFAULT nextval('entity_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* NUMBER OF TIMES THAT ENTITY HAS BEEN RECOGNIZED WHEN PROCESSING EBLA
        EXPERIENCES */
     occurance_count         INTEGER             DEFAULT 1
@@ -364,16 +369,17 @@ CREATE INDEX entity_run_id_idx ON entity_data (run_id);
    EBLA. A lexical item can occur in the table multiple times if multiple
    senses of the word are encountered */
 
---CREATE SEQUENCE lexeme_data_seq;
+CREATE SEQUENCE lexeme_data_seq;
 CREATE TABLE lexeme_data (
     /* UNIQUE ID FOR EACH LEXICAL ITEM RECORD */
-    lexeme_id               INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT nextval('lexeme_data_seq'),
+    lexeme_id               INTEGER             DEFAULT nextval('lexeme_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* LEXICAL ITEM / WORD */
     lexeme                  VARCHAR(50)         NOT NULL,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
@@ -390,22 +396,22 @@ CREATE INDEX lexeme_lexeme_idx ON lexeme_data (lexeme);
 
 /* This table stores run results for each experience */
 
---CREATE SEQUENCE experience_run_data_seq;
+CREATE SEQUENCE experience_run_data_seq;
 CREATE TABLE experience_run_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-RUN RECORD */
-    experience_run_id       INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('experience_run_data_seq'),
+    experience_run_id       INTEGER             DEFAULT nextval('experience_run_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER             REFERENCES experience_data
+    experience_id           INTEGER             NOT NULL
+    						REFERENCES experience_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ORDER THAT EXPERIENCE IS PROCESSED DURING CURRENT RUN
        (USED FOR DETERMINING HOW LONG IT TAKES TO RESOLVE EACH LEXEME) */
     experience_index        INTEGER             DEFAULT 0
@@ -423,22 +429,22 @@ CREATE INDEX exp_run_run_id_idx ON experience_run_data (run_id);
 
 /* This table contains a record with the entity-lexeme mappings */
 
---CREATE SEQUENCE entity_lexeme_data_seq;
+CREATE SEQUENCE entity_lexeme_data_seq;
 CREATE TABLE entity_lexeme_data (
     /* UNIQUE ID FOR EACH ENTITY-LEXEME RECORD */
-    entity_lexeme_id        INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('entity_lexeme_data_seq'),
+    entity_lexeme_id        INTEGER             DEFAULT nextval('entity_lexeme_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER             REFERENCES entity_data
+    entity_id               INTEGER             NOT NULL
+    						REFERENCES entity_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT LEXEME DATA RECORD */
-    lexeme_id               INTEGER             REFERENCES lexeme_data
+    lexeme_id               INTEGER             NOT NULL
+    						REFERENCES lexeme_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* NUMBER OF TIMES THAT LEXICAL ITEM HAS BEEN RECOGNIZED WHEN PROCESSING
        EBLA EXPERIENCES */
     occurance_count         INTEGER             DEFAULT 1
@@ -454,27 +460,27 @@ CREATE INDEX ent_lex_lexeme_id_idx ON entity_lexeme_data (lexeme_id);
 /* This table contains a record with the ID of each entity record in an EBLA
    experience for each run */
 
---CREATE SEQUENCE experience_entity_data_seq;
+CREATE SEQUENCE experience_entity_data_seq;
 CREATE TABLE experience_entity_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-ENTITY RECORD */
-    experience_entity_id    INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('experience_entity_data_seq'),
+    experience_entity_id    INTEGER             DEFAULT nextval('experience_entity_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER             REFERENCES experience_data
+    experience_id           INTEGER             NOT NULL
+    						REFERENCES experience_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER             REFERENCES entity_data
+    entity_id               INTEGER             NOT NULL
+    						REFERENCES entity_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
     resolution_code         INT2                DEFAULT 0
@@ -491,27 +497,27 @@ CREATE INDEX exp_ent_entity_id_idx ON experience_entity_data (entity_id);
 /* This table contains a record with the ID of each lexeme record in an EBLA
    experience for each run */
 
---CREATE SEQUENCE experience_lexeme_data_seq;
+CREATE SEQUENCE experience_lexeme_data_seq;
 CREATE TABLE experience_lexeme_data (
     /* UNIQUE ID FOR EACH EXPERIENCE-LEXEME RECORD */
-    experience_lexeme_id    INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('experience_lexeme_data_seq'),
+    experience_lexeme_id    INTEGER             DEFAULT nextval('experience_lexeme_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT EXPERIENCE DATA RECORD */
-    experience_id           INTEGER             REFERENCES experience_data
+    experience_id           INTEGER             NOT NULL
+    						REFERENCES experience_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT LEXEME DATA RECORD */
-    lexeme_id               INTEGER             REFERENCES lexeme_data
+    lexeme_id               INTEGER             NOT NULL
+    						REFERENCES lexeme_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* 0=NO; 1=YES (CODE INDICATING IF ENTITY HAS BEEN RESOLVED TO A LEXICAL
        ITEM) */
     resolution_code         INT2                DEFAULT 0
@@ -532,27 +538,27 @@ CREATE INDEX exp_lex_lexeme_id_idx ON experience_lexeme_data (lexeme_id);
 /* This table contains the attribute values for each entity encountered 
    in an EBLA experience */
 
---CREATE SEQUENCE attribute_value_data_seq;
+CREATE SEQUENCE attribute_value_data_seq;
 CREATE TABLE attribute_value_data (
     /* UNIQUE ID FOR EACH ATTRIBUTE-VALUE RECORD */
-    attribute_value_id      INTEGER             IDENTITY,--PRIMARY KEY
-                                                --DEFAULT 
-                                                --nextval('attribute_value_data_seq'),
+    attribute_value_id      INTEGER             DEFAULT nextval('attribute_value_data_seq')
+    						NOT NULL
+    						PRIMARY KEY,
     /* ID OF PARENT ATTRIBUTE LIST DATA RECORD */
-    attribute_list_id       INTEGER             REFERENCES attribute_list_data
+    attribute_list_id       INTEGER             NOT NULL
+    						REFERENCES attribute_list_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT RUN DATA RECORD */
-    run_id                  INTEGER             REFERENCES run_data
+    run_id                  INTEGER             NOT NULL
+    						REFERENCES run_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* ID OF PARENT ENTITY DATA RECORD */
-    entity_id               INTEGER             REFERENCES entity_data
+    entity_id               INTEGER             NOT NULL
+    						REFERENCES entity_data
                                                 ON UPDATE CASCADE
                                                 ON DELETE CASCADE,
-                                                --NOT NULL,
     /* AVERAGE VALUE OF ATTRIBUTE */
     avg_value               FLOAT               DEFAULT 0
                                                 NOT NULL,
