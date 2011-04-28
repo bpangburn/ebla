@@ -163,6 +163,7 @@ public class GeneticSegmentation {
 	}
 
 
+	@SuppressWarnings("unused")
 	public void initializeGeneticAlgorithm() {
 	// METHOD TO INITIALIZE GENE POOL FOR GENETIC ALGORITHM
 
@@ -355,6 +356,7 @@ public class GeneticSegmentation {
 
 
 
+	@SuppressWarnings("unused")
 	private SegParams crossover(SegParams pool[]) {
 	// GENE CROSSOVER FUNCTION
 
@@ -401,6 +403,7 @@ public class GeneticSegmentation {
 
 
 
+	@SuppressWarnings("unused")
 	private SegParams mutation() {
 	// GENE MUTATION ROUTINE
 
@@ -595,6 +598,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.5  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.4  2005/02/17 23:34:01  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

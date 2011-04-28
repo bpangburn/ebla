@@ -89,15 +89,19 @@ public class MSImageProcessor extends MeanShift {
 	/**
 	 * image pruning
 	 */
+	@SuppressWarnings("unused")
 	private static final int TOTAL_ITERATIONS = 14;
+	@SuppressWarnings("unused")
 	private static final long BIG_NUM = 0xffffffff; //2^32-1;
 	private static final int NODE_MULTIPLE = 10;
 
 	/**
 	 * data space conversion...
 	 */
+	@SuppressWarnings("unused")
 	private static final double Xn = 0.95050;
 	private static final double Yn = 1.00000;
+	@SuppressWarnings("unused")
 	private static final double Zn = 1.08870;
 	private static final double Un_prime = 0.19784977571475;
 	private static final double Vn_prime = 0.46834507665248;
@@ -216,6 +220,7 @@ public class MSImageProcessor extends MeanShift {
 	 * defines square range radius used when clustering pixels
 	 * together, thus defining image regions
 	 */
+	@SuppressWarnings("unused")
 	private float rR2;
 
 	/**
@@ -2214,7 +2219,7 @@ public class MSImageProcessor extends MeanShift {
 						// copy region color into modes
 							for (k = 0; k < N; k++) {
 								if (edisonPortVersion==0) {
-									modes[(N*label)+k] = (float)(LUV_data[(N*i)+k]);
+									modes[(N*label)+k] = LUV_data[(N*i)+k];
 								} else {
 									modes[(N*label)+k] = LUV_data[(N*i)+k];
 								}
@@ -2674,6 +2679,7 @@ public class MSImageProcessor extends MeanShift {
 
 		// Traverse RAM attempting to join raList[i] with its neighbors...
 			int i, iCanEl, neighCanEl;
+			@SuppressWarnings("unused")
 			float threshold;
 			RAList neighbor;
 
@@ -2826,6 +2832,7 @@ public class MSImageProcessor extends MeanShift {
 			}
 
 		// re-assign region count using label counter
+			@SuppressWarnings("unused")
 			int	oldRegionCount = regionCount;
 			regionCount	= label+1;
 
@@ -3049,6 +3056,7 @@ public class MSImageProcessor extends MeanShift {
 			int[] label_buffer = new int[regionCount];
 
 		// Declare variables
+			@SuppressWarnings("unused")
 			int	i, k, candidate, iCanEl, neighCanEl, iMPC, label, oldRegionCount, minRegionCount;
 			double minSqDistance, neighborDistance;
 			RAList neighbor;
@@ -4949,6 +4957,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.17  2004/02/25 21:59:21  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.16  2004/02/25 21:25:17  yoda2
  * Added options for chosing which EDISON port to use and hiding intermediate segmentation results.
  *

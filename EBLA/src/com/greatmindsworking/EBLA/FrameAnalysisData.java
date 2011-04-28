@@ -138,6 +138,7 @@ public class FrameAnalysisData {
 					while (st.hasMoreTokens()) {
 						int x = Integer.parseInt(st.nextToken());
 						int y = Integer.parseInt(st.nextToken());
+						poly.addPoint(x, y);
 					}
 
 			// # POINTS IN POLYGON
@@ -198,6 +199,9 @@ public class FrameAnalysisData {
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/17 23:33:15  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.11  2004/08/02 18:20:29  yoda2
  * Change "color" attribute calc from 256 grayscale to 16M -> 216 RGB color reduction.
  *

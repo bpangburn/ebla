@@ -238,9 +238,9 @@ public class LexemeResolver {
 			String sql = "";				// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 
 			long entityID = 0;				// ID OF CURRENT ENTITY
-			long entLexID = 0;				// ENTITY-LEXEME MAPPPING ID
+			//long entLexID = 0;				// ENTITY-LEXEME MAPPPING ID
 
-			int occuranceCount = 0;			// NUMBER OF TIME A GIVEN ENTITY-LEXEME MAPPING HAS BEEN ENCOUNTERED
+			//int occuranceCount = 0;			// NUMBER OF TIME A GIVEN ENTITY-LEXEME MAPPING HAS BEEN ENCOUNTERED
 			ResultSet eedRS = null;			// EXPERIENCE-ENTITY DATA RESULTSET
 
 			boolean mappingFound = false;	// INDICATE IF A MAPPING EXISTS FOR THE CURRENT ENTITY
@@ -291,10 +291,10 @@ public class LexemeResolver {
 					// GET LEXEME IF MAPPING EXISTS
 						while (mapRS.next()) {
 							// EXTRACT MAPPING ID
-								entLexID = mapRS.getLong("entity_lexeme_id");
+							//	entLexID = mapRS.getLong("entity_lexeme_id");
 
 							// EXTRACT OCCURANCE COUNT
-								occuranceCount = mapRS.getInt("occurance_count");
+							//	occuranceCount = mapRS.getInt("occurance_count");
 
 							// EXTRACT LEXEME
 								tmpString = mapRS.getString("lexeme");
@@ -638,8 +638,8 @@ public class LexemeResolver {
 			// CHECK FOR SINGLE UNMATCHED ENTITY-LEXEME PAIR REMAINING IN ARRAYLISTS
 				if ((curEnt.size() == 1) && (curLex.size() == 1)) {
 					// GET ENTITY & LEXEME ID'S
-						entityID = ((Long)curEnt.get(0)).longValue();
-						lexemeID = ((Long)curLex.get(0)).longValue();
+						entityID = curEnt.get(0);
+						lexemeID = curLex.get(0);
 
 					// UPDATE resolution_code IN experience_entity_data AND experience_lexeme_data
 						occuranceCount = updateExpResolutions(expID, entityID, lexemeID, expIndex);
@@ -1151,11 +1151,11 @@ public class LexemeResolver {
 			// ID'S TO BE UPDATED
 				for (int i=0; i<maxCount; i++) {
 					if (i==0) {
-						tmpEEDString = ((Long)tmpEED.get(i)).toString();
-						tmpELDString = ((Long)tmpELD.get(i)).toString();
+						tmpEEDString = tmpEED.get(i).toString();
+						tmpELDString = tmpELD.get(i).toString();
 					} else {
-						tmpEEDString += ", " + ((Long)tmpEED.get(i)).toString();
-						tmpELDString += ", " + ((Long)tmpELD.get(i)).toString();
+						tmpEEDString += ", " + tmpEED.get(i).toString();
+						tmpELDString += ", " + tmpELD.get(i).toString();
 					}
 				} // end for
 
@@ -1405,6 +1405,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.28  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.27  2011/04/25 02:34:51  yoda2
  * Coding for Java Generics.
  *

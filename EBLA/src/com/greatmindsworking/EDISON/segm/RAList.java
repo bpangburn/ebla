@@ -107,7 +107,9 @@ public class RAList {
 	/**
 	 * current and previous pointer
 	 */
-	private RAList	cur, prev;
+	private RAList cur;
+	@SuppressWarnings("unused")
+	private RAList prev;
 
 	/**
 	 * flag
@@ -227,6 +229,9 @@ public class RAList {
 
 /*
  * $Log$
+ * Revision 1.10  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.9  2004/02/25 21:59:22  yoda2
  * Updated copyright notice.
  *

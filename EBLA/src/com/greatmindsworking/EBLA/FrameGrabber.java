@@ -72,6 +72,12 @@ import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
  * @version	$Revision$
  */
 public class FrameGrabber extends JFrame {
+	
+	/**
+	 * serial version ID
+	 */
+	private static final long serialVersionUID = 208244286810134419L;
+
 	/**
 	 * string containing URL to source movie file
 	 */
@@ -510,6 +516,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.16  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.15  2004/01/13 21:36:16  yoda2
  * Improved behavior of FrameGrabber when an experience is not found.
  *

@@ -102,11 +102,13 @@ public class RegionList {
 	/**
 	 * dimension of data set being classified by region list class
 	 */
+	@SuppressWarnings("unused")
 	private int	N;
 
 	/**
 	 * number of points contained by the data set being classified byregion list class
 	 */
+	@SuppressWarnings("unused")
 	private int	L;
 
 
@@ -405,6 +407,9 @@ public class RegionList {
 
 /*
  * $Log$
+ * Revision 1.12  2004/02/25 21:59:22  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.11  2003/11/24 16:34:41  yoda2
  * Small JavaDoc fixes to get rid of warnings.
  *

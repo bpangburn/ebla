@@ -75,6 +75,11 @@ import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
  */
 public class SessionScreen extends JInternalFrame {
 
+	/**
+	 * serial version ID
+	 */
+	private static final long serialVersionUID = 5346441028706188350L;
+
 	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR SESSION SCREEN
 		Container desktop = null;
 
@@ -465,6 +470,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.17  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.16  2005/02/17 23:33:45  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

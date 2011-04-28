@@ -56,12 +56,16 @@ import javax.swing.*;
  * @version	$Revision$
  */
 public class ImageComponent extends JComponent {
+	
+	/**
+	 * serial version ID
+	 */
+	private static final long serialVersionUID = 3011719685331302521L;
+	
 	/**
 	 * BufferedImage to be drawn on JComponent
 	 */
   	private BufferedImage icImage = null;
-
-
 
 	/**
 	 * Class constructor that sets the BufferedImage and it's width and height
@@ -149,6 +153,9 @@ public class ImageComponent extends JComponent {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.6  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.5  2002/12/11 22:53:24  yoda2
  * Initial migration to SourceForge.
  *

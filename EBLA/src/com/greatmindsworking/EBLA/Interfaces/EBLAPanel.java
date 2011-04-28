@@ -67,8 +67,9 @@ import javax.swing.border.SoftBevelBorder;
  */
 public class EBLAPanel extends JPanel {
 
+
 	/**
-	 * 
+	 * serial version ID
 	 */
 	private static final long serialVersionUID = -5167125185772937155L;
 
@@ -356,6 +357,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.9  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.8  2005/02/17 23:33:45  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

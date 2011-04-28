@@ -116,6 +116,7 @@ public class MeanShift {
 		double[] w;
 		double halfWindow;
 		int sampleNumber;
+		@SuppressWarnings("unused")
 		int subspace;
 	};
 
@@ -579,7 +580,7 @@ public class MeanShift {
 // NEED TO FINISH THIS SECTIONS (see original code below) !!!
 			userWF.w = new double [sampleNumber+1];
 			for (i = 0; i <= sampleNumber; i++) {
-				userWF.w[i] = gf.g((double)(i*increment));
+				userWF.w[i] = gf.g(i*increment);
 			}
 // END PROBLEM SECTION
 
@@ -2318,8 +2319,8 @@ public class MeanShift {
 										y1 = w[j][x1];
 
 									// Accumulate tw using linear interpolation
-										tw *= (((double)(x1)*increment[j] - u)*y0+(u - (double)(x0)*increment[j])*y1)
-											/(double)(x1*increment[j] - x0*increment[j]);
+										tw *= (((x1)*increment[j] - u)*y0+(u - (x0)*increment[j])*y1)
+											/(x1*increment[j] - x0*increment[j]);
 
 								}
 
@@ -2681,6 +2682,7 @@ public class MeanShift {
 
 		// Declare variables
 			int i, j, k;
+			@SuppressWarnings("unused")
 			int			 s, p, dataPoint, lN, x0, x1;
 			double		 diff, el, dx, dy, tw, u, y0, y1, tx;
 
@@ -2775,8 +2777,8 @@ public class MeanShift {
 											y1 = w[k][x1];
 
 										// Accumulate tw using linear interpolation
-											tw *= (((double)(x1)*increment[k] - u)*y0+(u - (double)(x0)*increment[k])*y1)
-												/(double)(x1*increment[k] - x0*increment[k]);
+											tw *= (((x1)*increment[k] - u)*y0+(u - (x0)*increment[k])*y1)
+												/(x1*increment[k] - x0*increment[k]);
 
 									}
 
@@ -2845,6 +2847,7 @@ public class MeanShift {
 
 		// Declare variables
 			int	i, j, k;
+			@SuppressWarnings("unused")
 			int				s, p, dataPoint, pointIndx, lN, x0, x1;
 			double			diff, el, dx, dy, tw, u, y0, y1, tx;
 
@@ -2939,8 +2942,8 @@ public class MeanShift {
 											y1 = w[k][x1];
 
 										// Accumulate tw using linear interpolation
-											tw *= (((double)(x1)*increment[k] - u)*y0+(u - (double)(x0)*increment[k])*y1)
-												/(double)(x1*increment[k] - x0*increment[k]);
+											tw *= (((x1)*increment[k] - u)*y0+(u - (x0)*increment[k])*y1)
+												/(x1*increment[k] - x0*increment[k]);
 
 									}
 

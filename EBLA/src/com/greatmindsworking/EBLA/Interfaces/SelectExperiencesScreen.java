@@ -63,6 +63,11 @@ import com.greatmindsworking.utils.DBConnector;
  */
 public class SelectExperiencesScreen extends JInternalFrame {
 
+	/**
+	 * serial version ID
+	 */
+	private static final long serialVersionUID = 5463455717167911267L;
+
 	// INITIALIZE CONTAINER (APPLICATION WINDOW) FOR EXPERIENCE SCREEN
 		Container desktop = null;
 
@@ -319,7 +324,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		public long[] getExperienceIDs(int[] experiences) {
 			long[] experienceIDs = new long[experiences.length];
 			for (int i=0;i<experiences.length;i++) {
-				experienceIDs[i] = ((Long)experienceID.elementAt(experiences[i])).longValue();
+				experienceIDs[i] = experienceID.elementAt(experiences[i]);
 			}
 			return experienceIDs;
 		}
@@ -346,7 +351,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	 */
 	private class SelectedExperiencesListModel implements ListModel {
 
-		DBConnector connector  = null;
+		//DBConnector connector  = null;
 		Vector<String> experienceName = new Vector<String>();
 		Vector<Long> parameterExperienceID   = new Vector<Long>();
 
@@ -376,7 +381,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		public long[] getParameterExperienceIDs(int[] experiences){
 			long[] experienceIDs = new long[experiences.length + 1];
 			for (int i=0;i<experiences.length;i++) {
-				experienceIDs[i] = ((Long)parameterExperienceID.elementAt(experiences[i])).longValue();
+				experienceIDs[i] = parameterExperienceID.elementAt(experiences[i]);
 			}
 			return experienceIDs;
 		}
@@ -459,6 +464,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.8  2011/04/25 02:34:51  yoda2
+ * Coding for Java Generics.
+ *
  * Revision 1.7  2005/02/17 23:33:45  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *
