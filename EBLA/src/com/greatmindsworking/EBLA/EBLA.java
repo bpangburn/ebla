@@ -350,8 +350,7 @@ public class EBLA extends Thread {
 								updateFAD = false;
 
 							// DETERMINE IF frame_analysis_data SHOULD BE MODIFIED FOR CURRENT EXPERIENCE
-// check next line!!!
-								sql = "SELECT parameter_experience_id, calc_status_code, now() as current_timestamp, calc_timestamp as prior_timestamp"
+								sql = "SELECT parameter_experience_id, calc_status_code, now() as current_ts, calc_timestamp as prior_ts"
 									+ " FROM parameter_experience_data"
 									+ " WHERE parameter_id=" + sd.getParameterID()
 									+ " AND experience_id=" + experienceID + ";";
@@ -361,8 +360,8 @@ public class EBLA extends Thread {
 
 								parameterExperienceID = tmpRS.getLong("parameter_experience_id");
 								calcStatusCode = tmpRS.getInt("calc_status_code");
-								currentTimeStamp = tmpRS.getDate("current_timestamp");
-								priorTimeStamp = tmpRS.getDate("prior_timestamp");
+								currentTimeStamp = tmpRS.getDate("current_ts");
+								priorTimeStamp = tmpRS.getDate("prior_ts");
 								calcElapsedTime = currentTimeStamp.getTime() - priorTimeStamp.getTime();
 
 								tmpRS.close();
@@ -1066,6 +1065,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.42  2011/04/28 14:55:47  yoda2
+ * Addressing Java 1.6 -Xlint warnings and replaced ORDER BY random() with ORDER BY rand() to support H2.
+ *
  * Revision 1.41  2005/02/17 23:33:04  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *
