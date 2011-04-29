@@ -36,13 +36,30 @@ package com.greatmindsworking.EBLA.Interfaces;
 
 
 
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.text.JTextComponent;
+
 import com.greatmindsworking.utils.DBConnector;
 
 
@@ -414,6 +431,46 @@ public class EBLAGui extends JFrame {
 			dbSettingsScreen.showUp(desktop);
 
 	} // end showDBSettings()
+	
+	
+	/**
+	 * method to create database tables for EBLA
+	 */
+	private void loadSQL() {
+		
+		try {
+	        Class.forName("org.h2.Driver");
+	        Connection conn = DriverManager.getConnection("jdbc:h2:~/ebla", "sa", "");
+
+			Statement stmt = conn.createStatement();
+			stmt.execute("RUNSCRIPT FROM './database/ebla_data_H2.sql';");
+
+			conn.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+	}
+	
+	
+	/**
+	 * method to populate database tables for EBLA with sample dataset
+	 */
+	private void loadSampleData() {
+		
+		try {
+	        Class.forName("org.h2.Driver");
+	        Connection conn = DriverManager.getConnection("jdbc:h2:~/ebla", "sa", "");
+
+			Statement stmt = conn.createStatement();
+			stmt.execute("RUNSCRIPT FROM './database/ebla_sample_H2.sql';");
+
+			conn.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+	}
 
 
 
@@ -519,6 +576,8 @@ public class EBLAGui extends JFrame {
 			JMenuItem menuEditAttributes = null;
 			JMenuItem menuEditParameters = null;
 			JMenuItem menuUtilitiesDBSettings = null;
+			JMenuItem menuUtilitiesDBLoadSQL = null;
+			JMenuItem menuUtilitiesDBLoadSampleData = null;
 			JMenuItem menuReportsDataFiles = null;
 			JMenuItem menuHelpAbout = null;
 			JMenuItem menuHelpReadMe = null;
@@ -567,8 +626,10 @@ public class EBLAGui extends JFrame {
 					menuEditExperiences = menuEdit.add("Experiences");
 					menuEditAttributes = menuEdit.add("Attributes");
 
-					menuUtilitiesDBSettings = menuUtilities.add("Database Settings");
-
+					menuUtilitiesDBSettings = menuUtilities.add("Database Connection Settings");
+					menuUtilitiesDBLoadSQL = menuUtilities.add("Create Database Structure");
+					menuUtilitiesDBLoadSampleData = menuUtilities.add("Load Sample Dataset");
+					
 					menuReportsDataFiles = menuReports.add("Data Files");
 
 					menuHelpAbout = menuHelp.add("About");
@@ -582,6 +643,8 @@ public class EBLAGui extends JFrame {
 					menuEditParameters.addActionListener(menuListener);
 					menuEditAttributes.addActionListener(menuListener);
 					menuUtilitiesDBSettings.addActionListener(menuListener);
+					menuUtilitiesDBLoadSQL.addActionListener(menuListener);
+					menuUtilitiesDBLoadSampleData.addActionListener(menuListener);
 					menuReportsDataFiles.addActionListener(menuListener);
 					menuHelpAbout.addActionListener(menuListener);
 					menuHelpReadMe.addActionListener(menuListener);
@@ -618,6 +681,10 @@ public class EBLAGui extends JFrame {
 							showAttributesScreen();
 						} else if (menuItem.equals(menuUtilitiesDBSettings)) {
 							showDBSettings();
+						} else if (menuItem.equals(menuUtilitiesDBLoadSQL)) {
+							loadSQL();
+						} else if (menuItem.equals(menuUtilitiesDBLoadSampleData)) {
+							loadSampleData();
 						} else if (menuItem.equals(menuReportsDataFiles)) {
 							showReports();
 						} else if (menuItem.equals(menuHelpAbout)) {
@@ -654,6 +721,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.16  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.15  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

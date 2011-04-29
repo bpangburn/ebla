@@ -569,33 +569,3 @@ CREATE TABLE IF NOT EXISTS attribute_value_data (
 CREATE INDEX IF NOT EXISTS att_val_attribute_list_id_idx ON attribute_value_data (attribute_list_id);
 CREATE INDEX IF NOT EXISTS att_val_run_id_idx ON attribute_value_data (run_id);
 CREATE INDEX IF NOT EXISTS att_val_entity_id_idx ON attribute_value_data (entity_id);
-
-/* LOAD parameter_data */
-DELETE FROM parameter_data;
-INSERT INTO parameter_data (parameter_id, description, tmp_path, seg_color_radius, seg_spatial_radius, seg_min_region, seg_speed_up_code, frame_prefix, seg_prefix, poly_prefix, background_pixels, min_pixel_count, min_frame_count, reduce_color_code, notes, seg_speed_up_factor, edison_port_version)
-	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/parameter_data.csv');
-	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_data.csv');
-SELECT * FROM parameter_data;
-
-
-/* LOAD experience_data */
-DELETE FROM experience_data;
-INSERT INTO experience_data (experience_id, description, video_path, tmp_path, experience_lexemes, notes)
-	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/experience_data.csv');
-	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\experience_data.csv');
-SELECT * FROM experience_data;
-
-/* LOAD attribute_list_data */
-DELETE FROM attribute_list_data;
-INSERT INTO attribute_list_data (attribute_list_id, description, include_code, type_code, class_name, notes)
-	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/attribute_list_data.csv');
-	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\attribute_list_data.csv');
-SELECT * FROM attribute_list_data;
-
-
-/* LOAD parameter_experience_data */
-DELETE FROM parameter_experience_data;
-INSERT INTO parameter_experience_data (parameter_experience_id, parameter_id, experience_id, calc_status_code, calc_timestamp)
-	SELECT * FROM CSVREAD('/local_code/EBLA/database/csv_data/parameter_experience_data.csv');
-	--SELECT * FROM CSVREAD('c:\local_code\ebla\database\csv_data\parameter_experience_data.csv');
-SELECT * FROM parameter_experience_data;
