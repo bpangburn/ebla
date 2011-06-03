@@ -680,13 +680,14 @@ public class EBLA extends Thread {
 							startTime = new java.util.Date();
 
 						// QUERY EXPERIENCES BASED ON parameter_id AND parameter_experience_data
+						// H2 version 1.3.155 (2011-05-27) added support for RANDOM() IN ADDITION TO RAND()
 							if (sd.getRandomizeExp()) {
 								sql = "SELECT * FROM parameter_experience_data, experience_data"
 									+ " WHERE parameter_experience_data.parameter_id = " + sd.getParameterID()
 									+ " AND parameter_experience_data.experience_id = experience_data.experience_id"
 									+ " AND parameter_experience_data.calc_status_code = 2"
-									//+ " ORDER BY random();";
-									+ " ORDER BY rand();";
+									+ " ORDER BY random();";
+									//+ " ORDER BY rand();";
 							} else {
 								sql = "SELECT * FROM parameter_experience_data, experience_data"
 									+ " WHERE parameter_experience_data.parameter_id = " + sd.getParameterID()
@@ -1065,6 +1066,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.43  2011/04/28 20:13:54  yoda2
+ * Replaced _timestamp with _ts in SELECT aliases.
+ *
  * Revision 1.42  2011/04/28 14:55:47  yoda2
  * Addressing Java 1.6 -Xlint warnings and replaced ORDER BY random() with ORDER BY rand() to support H2.
  *
