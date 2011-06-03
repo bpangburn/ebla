@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002-2005, Brian E. Pangburn
+Copyright (c) 2002-2011, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ http://www.greatmindsworking.com
 Much of the vision system is based on a partial Java port of the EDISON
 image processing system developed by Chris M. Christoudias and Bogdan
 Georgescu at the Robust Image Understanding Laboratory at Rutgers University
-(http://www.caip.rutgers.edu/riul/).  See the "seg_readme.txt" file for
+(http://coewww.rutgers.edu/riul/).  See the "seg_readme.txt" file for
 more information.
 
 The graphical user interface (GUI) for EBLA was developed in part by
@@ -86,53 +86,39 @@ CODE EXECUTION, DOCUMENTATION, & COMPILATION
 ==============================================================================
 
 This code has been tested on both Windows and Linux platforms using
-the Java 2 SDK 1.4 and 1.5 available from http://java.sun.com/j2se/
-
-Note that EBLA will not work with the Java SDK 1.3 due to a bug in the
-early versions of Sun's ImageIO class.
-
-EBLA uses the following JAR files, which should be in or added to the /jars
-subdirectory:
- jmf.jar
-                Java Media Framework
-                http://java.sun.com/products/java-media/jmf/
-                (MUST BE DOWNLOADED REGARDLESS OF JDK)
-                
- rowset.jar
-                Sun's JDBC RowSet implementation
-                http://java.sun.com/developer/earlyAccess/jdbc/jdbc-rowset.html
-                (MUST BE DOWNLOADED FOR JDK 1.4, INCLUDED IN 1.5)
-                
- postgresql-8.4-701.jdbc4.jar
-                PostgreSQL JDBC driver
-                http://jdbc.postgresql.org
-                (INCLUDED)
-
- swingset-bin.jar
-                The open source SwingSet toolkit for making Swing DB-Aware
-                http://swingset.sourceforge.net
-                (INCLUDED)
+the Java SE 6 available from
+ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 To run EBLA:
   1. download the binary release file to the desired folder/directory and type:
-     jar -xf ebla-bin_0.7.1-alpha.jar
-  2. type "linrun" (Linux platforms)
+     jar -xf ebla-bin_CURRENT.jar
+  2. type:
+     linrun (Linux platforms)
      OR
-     type "winrun" (Windows platforms)
-  
-To generate the JavaDoc documentation for EBLA:
-  1. download the JavaDoc release file to the desired folder/directory and type:
-     jar -xf ebla-docs_0.7.1-alpha.jar
-  2. type "lindocs" (Linux platforms)
-     OR
-     type "windocs" (Windows platforms)
+     winrun (Windows platforms)
      
+To download the source code for EBLA:
+	(NEED THIS)
+	
 To recompile EBLA:
-  1. download the source release file to the desired folder/directory and type:
-     jar -xf ebla-src_0.7.1-alpha.jar
+  1. download checkout the project from SourceForge
+     OR
+     download the source release file to the desired folder/directory and type:
+     jar -xf ebla-src_CURRENT.jar   
   2. type "lincompile" (Linux platforms)
      OR
-     type "wincompile" (Windows platforms)     
+     type "wincompile" (Windows platforms)   
+     
+To generate the JavaDoc documentation for EBLA:
+  1. download the JavaDoc release file to the desired folder/directory and type:
+     jar -xf ebla-docs_CURRENT.jar
+  OR
+  2. download the source code (see above) and type:
+     lindocs (Linux platforms)
+     OR
+     windocs (Windows platforms)
+     
+  
 
 
 ==============================================================================
