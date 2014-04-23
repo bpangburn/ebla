@@ -5,6 +5,20 @@ ChangeLog file for the Experience-Based Language Acquisition (EBLA) system.
 $Id$
 
 ==============================================================================
+Version 0.9 - Released 06-21-2014
+==============================================================================
+
+1. Moved various compilation scripts to /EBLA/scripts
+
+2. Compiling for latest JRE (jdk1.7.0_45)
+
+3. Updates to latest H2 jar (h2-1.4.177)
+
+4. Retooling release jar as a single file with (bin, docs, & src),
+   with all extracting to a ./ebla directory
+
+
+==============================================================================
 Version 0.8 - Released 06-10-2011
 ==============================================================================
 
