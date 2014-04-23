@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# $Id$
+#
+# LINUX JAR CREATION SCRIPT FOR EBLA
+
+# MOVE UP A LEVEL IN SOURCE TREE
+cd ..
+
+# DELETE ANY EXISTING RELEASE JARS
+rm -r ./release_jars
+
+# CLEANUP ANY EXISTING SCRATCH SPACE
+rm -r ./scratch
+
+# CREATE RELEASE JAR LOCATION
+mkdir ./release_jars
+
+# CREATE SCRATCH SPACE
+mkdir ./scratch
+mkdir ./scratch/ebla
+mkdir ./scratch/ebla/bin
+mkdir ./scratch/ebla/docs
+
+# RECOMPILE EBLA
+javac -d ./scratch/ebla/bin -classpath .:./jars/h2-1.4.177.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
+
+# REBUILD JAVADOCS
+javadoc -d ./scratch/ebla/docs -classpath .:./jars/h2-1.4.177.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./src/com/greatmindsworking/EDISON/segm/*.java
+
+# COPY JARS
+mkdir ./scratch/ebla/jars
+cp ./jars/*.jar ./scratch/ebla/jars/
+
+# COPY DATABASE FILES
+mkdir ./scratch/ebla/database
+cp ./database/*.sql ./scratch/ebla/database/
+mkdir ./scratch/ebla/database/csv_data
+cp ./database/csv_data/*.csv ./scratch/ebla/database/csv_data/
+
+# COPY EXPERIENCES - LISTING EACH EXPLICITLY SO AS NOT TO INCLUDE THE FULL SET OF VIDEOS
+mkdir ./scratch/ebla/experiences
+cp ./experiences/ball_down1.avi ./scratch/ebla/experiences/
+cp ./experiences/ball_slide1.avi ./scratch/ebla/experiences/
+cp ./experiences/ball_touch1.avi ./scratch/ebla/experiences/
+cp ./experiences/ball_up1.avi ./scratch/ebla/experiences/
+cp ./experiences/cube_down1.avi ./scratch/ebla/experiences/
+cp ./experiences/cube_slide1.avi ./scratch/ebla/experiences/
+cp ./experiences/cube_touch1.avi ./scratch/ebla/experiences/
+cp ./experiences/cube_up1.avi ./scratch/ebla/experiences/
+
+# COPY SCRIPTS
+mkdir ./scratch/ebla/scripts
+cp ./scripts/* ./scratch/ebla/scripts/
+
+# COPY README & CHANGELOG
+cp ./readme.txt ./scratch/ebla/
+cp ./changelog.txt ./scratch/ebla/
+
+# COPY DATABASE CONNECTION CONFIG FILE
+cp ./dbSettings ./scratch/ebla
+
+# COPY SOURCE CODE
+mkdir ./scratch/ebla/src
+mkdir ./scratch/ebla/src/com
+mkdir ./scratch/ebla/src/com/greatmindsworking
+mkdir ./scratch/ebla/src/com/greatmindsworking/EBLA
+mkdir ./scratch/ebla/src/com/greatmindsworking/EBLA/Interfaces
+mkdir ./scratch/ebla/src/com/greatmindsworking/utils
+mkdir ./scratch/ebla/src/com/greatmindsworking/EDISON
+mkdir ./scratch/ebla/src/com/greatmindsworking/EDISON/segm
+mkdir ./scratch/ebla/src/com/greatmindsworking/EDISON/utils
+cp ./src/com/greatmindsworking/EBLA/*.java ./scratch/ebla/src/com/greatmindsworking/EBLA/
+cp ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./scratch/ebla/src/com/greatmindsworking/EBLA/Interfaces/
+cp ./src/com/greatmindsworking/utils/*.java ./scratch/ebla/src/com/greatmindsworking/utils/
+cp ./src/com/greatmindsworking/EDISON/segm/*.java ./scratch/ebla/src/com/greatmindsworking/EDISON/segm/
+cp ./src/com/greatmindsworking/EDISON/utils/*.java ./scratch/ebla/src/com/greatmindsworking/EDISON/utils/
+
+# BUILD JAR
+jar -cvf ./release_jars/ebla-current.jar -C ./scratch ebla

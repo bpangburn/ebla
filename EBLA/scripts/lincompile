@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# $Id$
+#
+# LINUX COMPILATION SCRIPT FOR EBLA
+#
+# DELETE ANY EXISTING .class FILES AND RE-COMPILE ALL .java FILES FOR EBLA
+#
+cd ..
+rm -r ./bin
+mkdir ./bin
+javac -d ./bin -classpath .:./jars/h2-1.4.177.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
