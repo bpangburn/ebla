@@ -131,6 +131,9 @@ public class DBSettingsScreen extends JInternalFrame {
 
 				// READ PASSWORD
 					txtPassword.setText(bufRead.readLine());
+					
+				// CLOSE BUFFERED READER
+					bufRead.close();
 
 			} catch(FileNotFoundException fnfe) {
 				System.out.println(fnfe.getMessage());
@@ -320,6 +323,9 @@ public class DBSettingsScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.8  2005/02/17 23:33:45  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

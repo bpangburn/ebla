@@ -36,19 +36,32 @@ package com.greatmindsworking.EBLA.Interfaces;
 
 
 
-import java.io.*;
-import java.util.Vector;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-
-import java.sql.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 
-import com.greatmindsworking.EBLA.Interfaces.SelectExperiencesScreen.AvailableExperiencesListModel;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.ListDataListener;
+
 import com.greatmindsworking.utils.DBConnector;
 
 
@@ -468,6 +481,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2014/04/23 13:25:17  yoda2
+ * corrected a few warnings related to generics
+ *
  * Revision 1.9  2011/04/28 14:55:07  yoda2
  * Addressing Java 1.6 -Xlint warnings.
  *
