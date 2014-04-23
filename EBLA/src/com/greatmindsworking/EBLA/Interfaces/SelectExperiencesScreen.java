@@ -40,11 +40,15 @@ import java.io.*;
 import java.util.Vector;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
+
 import java.sql.*;
 import java.beans.PropertyVetoException;
+
+import com.greatmindsworking.EBLA.Interfaces.SelectExperiencesScreen.AvailableExperiencesListModel;
 import com.greatmindsworking.utils.DBConnector;
 
 
@@ -75,8 +79,8 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		DBConnector dbc = null;
 
 	// INITIALIZE EXPERIENCE SELECTION SCREEN WIDGETS
-		JList lstAvailableExperiences 		= null;
-		JList lstSelectedExperiences   	  	= null;
+		JList<String> lstAvailableExperiences 		= null;
+		JList<String> lstSelectedExperiences   	  	= null;
 		JButton btnAddExperiences   		= new JButton(">");
 		JButton btnRemoveExperiences 		= new JButton("<");
 		JButton btnClose 					= new JButton("Close");
@@ -115,12 +119,12 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 		// INITIALIZE LIST MODELS AND WIDGETS WITH SCROLL PANES
 			availableListModel = new AvailableExperiencesListModel();
-			lstAvailableExperiences = new JList(availableListModel);
+			lstAvailableExperiences = new JList<String>(availableListModel);
 			JScrollPane availableScrollPane = new JScrollPane(lstAvailableExperiences);
 			availableScrollPane.setPreferredSize(new Dimension(250,300));
 
 			selectedListModel = new SelectedExperiencesListModel(_parameterID);
-			lstSelectedExperiences = new JList(selectedListModel);
+			lstSelectedExperiences = new JList<String>(selectedListModel);
 			JScrollPane selectedScrollPane = new JScrollPane(lstSelectedExperiences);
 			selectedScrollPane.setPreferredSize(new Dimension(250,300));
 
@@ -291,7 +295,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	/**
 	 * Private class to build the list of available experiences.
 	 */
-	private class AvailableExperiencesListModel implements ListModel {
+	protected class AvailableExperiencesListModel implements ListModel<String> {
 
 		DBConnector connector = null;
 		Vector<String> experienceName = new Vector<String>();
@@ -329,7 +333,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 			return experienceIDs;
 		}
 
-		public Object getElementAt(int index) {
+		public String getElementAt(int index) {
 			return experienceName.elementAt(index);
 		}
 
@@ -349,7 +353,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 	/**
 	 * Private class to build the list of selected experiences.
 	 */
-	private class SelectedExperiencesListModel implements ListModel {
+	protected class SelectedExperiencesListModel implements ListModel<String> {
 
 		//DBConnector connector  = null;
 		Vector<String> experienceName = new Vector<String>();
@@ -386,7 +390,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 			return experienceIDs;
 		}
 
-		public Object getElementAt(int index) {
+		public String getElementAt(int index) {
 			return experienceName.elementAt(index);
 		}
 
@@ -464,6 +468,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.9  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.8  2011/04/25 02:34:51  yoda2
  * Coding for Java Generics.
  *
