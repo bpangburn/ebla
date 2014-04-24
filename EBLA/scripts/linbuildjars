@@ -77,4 +77,4 @@ cp ./src/com/greatmindsworking/EDISON/segm/*.java ./scratch/ebla/src/com/greatmi
 cp ./src/com/greatmindsworking/EDISON/utils/*.java ./scratch/ebla/src/com/greatmindsworking/EDISON/utils/
 
 # BUILD JAR
-jar -cvf ./release_jars/ebla-current.jar -C ./scratch ebla
+jar -cvf ./release_jars/ebla.jar -C ./scratch ebla
