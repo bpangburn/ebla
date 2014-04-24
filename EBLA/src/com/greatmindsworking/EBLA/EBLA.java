@@ -717,6 +717,9 @@ public class EBLA extends Thread {
 								// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
 									if (statusScreen.getEBLACanceled()) {
 										stopEBLA = true;
+										fo1.close();
+										fo2.close();
+										fo3.close();
 										throw new Exception("EBLA Execution Canceled.");
 									}
 
@@ -878,11 +881,6 @@ public class EBLA extends Thread {
 			// CLOSE TMP STATEMENT
 				tmpState.close();
 
-			// CLOSE LOG FILES
-				fo3.close();
-				fo2.close();
-				fo1.close();
-
 			// UPDATE STATUS SCREEN
 				statusScreen.updateStatus(1, "EBLA Session Completed!");
 				statusScreen.updateStatus(2, "");
@@ -906,28 +904,43 @@ public class EBLA extends Thread {
 			if (stopEBLA) {
 			// UPDATE STATUS
 				statusScreen.updateStatus(1, "EBLA Session Interrupted!");
-
-			// CLOSE OPEN FILES/RESULTSETS
-				try {
-					experienceRS.close();
-					tmpRS.close();
-					tmpState.close();
-					//fo3.close();
-					//fo2.close();
-					//fo1.close();
-
-				} catch (Exception misc) {
-					System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
-					misc.printStackTrace();
-				}
 			}
 
 		// DISPLAY EXCEPTION MESSAGE
 			System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
 			e.printStackTrace();
+			
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				experienceRS.close();
+				tmpRS.close();
+				tmpState.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
+				misc.printStackTrace();
+			}
+			
+		// CLOSE LOG FILES
+			close(fo1);
+			close(fo2);
+			close(fo3);
+
 		}
 
 	} // end processExperiences()
+	
+	
+	protected static void close(FileWriter fw) {
+	    try {
+	        if (fw != null) {
+	            fw.close();
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
 
 
 
@@ -1066,6 +1079,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.44  2011/06/03 14:45:45  yoda2
+ * Restored RANDOM() in SQL now that it is supported in addition to RAND() for H2. This preserves backward compatibility with PostgreSQL.
+ *
  * Revision 1.43  2011/04/28 20:13:54  yoda2
  * Replaced _timestamp with _ts in SELECT aliases.
  *
