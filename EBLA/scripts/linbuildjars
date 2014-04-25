@@ -76,5 +76,8 @@ cp ./src/com/greatmindsworking/utils/*.java ./scratch/ebla/src/com/greatmindswor
 cp ./src/com/greatmindsworking/EDISON/segm/*.java ./scratch/ebla/src/com/greatmindsworking/EDISON/segm/
 cp ./src/com/greatmindsworking/EDISON/utils/*.java ./scratch/ebla/src/com/greatmindsworking/EDISON/utils/
 
-# BUILD JAR
+# BUILD MONOLITHIC JAR
 jar -cvf ./release_jars/ebla.jar -C ./scratch ebla
+
+# BUILD WEBSTART JAR
+jar -cvf ./release_jars/eblaweb.jar -C ./scratch/ebla/bin com -C ./scratch/ebla database -C ./scratch/ebla experiences -C ./scratch/ebla dbSettings
