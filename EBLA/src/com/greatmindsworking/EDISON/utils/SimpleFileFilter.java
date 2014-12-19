@@ -51,7 +51,8 @@ public class SimpleFileFilter implements FileFilter {
 	}
 
 
-    public boolean accept(File f) {
+    @Override
+	public boolean accept(File f) {
 	if (f != null) {
 	    if (f.isDirectory()) {
 			return false;
@@ -77,4 +78,7 @@ public class SimpleFileFilter implements FileFilter {
 
 /*
  * $Log$
+ * Revision 1.1  2004/01/21 19:40:30  yoda2
+ * Added experimental jEDISON genetic training algorithm for determining "optimal" segmentation parameters for a given set of images.
+ *
  */

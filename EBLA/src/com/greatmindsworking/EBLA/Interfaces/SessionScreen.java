@@ -161,6 +161,7 @@ public class SessionScreen extends JInternalFrame {
 
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 				// CLOSE WINDOW
 					try {
@@ -309,6 +310,10 @@ public class SessionScreen extends JInternalFrame {
 	 */
 	private class StartEBLAListener implements ActionListener {
 
+		// EMPTY CONSTRUCTOR
+		StartEBLAListener() {}
+
+		@Override
 		public void actionPerformed(ActionEvent ae) {
 
 			// EXTRACT "GENERAL" TAB WIDGET VALUES
@@ -395,6 +400,7 @@ public class SessionScreen extends JInternalFrame {
 
 					statusScreen.addInternalFrameListener(new InternalFrameAdapter() {
 					// FRAME CLOSED
+						@Override
 						public void internalFrameClosed(InternalFrameEvent ife) {
 							statusScreen = null;
 						} // end internalFrameClosed()
@@ -470,6 +476,9 @@ public class SessionScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.18  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.17  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

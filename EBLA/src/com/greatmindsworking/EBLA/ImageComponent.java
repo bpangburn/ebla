@@ -124,6 +124,7 @@ public class ImageComponent extends JComponent {
 	 *
 	 * @param _g			Graphics context on which to draw
 	 */
+	@Override
 	public void paint(Graphics _g) {
 
 		try {
@@ -153,6 +154,9 @@ public class ImageComponent extends JComponent {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.7  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.6  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

@@ -380,7 +380,7 @@ public class RegionList {
 	 * @param errmsg		the error message associated with the function name
 	 * @param status		the error type that has occured
 	 */
-	private void ErrorHandler(String functName, String errmsg, ErrorType status) {
+	private static void ErrorHandler(String functName, String errmsg, ErrorType status) {
 
 		try {
 
@@ -407,6 +407,9 @@ public class RegionList {
 
 /*
  * $Log$
+ * Revision 1.13  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.12  2004/02/25 21:59:22  yoda2
  * Updated copyright notice.
  *

@@ -37,7 +37,9 @@ package com.greatmindsworking.EBLA;
 
 
 import java.sql.*;
+
 import com.greatmindsworking.utils.DBConnector;
+
 import java.net.InetAddress;
 
 
@@ -199,7 +201,7 @@ public class SessionData {
 	 *
 	 * @return String enclosed in single quotes
 	 */
-	private String addQuotes(String _tmpString) {
+	private static String addQuotes(String _tmpString) {
 
 		return "'" + _tmpString + "'";
 
@@ -214,7 +216,7 @@ public class SessionData {
 	 *
 	 * @return integer for boolean (0=false, 1=true)
 	 */
-	private int boolInt(boolean _tmpBool) {
+	private static int boolInt(boolean _tmpBool) {
 
 		int tmpInt = 0;
 
@@ -239,18 +241,14 @@ public class SessionData {
 
 		// DECLARATIONS
 			boolean result = true;		// ASSUME DB WRITE IS OK UNTIL ERROR IS ENCOUNTERED
-			Statement tmpState = null;
 			ResultSet tmpRS = null;
 			String sql = "";
 
 		try {
 
-			// GET DB STATEMENT
-				tmpState = _dbc.getStatement();
-
 			// RETRIEVE SESSION ID
 				sql = "SELECT nextval('session_data_seq') AS next_index;";
-				tmpRS = tmpState.executeQuery(sql);
+				tmpRS = _dbc.getStatement().executeQuery(sql);
 				tmpRS.next();
 				sessionID = tmpRS.getLong("next_index");
 				tmpRS.close();
@@ -281,15 +279,20 @@ public class SessionData {
 					+ addQuotes(ipAddress) + ");";
 
 			// EXECUTE QUERY
-				tmpState.executeUpdate(sql);
-
-			// CLOSE DB STATEMENT
-				tmpState.close();
+				_dbc.getStatement().executeUpdate(sql);
 
 		} catch (Exception e) {
 			result = false;
 			System.out.println("\n--- SessionData.writeToDB() Exception ---\n");
 			e.printStackTrace();
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (tmpRS!=null) tmpRS.close();
+			} catch (Exception misc) {
+				System.out.println("\n--- SessionData.writeToDB() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 		// RETURN RESULT
@@ -310,24 +313,16 @@ public class SessionData {
 
 		// DECLARATIONS
 			boolean result = true;		// ASSUME DB WRITE IS OK UNTIL ERROR IS ENCOUNTERED
-			Statement tmpState = null;
 			String sql = "";
 
 		try {
-
-			// GET DB STATEMENT
-				tmpState = _dbc.getStatement();
-
 			// BUILD SQL
 			// NOTE DB DEFAULT TAKES CARE OF WRITING SESSION START TIME
 				sql = "UPDATE session_data SET session_stop = now()"
 					+ " WHERE session_id=" + sessionID + ";";
 
 			// EXECUTE QUERY
-				tmpState.executeUpdate(sql);
-
-			// CLOSE DB STATEMENT
-				tmpState.close();
+				_dbc.getStatement().executeUpdate(sql);
 
 		} catch (Exception e) {
 			result = false;
@@ -533,6 +528,9 @@ public class SessionData {
 
 /*
  * $Log$
+ * Revision 1.6  2005/02/17 23:33:54  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.5  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

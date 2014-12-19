@@ -107,18 +107,22 @@ public class MeanShift {
 		Tree  right;
 		Tree  left;
 		Tree  parent;
-	};
+	}
 
 	/**
 	 * User Defined Weight Function
 	 */
 	private class UserWeightFunc {
-		double[] w;
+		
+		// EMPTY CONSTRUCTOR
+		UserWeightFunc() {}
+		
+		double[] w1;
 		double halfWindow;
 		int sampleNumber;
 		@SuppressWarnings("unused")
 		int subspace;
-	};
+	}
 
 	/**
 	 * Define class state structure
@@ -128,7 +132,7 @@ public class MeanShift {
 		boolean	INPUT_DEFINED;
 		boolean	LATTICE_DEFINED;
 		boolean	OUTPUT_DEFINED;
-	};
+	}
 
 
 
@@ -145,10 +149,10 @@ public class MeanShift {
 	public String errorMessage;
 
 	/**
-	 * errorStatus indicates if an error has occured as a result of improper use of a
-	 * mean shift library class method or because of insufficient resourses.
-	 * errorStatus is set to EL_ERROR (errorStatus = 1) if an error has occured. If no
-	 * error occured when calling a particular method errorStatus is set to
+	 * errorStatus indicates if an error has occurred as a result of improper use of a
+	 * mean shift library class method or because of insufficient resources.
+	 * errorStatus is set to EL_ERROR (errorStatus = 1) if an error has occurred. If no
+	 * error occurred when calling a particular method errorStatus is set to
 	 * EL_OKAY (errorStatus = 0).
 	 */
 	public ErrorLevel errorStatus;
@@ -578,9 +582,9 @@ public class MeanShift {
 			increment = halfWindow/(double)(sampleNumber);
 
 // NEED TO FINISH THIS SECTIONS (see original code below) !!!
-			userWF.w = new double [sampleNumber+1];
+			userWF.w1 = new double [sampleNumber+1];
 			for (i = 0; i <= sampleNumber; i++) {
-				userWF.w[i] = gf.g(i*increment);
+				userWF.w1[i] = gf.g(i*increment);
 			}
 // END PROBLEM SECTION
 
@@ -1674,17 +1678,17 @@ public class MeanShift {
 
 					// RETRIEVE USER-DEFINED WEIGHT FUNCTION FOR SUBSPACE i+1
 						Integer tmpInt = new Integer(i+1);
-						if (userWFMap.containsKey((Object)tmpInt)) {
+						if (userWFMap.containsKey(tmpInt)) {
 						// retrieve weight function
-							UserWeightFunc uWF = (UserWeightFunc)userWFMap.get((Object)tmpInt);
+							UserWeightFunc uWF = (UserWeightFunc)userWFMap.get(tmpInt);
 
 						// Otherwise, copy weight function lookup table to w[i]
 							w[i] = new double [uWF.sampleNumber+1];
-							System.arraycopy(uWF.w, 0, w[i], 0, uWF.sampleNumber);
+							System.arraycopy(uWF.w1, 0, w[i], 0, uWF.sampleNumber);
 
 						// Set offset and increment accordingly
 							offset   [i] = (float)(uWF.halfWindow);
-							increment[i] = uWF.halfWindow/(float)uWF.sampleNumber;
+							increment[i] = uWF.halfWindow/uWF.sampleNumber;
 
 						} else {
 						// error message
@@ -1950,7 +1954,7 @@ public class MeanShift {
 	 * @param a1 first array
 	 * @param a2 second array
 	 */
-	private void SWAP(float[] a1, float[] a2) {
+	private static void SWAP(float[] a1, float[] a2) {
 
 		try {
 
@@ -2023,37 +2027,36 @@ public class MeanShift {
 					SWAP(arr[l-1].x, arr[ir-1].x);
 				}
 				return;
-			} else {
-				mid = (l+ir) >> 1;
-				SWAP(arr[mid-1].x, arr[l+1-1].x);
-
-					if (arr[l-1].x[d] > arr[ir-1].x[d]) {
-						SWAP(arr[l-1].x, arr[ir-1].x);
-					}
-					if (arr[l+1-1].x[d] > arr[ir-1].x[d]) {
-						SWAP(arr[l+1-1].x, arr[ir-1].x);
-					}
-					if (arr[l-1].x[d] > arr[l+1-1].x[d]) {
-						SWAP(arr[l-1].x, arr[l+1-1].x);
-					}
-
-					i = l+1;
-					j = ir;
-					System.arraycopy(arr[l+1-1].x, 0, a, 0, N);
-
-					for (;;) {
-						do i++; while (arr[i-1].x[d] < a[d]);
-						do j--; while (arr[j-1].x[d] > a[d]);
-						if (j<i) break;
-						SWAP(arr[i-1].x, arr[j-1].x);
-					}
-
-					System.arraycopy(arr[j-1].x, 0, arr[l+1-1].x, 0, N);
-					System.arraycopy(a, 0, arr[j-1].x, 0, N);
-
-					if (j>=k) ir = j-1;
-					if (j<=k) l = i;
 			}
+			mid = (l+ir) >> 1;
+			SWAP(arr[mid-1].x, arr[l+1-1].x);
+
+				if (arr[l-1].x[d] > arr[ir-1].x[d]) {
+					SWAP(arr[l-1].x, arr[ir-1].x);
+				}
+				if (arr[l+1-1].x[d] > arr[ir-1].x[d]) {
+					SWAP(arr[l+1-1].x, arr[ir-1].x);
+				}
+				if (arr[l-1].x[d] > arr[l+1-1].x[d]) {
+					SWAP(arr[l-1].x, arr[l+1-1].x);
+				}
+
+				i = l+1;
+				j = ir;
+				System.arraycopy(arr[l+1-1].x, 0, a, 0, N);
+
+				for (;;) {
+					do i++; while (arr[i-1].x[d] < a[d]);
+					do j--; while (arr[j-1].x[d] > a[d]);
+					if (j<i) break;
+					SWAP(arr[i-1].x, arr[j-1].x);
+				}
+
+				System.arraycopy(arr[j-1].x, 0, arr[l+1-1].x, 0, N);
+				System.arraycopy(a, 0, arr[j-1].x, 0, N);
+
+				if (j>=k) ir = j-1;
+				if (j<=k) l = i;
 		}
 
 
@@ -2178,6 +2181,8 @@ public class MeanShift {
 
 				c_t = c_t.parent;
 				break;
+			default:
+				throw new Exception("Unknown actionType value of " + actionType);
 			}
 		}
 
@@ -2363,6 +2368,8 @@ public class MeanShift {
 
 				c_t = c_t.parent;
 				break;
+			default:
+				throw new Exception("Unknown actionType value of " + actionType);
 		  }
 	   }
 
@@ -2986,6 +2993,9 @@ public class MeanShift {
 
 /*
  * $Log$
+ * Revision 1.21  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.19  2005/10/14 00:08:28  yoda2
  * Fixed inaccessible class or interface error by making ClassStateStruct a protected rather than private class.
  *

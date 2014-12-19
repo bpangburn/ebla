@@ -258,6 +258,7 @@ public class FrameGrabber extends JFrame {
 
 					// ADD A LISTENER TO CLOSE THE APPLICATION IF USER CLOSES WINDOW
 						addWindowListener(new WindowAdapter() {
+							@Override
 							public void windowClosing(WindowEvent evt) {
 								System.out.println("User closed window ... exiting.");
 								System.exit(0);
@@ -516,6 +517,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.17  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.16  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

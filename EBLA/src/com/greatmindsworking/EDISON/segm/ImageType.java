@@ -76,6 +76,7 @@ public class ImageType {
 
 	private ImageType(String name) { this.name = name; }
 
+	@Override
 	public String toString() { return name; }
 
 	public static final ImageType GRAYSCALE = new ImageType("grayscale");
@@ -87,6 +88,9 @@ public class ImageType {
 
 /*
  * $Log$
+ * Revision 1.6  2004/02/25 21:59:22  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.5  2003/11/24 16:20:10  yoda2
  * Updated copyright to 2002-2003.
  *

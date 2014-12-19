@@ -39,6 +39,7 @@ package com.greatmindsworking.EBLA;
 import java.awt.*;
 import java.util.*;
 import java.sql.*;
+
 import com.greatmindsworking.utils.DBConnector;
 
 
@@ -161,7 +162,6 @@ public class EntityExtractor {
 
 		// DECLARATIONS
 			// DATABASE
-				Statement tmpState = null;				// USED TO EXECUTE STATEMENTS AGAINST THE ebla_data DATABASE
 				ResultSet fadRS = null;					// RESULTSET FOR frame_analysis_data
 				ResultSet aldRS = null;					// RESULTSET FOR attribute_list_data
 				String sql = "";						// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
@@ -202,12 +202,9 @@ public class EntityExtractor {
 			// INITIALIZE OBJECT ARRAY LIST
 				objectAL = new ArrayList<ArrayList<FrameAnalysisData>>();
 
-			// CREATE STATEMENT
-				tmpState = dbc.getStatement();
-
 			// QUERY INCLUDE CODES FROM attribute_list_data
 				sql = "SELECT * FROM attribute_list_data;";
-				aldRS = tmpState.executeQuery(sql);
+				aldRS = dbc.getStatement().executeQuery(sql);
 // NEED TO 	NEED TO MOVE ATTRIBUTE INCLUSION CODE INTO SOME SORT OF MAP DATATYPE
 // SO THAT ARRAY SIZE ISN'T PRE-DETERMINED
 				boolean attInclusion[] = new boolean[100];
@@ -231,7 +228,8 @@ public class EntityExtractor {
 						+ " ORDER BY frame_number ASC;";
 
 				// EXECUTE QUERY
-					fadRS = tmpState.executeQuery(sql);
+					//if (fadRS!=null) fadRS.close();
+					fadRS = dbc.getStatement().executeQuery(sql);
 
 				// INITIALIZE TreeMap TO HOLD FRAME FOR CURRENT OBJECT
 					ArrayList<FrameAnalysisData> frameAL = new ArrayList<FrameAnalysisData>();
@@ -297,8 +295,8 @@ public class EntityExtractor {
 							// CALCULATE & NORMALIZE RELATIVE CENTROID COORDINATES
 							// NEED TO ADJUST BOUNDING RECTANGLE ONE POINT ON ALL SIDES
 							//  SINCE IT WAS GROWN BY ONE PIXEL TO DETERMINE CONTACT
-								double relativeCGX = ((double)tmpFAD.cg.x-(double)(tmpFAD.boundRect.x+1)) / (double)(tmpFAD.boundRect.width-2);
-								double relativeCGY = ((double)tmpFAD.cg.y-(double)(tmpFAD.boundRect.y+1)) / (double)(tmpFAD.boundRect.height-2);
+								double relativeCGX = ((double)tmpFAD.cg.x-(double)(tmpFAD.boundRect.x+1)) / (tmpFAD.boundRect.width-2);
+								double relativeCGY = ((double)tmpFAD.cg.y-(double)(tmpFAD.boundRect.y+1)) / (tmpFAD.boundRect.height-2);
 
 							// ADD NORMALIZED, RELATIVE CENTROID TO APPROPRIATE ARRAY LISTS
 								relativeCGXAL.add(new Double(relativeCGX));
@@ -554,13 +552,20 @@ public class EntityExtractor {
 
 				} // end for (i=...)
 
-			// CLOSE STATEMENT
-				tmpState.close();
-
 		} catch (Exception e) {
 			System.out.println("\n--- EntityExtractor.extractEntities() Exception ---\n");
 			e.printStackTrace();
-		}
+		} finally {
+			// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (aldRS!=null) aldRS.close();
+				if (fadRS!=null) fadRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- EntityExtractor.extractEntities() Exception ---\n");
+				misc.printStackTrace();
+			}
+		}			
 
 	} // end extractEntities()
 
@@ -634,13 +639,12 @@ public class EntityExtractor {
 	 *
 	 * @return boolean indicating success (true) or failure (false)
 	 */
+	@SuppressWarnings("resource")
 	public boolean writeToDB() {
 
 		// DECLARATIONS
-			Statement tmpState;
-			Statement tmpState2;
-			ResultSet entityRS;
-			ResultSet attRS;
+			ResultSet entityRS = null;
+			ResultSet attRS = null;
 
 			long entityID = 0;
 			int occuranceCount = 0;
@@ -656,9 +660,6 @@ public class EntityExtractor {
 
 
 		try {
-			// CREATE STATEMENTS
-				tmpState = dbc.getStatement();
-				tmpState2 = dbc.getStatement();
 
 			// ITERATE THROUGH ENTITY ARRAY LIST AND FOR EACH ENTITY:
 			// 	1. check to see if any matching entities exist in database (+/- one SD (min 5%)
@@ -750,7 +751,7 @@ public class EntityExtractor {
 						sql = sql + ");";
 
 					// EXECUTE QUERY
-						entityRS = tmpState.executeQuery(sql);
+						entityRS = dbc.getStatement().executeQuery(sql);
 
 					// CREATE NEW AttributeScore ArrayList
 						ArrayList<AttributeScore> asArrayList = new ArrayList<AttributeScore>();
@@ -778,7 +779,7 @@ public class EntityExtractor {
 										sql = "SELECT * FROM attribute_value_data WHERE entity_id=" + entityID
 											+ " AND attribute_list_id=" + tmpAtt.attributeListID + ";";
 
-										attRS = tmpState2.executeQuery(sql);
+										attRS = dbc.getStatement().executeQuery(sql);
 										attRS.next();
 										double oldAvg = Math.abs(attRS.getDouble("avg_value"));
 										attRS.close();
@@ -836,7 +837,7 @@ public class EntityExtractor {
 									+ " WHERE entity_id = " + entityID + ";";
 
 							// EXECUTE QUERY
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES, UPDATING AVERAGE VALUES FOR EACH
 								Iterator<?> itt2 = attributeAL.iterator();
@@ -848,21 +849,21 @@ public class EntityExtractor {
 										sql = "SELECT * FROM attribute_value_data WHERE entity_id=" + entityID
 											+ " AND attribute_list_id=" + tmpAtt.attributeListID + ";";
 
-										attRS = tmpState.executeQuery(sql);
+										attRS = dbc.getStatement().executeQuery(sql);
 										attRS.next();
 										double oldAvg = attRS.getDouble("avg_value");
 										double oldSD = attRS.getDouble("std_deviation");
 										attRS.close();
 
-										double newAvg = (tmpAtt.avgValue * (1.0/(double)occuranceCount)) + (oldAvg * ((double)(occuranceCount-1)/(double)occuranceCount));
-										double newSD = (tmpAtt.stdDeviation * (1.0/(double)occuranceCount)) + (oldSD * ((double)(occuranceCount-1)/(double)occuranceCount));
+										double newAvg = (tmpAtt.avgValue * (1.0/occuranceCount)) + (oldAvg * ((double)(occuranceCount-1)/(double)occuranceCount));
+										double newSD = (tmpAtt.stdDeviation * (1.0/occuranceCount)) + (oldSD * ((double)(occuranceCount-1)/(double)occuranceCount));
 
 									// WRITE UPDATED ATTRIBUTE VALUES TO DATABASE
 										sql = "UPDATE attribute_value_data SET avg_value=" + newAvg
 											+ ", std_deviation=" + newSD
 											+ " WHERE entity_id=" + entityID + " AND attribute_list_id=" + tmpAtt.attributeListID + ";";
 
-										tmpState.executeUpdate(sql);
+										dbc.getStatement().executeUpdate(sql);
 
 								}
 
@@ -870,7 +871,7 @@ public class EntityExtractor {
 						// ADD NEW ENTITY AND WRITE ATTRIBUTE VALUES TO DATABASE
 							// GET NEXT entity_id
 								sql = "SELECT nextval('entity_data_seq') AS next_index;";
-								entityRS = tmpState.executeQuery(sql);
+								entityRS = dbc.getStatement().executeQuery(sql);
 								entityRS.next();
 								entityID = entityRS.getLong("next_index");
 								entityRS.close();
@@ -878,7 +879,7 @@ public class EntityExtractor {
 							// ADD ENTITY DATA RECORD
 								sql = "INSERT INTO entity_data (entity_id, run_id)"
 									+ " VALUES (" + entityID + "," + runID + ");";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// CREATE 2ND ITERATOR AND LOOP THROUGH ATTRIBUTES
 								Iterator<?> itt2 = attributeAL.iterator();
@@ -890,26 +891,32 @@ public class EntityExtractor {
 										sql = "INSERT INTO attribute_value_data (attribute_list_id, run_id, entity_id, avg_value, std_deviation)"
 											+ " VALUES (" + tmpAtt.attributeListID + ", " + runID + "," + entityID + ", " + tmpAtt.avgValue
 											+ ", " + tmpAtt.stdDeviation + ");";
-										tmpState.executeUpdate(sql);
+										dbc.getStatement().executeUpdate(sql);
 								}
 						} // end if (entityExists)...
 
 					// ADD EXPERIENCE-ENTITY RECORD
 						sql = "INSERT INTO experience_entity_data (experience_id, run_id, entity_id, resolution_code) VALUES ("
 							+ expID + ", " + runID + ", " + entityID + ", 0);";
-						tmpState.executeUpdate(sql);
+						dbc.getStatement().executeUpdate(sql);
 
 				} // end while
-
-			// CLOSE STATEMENTS
-				tmpState.close();
-				tmpState2.close();
-
 
 		} catch (Exception e) {
 			System.out.println("\n--- EntityExtractor.writeToDB() Exception ---\n");
 			e.printStackTrace();
 			return false;
+		} finally {
+			// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (entityRS!=null) entityRS.close();
+				if (attRS!=null) attRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- EntityExtractor.writeToDB() Exception ---\n");
+				misc.printStackTrace();
+			}			
+			
 		}
 
 		// RETURN RESULT
@@ -923,6 +930,9 @@ public class EntityExtractor {
 
 /*
  * $Log$
+ * Revision 1.27  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.26  2005/02/17 23:33:15  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

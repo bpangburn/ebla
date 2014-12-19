@@ -68,19 +68,14 @@ package com.greatmindsworking.EDISON.segm;
  * passed as a parameter like C++ does.
  * <pre>
  * To-do:
- *  1. Rewrite as an abstract class that can be implemented by users so that
- *     they can supply a custom weight function to the MeanShift class.
- *	   functions as method parameters in Java)
- *  2. Add JavaDoc for public methods and data members.
+ *  1. Add JavaDoc for public methods and data members.
  *
  * @author	$Author$
  * @version	$Revision$
  */
-public class GFunction {
+public abstract class GFunction {
 
-	public double g(double tmp) {
-		return 0.0;
-	}
+	public abstract double g(double tmp);
 
 } // end GFunction class
 
@@ -88,6 +83,9 @@ public class GFunction {
 
 /*
  * $Log$
+ * Revision 1.7  2004/02/25 21:59:22  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.6  2003/11/24 16:20:10  yoda2
  * Updated copyright to 2002-2003.
  *

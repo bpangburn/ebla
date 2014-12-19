@@ -50,6 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
 
@@ -81,7 +82,7 @@ public class EBLAPanel extends JPanel {
 	/**
 	 * widget border for EBLA
 	 */
-	SoftBevelBorder softBevelBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
+	SoftBevelBorder softBevelBorder = new SoftBevelBorder(BevelBorder.RAISED);
 
 
 
@@ -152,7 +153,7 @@ public class EBLAPanel extends JPanel {
 					int columns = ((JTextArea)_component).getColumns();
 					int rows = ((JTextArea)_component).getRows();
 
-					JScrollPane scrollPane = new JScrollPane((JTextArea)_component);
+					JScrollPane scrollPane = new JScrollPane(_component);
 
 					if ((columns > 1) && (rows > 1)) {
 						scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
@@ -167,7 +168,7 @@ public class EBLAPanel extends JPanel {
 
 		// ADD WIDGET AND RETURN FOR ALL EXCEPT MULTI-LINE TEXTBOX
 			if (! (_component instanceof JTextArea)) {
-				return super.add((Component)_component);
+				return super.add(_component);
 			}
 
 		// THIS STATEMENT IS NOT REQUIRED BUT THE RETURN STATEMENT IS REQUIRED BY THE COMPILER
@@ -189,7 +190,7 @@ public class EBLAPanel extends JPanel {
 	public void add(JComponent _component, java.lang.Object _constraints, boolean _setDimensions) {
 
 		if (_setDimensions == false) {
-			super.add((Component)_component, _constraints);
+			super.add(_component, _constraints);
 		} else {
 			add(_component, _constraints);
 		}
@@ -254,7 +255,7 @@ public class EBLAPanel extends JPanel {
 					int columns = ((JTextArea)_component).getColumns();
 					int rows = ((JTextArea)_component).getRows();
 
-					JScrollPane scrollPane = new JScrollPane((JTextArea)_component);
+					JScrollPane scrollPane = new JScrollPane(_component);
 
 					if ((columns > 1) && (rows > 1)) {
 						scrollPane.setPreferredSize(new Dimension(columns*10, rows*20));
@@ -269,7 +270,7 @@ public class EBLAPanel extends JPanel {
 
 		// ADD WIDGET AND RETURN FOR ALL EXCEPT MULTI-LINE TEXTBOX
 			if (! (_component instanceof JTextArea)) {
-				super.add((Component)_component, _constraints);
+				super.add(_component, _constraints);
 			}
 
 	} // end public void add
@@ -321,6 +322,7 @@ public class EBLAPanel extends JPanel {
 			component = _component;
 		}
 
+		@Override
 		public void mouseClicked(MouseEvent ae) {
 			if (component instanceof JTextField) {
 				((JTextField)component).requestFocus();
@@ -330,6 +332,7 @@ public class EBLAPanel extends JPanel {
 			}
 		}
 
+		@Override
 		public void mouseEntered(MouseEvent me){
 			if (component instanceof JTextField) {
 				((JTextField)component).requestFocus();
@@ -339,12 +342,15 @@ public class EBLAPanel extends JPanel {
 			}
 		}
 
+		@Override
 		public void mouseExited(MouseEvent me){
 		}
 
+		@Override
 		public void mousePressed(MouseEvent me){
 		}
 
+		@Override
 		public void mouseReleased(MouseEvent me){
 		}
 	}
@@ -357,6 +363,9 @@ public class EBLAPanel extends JPanel {
 
 /*
  * $Log$
+ * Revision 1.10  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.9  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

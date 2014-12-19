@@ -108,43 +108,35 @@ public class DBConnector {
 	private boolean autoCommit = false;
 
 
-
 	/**
 	 * Class constructor that calls appropriate methods to initialize database connection
 	 *
 	 * @param _dbFile       String to specify the path of file that has database path, username and password
 	 * @param _autoCommit	boolean to indicate whether to auto-commit database changes
 	 */
-    public DBConnector(String _dbFile, boolean _autoCommit) throws IOException {
+    public DBConnector(String _dbFile, boolean _autoCommit) {
 
-		 this(new FileReader(_dbFile), _autoCommit);
-		 System.out.println(dbPath);
+    	try {
+    		
+		// CREATE FILEREADER
+			FileReader fr = new FileReader(_dbFile);
 
-	} // end DBConnector()
+		// READ CONNECTION INFO FROM FILE 
+			if (!getDBInformation(fr)) {
+				throw new IOException("Failed to read input file : " + _dbFile);
+			}
+			
+		// CLOSE FILEREADER
+			fr.close();
 
-	/**
-	 * Class constructor that calls appropriate methods to initialize database connection
-	 *
-	 * @param _dbFile       String to specify the path of file that has database path, username and password
-	 * @param _autoCommit	boolean to indicate whether to auto-commit database changes
-	 */
-    public DBConnector(FileReader _dbFile, boolean _autoCommit) throws IOException {
-
-		try {
-
-			// READ CONNECTION INFO FROM FILE 
-				if (!getDBInformation(_dbFile)) {
-					throw new IOException("Failed to read input file : " + _dbFile);
-				}
-
-			// INITIALIZE DATABASE
-				autoCommit = _autoCommit;
-				initializeDatabase();
-
+		// INITIALIZE DATABASE
+			autoCommit = _autoCommit;
+			initializeDatabase();
+			
 		} catch (Exception e) {
 			System.out.println("\n--- DBConnector Constructor() Exception ---\n");
 			e.printStackTrace();
-		}
+		}			
 
 	} // end DBConnector()
 
@@ -203,7 +195,7 @@ public class DBConnector {
 	*	@param fileReader a file reader from the database path, username and password can be read
 	*	@return returns true if file is read successfully else false
 	*/
-	private boolean getDBInformation(FileReader _file) {
+	private static boolean getDBInformation(FileReader _file) {
 
 		try {
 
@@ -345,6 +337,9 @@ public class DBConnector {
 
 /*
  * $Log$
+ * Revision 1.3  2011/04/25 02:34:15  yoda2
+ * Coding for H2 embedded database.
+ *
  * Revision 1.2  2005/02/17 23:34:16  yoda2
  * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
  *

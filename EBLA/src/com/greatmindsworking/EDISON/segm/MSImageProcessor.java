@@ -341,7 +341,7 @@ public class MSImageProcessor extends MeanShift {
 			float luv[] = new float [height_*width_*dim];
 			if (dim == 1) {
 				for(i = 0; i < height_*width_; i++) {
-					luv[i]	= (float)(data_[i]);
+					luv[i]	= (data_[i]);
 				}
 			} else {
 				for(i = 0; i < height_*width_; i++) {
@@ -419,7 +419,7 @@ public class MSImageProcessor extends MeanShift {
 			float luv[] = new float [height_*width_*dim];
 			if (dim == 1) {
 				for (i = 0; i < height_*width_; i++) {
-					luv[i]  = (float)(data_[i]);
+					luv[i]  = (data_[i]);
 				}
 			} else {
 				for (i = 0; i < height_*width_; i++) {
@@ -620,25 +620,25 @@ public class MSImageProcessor extends MeanShift {
 			if (speedUpLevel == SpeedUpLevel.NO_SPEEDUP) {
 			// no speedup...
 				if (edisonPortVersion==0) {
-					NonOptimizedFilter((float)(sigmaS), sigmaR);
+					NonOptimizedFilter((sigmaS), sigmaR);
 				} else {
-					NewNonOptimizedFilter((float)(sigmaS), sigmaR);
+					NewNonOptimizedFilter((sigmaS), sigmaR);
 				}
 
 			} else if (speedUpLevel == SpeedUpLevel.MED_SPEEDUP) {
 			// medium speedup
 				if (edisonPortVersion==0) {
-					OptimizedFilter1((float)(sigmaS), sigmaR);
+					OptimizedFilter1((sigmaS), sigmaR);
 				} else {
-					NewOptimizedFilter1((float)(sigmaS), sigmaR);
+					NewOptimizedFilter1((sigmaS), sigmaR);
 				}
 
 			} else if (speedUpLevel == SpeedUpLevel.HIGH_SPEEDUP) {
 			// high speedup
 				if (edisonPortVersion==0) {
-					OptimizedFilter2((float)(sigmaS), sigmaR);
+					OptimizedFilter2((sigmaS), sigmaR);
 				} else {
-					NewOptimizedFilter2((float)(sigmaS), sigmaR);
+					NewOptimizedFilter2((sigmaS), sigmaR);
 				}
 			}
 
@@ -1097,13 +1097,12 @@ public class MSImageProcessor extends MeanShift {
 	 *
 	 * @return rounded value
 	 */
-	private int my_round(double in_x) {
+	private static int my_round(double in_x) {
 
 		if (in_x < 0) {
 			return (int)(in_x - 0.5);
-		} else {
-			return (int)(in_x + 0.5);
 		}
+		return (int)(in_x + 0.5);
 
 	} // end my_round
 
@@ -2265,24 +2264,25 @@ public class MSImageProcessor extends MeanShift {
 	 * @param regionLoc
 	 * @param label
 	 */
-	private void Fill(int regionLoc, int label) {
+	private void Fill(int _regionLoc, int _label) {
 
 		try {
 
 		// declare variables
 			int	i, k, neighLoc, imageSize = width*height;
 			boolean neighborsFound;
+			int regionLoc = _regionLoc;
 
 		// Fill region starting at region location
 		// using labels...
 
 		// initialize indexTable
 			int	index = 0;
-			indexTable[0] = regionLoc;
+			indexTable[0] = _regionLoc;
 
 		// increment mode point counts for this region to
 		// indicate that one pixel belongs to this region
-			modePointCounts[label]++;
+			modePointCounts[_label]++;
 
 		while (true) {
 
@@ -2327,10 +2327,10 @@ public class MSImageProcessor extends MeanShift {
 							//processing
 								if (k == N) {
 									// assign label to neighbor i
-										labels[neighLoc]	= label;
+										labels[neighLoc] = _label;
 
 									// increment region point count
-										modePointCounts[label]++;
+										modePointCounts[_label]++;
 
 									// place index of neighbor i onto the index tabel buffer
 										indexTable[++index]	= neighLoc;
@@ -2879,7 +2879,7 @@ public class MSImageProcessor extends MeanShift {
 		// traverse labeled image computing edge strengths
 		// (excluding image boundary)...
 			int x, y, dp, curLabel, rightLabel, bottomLabel;
-			RAList curRegion;
+			RAList curRegion = null;
 
 			for (y = 1; y < height-1; y++) {
 				for (x = 1; x < width-1; x++) {
@@ -2905,6 +2905,8 @@ public class MSImageProcessor extends MeanShift {
 
 //-bp-						// this should not occur...
 //-bp-							assert (curRegion);
+							// CHECK FOR NULL curRegion
+								if (curRegion==null) break;
 
 							// accumulate edge strength
 								curRegion.edgeStrength += weightMap[dp] + weightMap[dp+1];
@@ -2920,6 +2922,8 @@ public class MSImageProcessor extends MeanShift {
 
 //-bp-						// this should not occur...
 //-bp-							assert (curRegion);
+							// CHECK FOR NULL curRegion
+								if (curRegion==null) break;
 
 							// accumulate edge strength
 								if (curLabel == rightLabel) {
@@ -2960,6 +2964,8 @@ public class MSImageProcessor extends MeanShift {
 
 //-bp-							// this should not occur...
 //-bp-								assert (neighborRegion);
+								// CHECK FOR NULL neighborRegion
+									if (neighborRegion==null) break;
 
 								// compute edge strengths using accumulated confidence
 								// value and pixel count
@@ -4932,12 +4938,12 @@ public class MSImageProcessor extends MeanShift {
 	public void SetSpeedThreshold(float speedUpThreshold) {
 
 		if (speedUpThreshold < 0.0) {
-			speedUpThreshold = (float)0.0;
+			speedThreshold = (float)0.0;
 		} else if (speedUpThreshold > 1.0) {
-			speedUpThreshold = (float)1.0;
+			speedThreshold = (float)1.0;
 		}
 
-		speedThreshold = speedUpThreshold;
+		//speedThreshold = speedUpThreshold;
 
 		if (prompt) {
 			msSystem.Prompt("Setting speedup threshold to " + speedThreshold + ".\n");
@@ -4957,6 +4963,9 @@ public class MSImageProcessor extends MeanShift {
 
 /*
  * $Log$
+ * Revision 1.18  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.17  2004/02/25 21:59:21  yoda2
  * Updated copyright notice.
  *

@@ -219,7 +219,7 @@ public class RAList {
 
 		// done. Return exists indicating whether or not a new node was
 		//       actually inserted into the region adjacency list.
-			return (int)(exists);
+			return (exists);
 
 	} // end Insert
 
@@ -229,6 +229,9 @@ public class RAList {
 
 /*
  * $Log$
+ * Revision 1.11  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.10  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

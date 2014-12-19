@@ -38,7 +38,9 @@ package com.greatmindsworking.EBLA;
 
 import java.util.*;
 import java.sql.*;
+
 import com.greatmindsworking.utils.DBConnector;
+
 import java.io.*;
 
 
@@ -230,17 +232,11 @@ public class LexemeResolver {
 	 public void generateDescriptions(FileWriter fw, int loopCount, int stdDev) {
 
 		// DECLARATIONS
-			Statement tmpState = null;		// DATABASE STATEMENT USED TO EXECUTE QUERIES AGAINST THE DATABASE
-			Statement tmpState2 = null;		// NEED A 2ND STATEMENT BECAUSE YOU CAN'T USE THE SAME STATEMENT
-											// TO EXECUTE NEW QUERIES WHILE THERE IS A RESULTSET OPEN THAT
-											// USES THAT STATEMENT
 			ResultSet mapRS = null;			// ENTITY-LEXEME DATA MAPPINGS
 			String sql = "";				// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 
 			long entityID = 0;				// ID OF CURRENT ENTITY
-			//long entLexID = 0;				// ENTITY-LEXEME MAPPPING ID
 
-			//int occuranceCount = 0;			// NUMBER OF TIME A GIVEN ENTITY-LEXEME MAPPING HAS BEEN ENCOUNTERED
 			ResultSet eedRS = null;			// EXPERIENCE-ENTITY DATA RESULTSET
 
 			boolean mappingFound = false;	// INDICATE IF A MAPPING EXISTS FOR THE CURRENT ENTITY
@@ -256,16 +252,13 @@ public class LexemeResolver {
 
 
 		try {
-			// CREATE STATEMENTS
-				tmpState = dbc.getStatement();
-				tmpState2 = dbc.getStatement();
 
 			// FILL CURRENT ENTITY SET
 				sql = "SELECT entity_id FROM experience_entity_data WHERE experience_id = " + expID
 					+ " AND run_id = " + runID + ";";
 
 			// EXECUTE QUERY
-				eedRS = tmpState.executeQuery(sql);
+				eedRS = dbc.getStatement().executeQuery(sql);
 
 			// LOOP THROUGH RESULTSET AND CHECK EACH ENTITY FOR A MAPPING
 				while (eedRS.next()) {
@@ -279,7 +272,7 @@ public class LexemeResolver {
 							+ " WHERE entity_lexeme_data.entity_id=" + entityID
 							+ " AND entity_lexeme_data.lexeme_id = lexeme_data.lexeme_id"
 							+ " ORDER BY entity_lexeme_data.occurance_count;";
-						mapRS = tmpState2.executeQuery(sql);
+						mapRS = dbc.getStatement().executeQuery(sql);
 
 					// RESET MAPPING FLAG
 						mappingFound = false;
@@ -359,7 +352,7 @@ public class LexemeResolver {
 									+ " WHERE experience_id = " + expID
 									+ " AND run_id = " + runID
 									+ " AND entity_id = " + entityID + ";";
-								tmpState2.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						}
 
@@ -378,16 +371,23 @@ public class LexemeResolver {
 				sql = "UPDATE experience_run_data SET experience_description = '" + description + "'"
 					+ " WHERE experience_id = " + expID
 					+ " AND run_id = " + runID + ";";
-				tmpState.executeUpdate(sql);
-
-			// CLOSE STATEMENTS
-				tmpState.close();
-				tmpState2.close();
+				dbc.getStatement().executeUpdate(sql);
 
 		} catch (Exception e) {
 			System.out.println("\n--- LexemeResolver.generateDescriptions() Exception ---\n");
 			System.out.println("	Current Query: " + sql +"\n");
 			e.printStackTrace();
+			
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (eedRS!=null) eedRS.close();
+				if (mapRS!=null) mapRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- LexemeResolver.generateDescriptions() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 	} // end generateDescriptions()
@@ -399,21 +399,18 @@ public class LexemeResolver {
 	 * current experience and attempts to back-fill lexeme-entity relations
 	 * for prior experiences.
 	 */
+	@SuppressWarnings("resource")
 	public void resolveLexemes() {
 
 		// DECLARATIONS
 			ArrayList<Long> curLex = null;	// UNRESOLVED LEXEMES FROM THE CURRENT EXPERIENCE
 			ArrayList<Long> curEnt = null;	// UNRESOLVED ENTITIES FROM THE CURRENT EXPERIENCE
 
-			Statement tmpState = null;		// DATABASE STATEMENT USED TO EXECUTE QUERIES AGAINST THE DATABASE
-			Statement tmpState2 = null;		// NEED A 2ND STATEMENT BECAUSE YOU CAN'T USE THE SAME STATEMENT
-											// TO EXECUTE NEW QUERIES WHILE THERE IS A RESULTSET OPEN THAT
-											// USES THAT STATEMENT
-
 			ResultSet eedRS = null;			// EXPERIENCE-ENTITY DATA RESULTSET
 			ResultSet entityRS = null;		// ENTITY RESULTSET
 			ResultSet lexemeRS = null;		// LEXEME DATA RESULTSET
 			ResultSet mapRS = null;			// ENTITY-LEXEME DATA MAPPINGS RESULTSET
+			ResultSet expRS = null;			// USED FOR CROSS-SITUATIONAL LEARNING QUERIES		
 
 			String sql = "";				// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 			String entityString = "";		// USED FOR BUILDING LISTS OF ENTITIES CONTAINED IN QUERIES
@@ -434,11 +431,8 @@ public class LexemeResolver {
 			boolean tech2 = true;			// RESULTS OF CROSS-SITUITATIONAL LEARNING TECHNIQUE #2
 			boolean tech3 = true;			// RESULTS OF CROSS-SITUITATIONAL LEARNING TECHNIQUE #3
 
-			ResultSet expRS = null;			// USED FOR CROSS-SITUATIONAL LEARNING QUERIES
 			long exp1 = 0;					// FIRST EXPERIENCE FOR CROSS-SITUITATIONAL LEARNING
 			long exp2 = 0;					// SECOND EXPERIENCE FOR CROSS-SITUITATIONAL LEARNING
-
-
 
 			boolean tmpFirst = true;		// INDICATES WHETHER FIRST LEXEME/ENTITY IS BEING PROCESS WHEN
 											// BUILDING LISTS IN SQL STATEMENTS (DETERMINES LOCATION OF
@@ -448,9 +442,6 @@ public class LexemeResolver {
 
 
 		try {
-			// CREATE STATEMENTS
-				tmpState = dbc.getStatement();
-				tmpState2 = dbc.getStatement();
 
 			// INITIALIZE CURRENT UNRESOLVED LEXEME & ENTITY SETS
 				curLex = new ArrayList<Long>();
@@ -461,7 +452,7 @@ public class LexemeResolver {
 					+ " AND run_id = " + runID + ";";
 
 			// EXECUTE QUERY
-				eedRS = tmpState.executeQuery(sql);
+				eedRS = dbc.getStatement().executeQuery(sql);
 
 			// LOOP THROUGH RESULTSET AND ADD ENTITIES TO ARRAYLIST
 				while (eedRS.next()) {
@@ -500,7 +491,7 @@ public class LexemeResolver {
 							+ " AND lexeme = '" + tmpLex + "';";
 
 					// EXECUTE QUERY
-						lexemeRS = tmpState.executeQuery(sql);
+						lexemeRS = dbc.getStatement().executeQuery(sql);
 
 					// IF RECORDS EXIST, GRAB LEXEME ID
 						if (lexemeRS.next()) {
@@ -528,13 +519,13 @@ public class LexemeResolver {
 									+ " WHERE lexeme_id = " + lexemeID + ";";
 
 							// EXECUTE QUERY
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						} else {
 						// ADD NEW LEXEME
 							// GET NEXT lexeme_id
 								sql = "SELECT nextval('lexeme_data_seq') AS next_index;";
-								lexemeRS = tmpState.executeQuery(sql);
+								lexemeRS = dbc.getStatement().executeQuery(sql);
 								lexemeRS.next();
 								lexemeID = lexemeRS.getLong("next_index");
 								lexemeRS.close();
@@ -542,14 +533,14 @@ public class LexemeResolver {
 							// ADD LEXEME DATA RECORD
 								sql = "INSERT INTO lexeme_data (lexeme_id, run_id, lexeme, occurance_count) VALUES ("
 									+ lexemeID + "," + runID + ", '" + tmpLex + "', 1);";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						} // end if (lexemeExists)...
 
 					// ADD EXPERIENCE LEXEME RECORD
 						sql = "INSERT INTO experience_lexeme_data (experience_id, run_id, lexeme_id, resolution_code) VALUES ("
 							+ expID + "," + runID + "," + lexemeID + ", 0);";
-						tmpState.executeUpdate(sql);
+						dbc.getStatement().executeUpdate(sql);
 
 					// ADD LEXEME ID TO ARRAYLIST
 						curLex.add(new Long(lexemeID));
@@ -602,7 +593,7 @@ public class LexemeResolver {
 						+ " AND lexeme_id IN " + lexemeString + ";";
 
 				// EXECUTE QUERY
-					mapRS = tmpState.executeQuery(sql);
+					mapRS = dbc.getStatement().executeQuery(sql);
 
 				// LOOP THROUGH RESULTS
 				// TO EXECUTE QUERIES INSIDE THE LOOP, NEED TO USE A 2ND STATEMENT OR mapRS WILL GET CORRUPTED
@@ -628,7 +619,7 @@ public class LexemeResolver {
 						// UPDATE occurance_count IN entity_lexeme_data
 							sql = "UPDATE entity_lexeme_data SET occurance_count = " + occuranceCount
 								+ " WHERE entity_lexeme_id = " + entLexID + ";";
-							tmpState2.executeUpdate(sql);
+							dbc.getStatement().executeUpdate(sql);
 
 					} // end while
 
@@ -647,7 +638,7 @@ public class LexemeResolver {
 					// ADD ENTITY-LEXEME MAPPING RECORD
 						sql = "INSERT INTO entity_lexeme_data (entity_id, lexeme_id, occurance_count)"
 							+ " VALUES (" + entityID + ", " + lexemeID + ", " + occuranceCount + ");";
-						tmpState.executeUpdate(sql);
+						dbc.getStatement().executeUpdate(sql);
 
 					// DELETE CONTENTS OF ENTITY & LEXEME ARRAY LISTS
 						curEnt.clear();
@@ -708,7 +699,7 @@ public class LexemeResolver {
 							+ " LIMIT 1;";
 
 					// EXECUTE QUERY
-						expRS = tmpState.executeQuery(sql);
+						expRS = dbc.getStatement().executeQuery(sql);
 
 					// EXTRACT EXPERIENCE ID'S
 						if (expRS.next()) {
@@ -739,7 +730,7 @@ public class LexemeResolver {
 									   + "		);";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								entityRS = tmpState.executeQuery(eedSQL);
+								entityRS = dbc.getStatement().executeQuery(eedSQL);
 								entityRS.next();
 
 							// EXTRACT ID
@@ -768,7 +759,7 @@ public class LexemeResolver {
 									   + "		);";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								lexemeRS = tmpState.executeQuery(eldSQL);
+								lexemeRS = dbc.getStatement().executeQuery(eldSQL);
 								lexemeRS.next();
 
 							// EXTRACT ID
@@ -794,7 +785,7 @@ public class LexemeResolver {
 							// ADD ENTITY-LEXEME MAPPING RECORD (SET OCCURANCE_COUNT TO 2 BECAUSE TWO MAPPINGS WERE INVOLVED)
 								sql = "INSERT INTO entity_lexeme_data (entity_id, lexeme_id, occurance_count)"
 									+ " VALUES (" + entityID + ", " + lexemeID + ", " + occuranceCount + ");";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						// SEARCH FOR OTHER UNRESOLVED INSTANCES OF THIS NEW MAPPING AND RESOLVE
 							 if (resolveOtherInstances(entityID, lexemeID, 2)) {
@@ -845,7 +836,7 @@ public class LexemeResolver {
 							+ " LIMIT 1;";
 
 					// EXECUTE QUERY
-						expRS = tmpState.executeQuery(sql);
+						expRS = dbc.getStatement().executeQuery(sql);
 
 					// EXTRACT EXPERIENCE ID'S
 						if (expRS.next()) {
@@ -875,7 +866,7 @@ public class LexemeResolver {
 									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								entityRS = tmpState.executeQuery(eedSQL);
+								entityRS = dbc.getStatement().executeQuery(eedSQL);
 								entityRS.next();
 
 							// EXTRACT ID
@@ -903,7 +894,7 @@ public class LexemeResolver {
 									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								lexemeRS = tmpState.executeQuery(eldSQL);
+								lexemeRS = dbc.getStatement().executeQuery(eldSQL);
 								lexemeRS.next();
 
 							// EXTRACT ID
@@ -924,7 +915,7 @@ public class LexemeResolver {
 							// ADD ENTITY-LEXEME MAPPING RECORD
 								sql = "INSERT INTO entity_lexeme_data (entity_id, lexeme_id, occurance_count)"
 									+ " VALUES (" + entityID + ", " + lexemeID + ", " + occuranceCount + ");";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						// SEARCH FOR OTHER UNRESOLVED INSTANCES OF THIS NEW MAPPING AND RESOLVE
 							 if (resolveOtherInstances(entityID, lexemeID, 1)) {
@@ -975,7 +966,7 @@ public class LexemeResolver {
 							+ " LIMIT 1;";
 
 					// EXECUTE QUERY
-						expRS = tmpState.executeQuery(sql);
+						expRS = dbc.getStatement().executeQuery(sql);
 
 					// EXTRACT EXPERIENCE ID'S
 						if (expRS.next()) {
@@ -1005,7 +996,7 @@ public class LexemeResolver {
 									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								entityRS = tmpState.executeQuery(eedSQL);
+								entityRS = dbc.getStatement().executeQuery(eedSQL);
 								entityRS.next();
 
 							// EXTRACT ID
@@ -1033,7 +1024,7 @@ public class LexemeResolver {
 									   + " 		AND resolution_code = 0;";
 
 							// OPEN RESULTSET & MOVE TO FIRST (ONLY) RECORD
-								lexemeRS = tmpState.executeQuery(eldSQL);
+								lexemeRS = dbc.getStatement().executeQuery(eldSQL);
 								lexemeRS.next();
 
 							// EXTRACT ID
@@ -1054,7 +1045,7 @@ public class LexemeResolver {
 							// ADD ENTITY-LEXEME MAPPING RECORD
 								sql = "INSERT INTO entity_lexeme_data (entity_id, lexeme_id, occurance_count)"
 									+ " VALUES (" + entityID + ", " + lexemeID + ", " + occuranceCount + ");";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						// SEARCH FOR OTHER UNRESOLVED INSTANCES OF THIS NEW MAPPING AND RESOLVE
 							 if (resolveOtherInstances(entityID, lexemeID, 1)) {
@@ -1064,15 +1055,24 @@ public class LexemeResolver {
 
 				} // end while (tech1 || tech2 || tech3)
 
-			// CLOSE STATEMENTS
-				tmpState.close();
-				tmpState2.close();
-
 		} catch (Exception e) {
 			System.out.println("\n--- LexemeResolver.resolveLexemes() Exception ---\n");
 			System.out.println("	Current Query: " + sql +"\n");
 			e.printStackTrace();
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (eedRS!=null) eedRS.close();
+				if (entityRS!=null) entityRS.close();
+				if (lexemeRS!=null) lexemeRS.close();
+				if (mapRS!=null) mapRS.close();
+				if (expRS!=null) expRS.close();
+			} catch (Exception misc) {
+				System.out.println("\n--- LexemeResolver.resolveLexemes() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
+
 
 	} // end resolveLexemes()
 
@@ -1101,15 +1101,11 @@ public class LexemeResolver {
 		// DECLARATIONS
 			String sql = "";				// STRING USED FOR QUERY CONSTRUCTION
 			ResultSet tmpRS = null;			// USED TO QUERY # OF TIMES A GIVEN ENTITY/LEXEME OCCURS IN AN EXPERIENCE
-			Statement tmpState = null;		// DATABASE STATEMENT
 			int maxCount = 0;				// MAXIMUM NUMBER OF TIMES TO UPDATE A NEW MAPPING FOR A GIVEN EXPERIENCE
 			String tmpEEDString = "";		// USED FOR BUILDING LISTS OF experience_entity_data RECORD ID'S
 			String tmpELDString = "";		// USED FOR BUILDING LISTS OF experience_lexeme_data RECORD ID'S
 
 		try {
-
-			// GET STATEMENT
-				tmpState = dbc.getStatement();
 
 			// QUERY # OF TIMES THAT ENTITY AND LEXEME EXIST FOR CURRENT QUERY AND USE SMALLER COUNT
 			// UPDATE OCCURANCE COUNT ACCORDINGLY
@@ -1122,7 +1118,7 @@ public class LexemeResolver {
 					+ " AND entity_id = " + _entityID
 					+ " AND resolution_code = 0;";
 
-				tmpRS = tmpState.executeQuery(sql);
+				tmpRS = dbc.getStatement().executeQuery(sql);
 
 				while (tmpRS.next()) {
 					tmpEED.add(new Long(tmpRS.getLong("experience_entity_id")));
@@ -1135,7 +1131,7 @@ public class LexemeResolver {
 					+ " AND lexeme_id = " + _lexemeID
 					+ " AND resolution_code = 0;";
 
-				tmpRS = tmpState.executeQuery(sql);
+				tmpRS = dbc.getStatement().executeQuery(sql);
 
 				while (tmpRS.next()) {
 					tmpELD.add(new Long(tmpRS.getLong("experience_lexeme_id")));
@@ -1164,20 +1160,26 @@ public class LexemeResolver {
 				if (maxCount > 0) {
 					sql = "UPDATE experience_entity_data SET resolution_code = 1"
 						+ " WHERE experience_entity_id IN (" + tmpEEDString + ");";
-					tmpState.executeUpdate(sql);
+					dbc.getStatement().executeUpdate(sql);
 
 					sql = "UPDATE experience_lexeme_data SET resolution_code = 1, resolution_index = " + _expIndex
 						+ " WHERE experience_lexeme_id IN (" + tmpELDString + ");";
-					tmpState.executeUpdate(sql);
+					dbc.getStatement().executeUpdate(sql);
 				}
-
-			// CLOSE DATABASE STATEMENT
-				tmpState.close();
 
 		} catch (Exception e) {
 			System.out.println("\n--- LexemeResolver.updateExpResolutions() Exception ---\n");
 			e.printStackTrace();
 			System.out.println("	Current Query: " + sql +"\n");
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (tmpRS!=null) tmpRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- LexemeResolver.updateExpResolutions() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 		// RETURN RESULT
@@ -1204,16 +1206,12 @@ public class LexemeResolver {
 
 		// DECLARATIONS
 			String sql = "";				// STRING USED FOR QUERY CONSTRUCTION
-			Statement tmpState = null;		// DATABASE STATEMENT
 			ResultSet matchRS = null;		// RESULTSET OF EXPERIENCES CONTAINING NEWLY DISCOVERED MAPPING
 			int newOccurances = 0;			// NUMBER OF TIMES A NEW MAPPING OCCURS
 			long expID = 0;					// EXPERIENCE ID
 
 
 		try {
-			// CREATE STATEMENT
-				tmpState = dbc.getStatement();
-
 			// QUERY experience_entity_data AND experience_lexeme_data FOR UNRESOLVED EXPERIENCES WITH THE NEWLY
 			// RESOLVED entity-lexeme PAIR
 				sql = "SELECT eed.experience_id FROM experience_entity_data eed, experience_lexeme_data eld"
@@ -1224,7 +1222,7 @@ public class LexemeResolver {
 					+ " AND eld.resolution_code = 0;";
 
 			// BUILD RESULTSET
-				matchRS = tmpState.executeQuery(sql);
+				matchRS = dbc.getStatement().executeQuery(sql);
 
 			// INITIALIZE OCCURANCE COUNTER
 				newOccurances = 0;
@@ -1247,23 +1245,28 @@ public class LexemeResolver {
 				if (newOccurances > 0) {
 					sql = "UPDATE entity_lexeme_data SET occurance_count = " + (newOccurances + _occCount)
 						+ " WHERE entity_id = " + _entityID + " AND lexeme_id = " + _lexemeID + ";";
-					tmpState.executeUpdate(sql);
+					dbc.getStatement().executeUpdate(sql);
 				}
-
-			// CLOSE STATEMENTS
-				tmpState.close();
 
 		} catch (Exception e) {
 			System.out.println("\n--- LexemeResolver.resolveOtherInstances() Exception ---\n");
 			e.printStackTrace();
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (matchRS!=null) matchRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- LexemeResolver.resolveOtherInstances() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 		// RETURN RESULT
 			if (newOccurances > 0) {
 				return true;
-			} else {
-				return false;
 			}
+			return false;
 
 	} // end resolveOtherInstances()
 
@@ -1282,7 +1285,6 @@ public class LexemeResolver {
 		// DECLARATIONS
 			String sql = "";				// STRING USED FOR QUERY CONSTRUCTION
 
-			Statement tmpState = null;		// DATABASE STATEMENT
 			ResultSet expRS = null;			// RESULTSET USED TO QUERY SINGLE UNMAPPED ENTITY-LEXEME PAIRINGS
 
 			long expID = 0;					// EXPERIENCE ID FOR NEW MAPPING
@@ -1295,8 +1297,6 @@ public class LexemeResolver {
 
 
 		try {
-			// CREATE STATEMENT
-				tmpState = dbc.getStatement();
 
 			// LOOP AND RESOLVE SINGLE PAIRS UNTIL NO MORE REMAIN
 				while (!stopLoop) {
@@ -1320,7 +1320,7 @@ public class LexemeResolver {
 							+ " LIMIT 1;";
 
 					// BUILD RESULTSET
-						expRS = tmpState.executeQuery(sql);
+						expRS = dbc.getStatement().executeQuery(sql);
 
 					// RESOLVE RESULTS
 						if (expRS.next()) {
@@ -1347,7 +1347,7 @@ public class LexemeResolver {
 									+ " AND eld.resolution_code = 0;";
 
 							// BUILD RESULTSET
-								expRS = tmpState.executeQuery(sql);
+								expRS = dbc.getStatement().executeQuery(sql);
 								expRS.next();
 
 							// EXTRACT ID'S
@@ -1360,21 +1360,21 @@ public class LexemeResolver {
 							// ADD ENTITY-LEXEME MAPPING RECORD
 								sql = "INSERT INTO entity_lexeme_data (entity_id, lexeme_id, occurance_count)"
 									+ " VALUES (" + entityID + ", " + lexemeID + ", 1);";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// UPDATE resolution_code IN experience_entity_data
 								sql = "UPDATE experience_entity_data SET resolution_code = 1"
 									+ " WHERE experience_id = " + expID
 									+ " AND run_id = " + runID
 									+ " AND entity_id = " + entityID + ";";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// UPDATE resolution_code AND resolution_index IN experience_lexeme_data
 								sql = "UPDATE experience_lexeme_data SET resolution_code = 1, resolution_index = " + expIndex
 									+ " WHERE experience_id = " + expID
 									+ " AND run_id = " + runID
 									+ " AND lexeme_id = " + lexemeID + ";";
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// RESOLVE OTHER INSTANCES OF NEW MAPPING
 								resolveOtherInstances(entityID, lexemeID, 1);
@@ -1386,12 +1386,18 @@ public class LexemeResolver {
 
 				} // end while(!stopLoop)
 
-			// CLOSE STATEMENT
-				tmpState.close();
-
 		} catch (Exception e) {
 			System.out.println("\n--- LexemeResolver.resolveSinglePairs() Exception ---\n");
 			e.printStackTrace();
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (expRS!=null) expRS.close();
+
+			} catch (Exception misc) {
+				System.out.println("\n--- LexemeResolver.resolveSinglePairs() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 		// RETURN RESULT
@@ -1405,6 +1411,9 @@ public class LexemeResolver {
 
 /*
  * $Log$
+ * Revision 1.29  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.28  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

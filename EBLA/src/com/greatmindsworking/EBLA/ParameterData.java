@@ -37,6 +37,7 @@ package com.greatmindsworking.EBLA;
 
 
 import java.sql.*;
+
 import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
 
@@ -190,21 +191,17 @@ public class ParameterData {
 	private void lookupParams(DBConnector _dbc) {
 
 		// DECLARATIONS
-			Statement paramState;	// STATEMENT USED TO CREATE PARAMETER RECORDSET
-			ResultSet paramRS; 		// RESULTSET FOR RUNTIME PARAMETERS
-			String sql;				// USED TO BUILD QUERY AGAINST parameter_data TABLE
-			String tmpString;		// USED TO HOLD STRING RESULTS FROM DB (because 2nd ref. to a resultset field returns null)
+			ResultSet paramRS = null;	// RESULTSET FOR RUNTIME PARAMETERS
+			String sql;					// USED TO BUILD QUERY AGAINST parameter_data TABLE
+			String tmpString;			// USED TO HOLD STRING RESULTS FROM DB (because 2nd ref. to a resultset field returns null)
 
 		try {
 
 			// BUILD PARAMETER_DATA QUERY STRING
 				sql = "SELECT * FROM parameter_data WHERE parameter_id = " + parameterID + ";";
 
-			// CREATE STATEMENT
-				paramState = _dbc.getStatement();
-
 			// EXECUTE QUERY
-				paramRS = paramState.executeQuery(sql);
+				paramRS = _dbc.getStatement().executeQuery(sql);
 
 			// IF A RECORD IS RETURNED, EXTRACT PARAMETERS, OTHERWISE WARN USER
 				if (paramRS.next()) {
@@ -280,12 +277,17 @@ public class ParameterData {
 			// CLOSE RESULTSET
 				paramRS.close();
 
-			// CLOSE STATEMENT
-				paramState.close();
-
 		} catch (Exception e) {
 			System.out.println("\n--- ParameterData.lookupParams() Exception ---\n");
 			e.printStackTrace();
+		} finally {
+		// CLOSE OPEN FILES/RESULTSETS
+			try {
+				if (paramRS!=null) paramRS.close();
+			} catch (Exception misc) {
+				System.out.println("\n--- ParameterData.lookupParams() Exception ---\n");
+				misc.printStackTrace();
+			}
 		}
 
 	} // end lookupParams()
@@ -548,6 +550,9 @@ public class ParameterData {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.22  2005/02/17 23:33:54  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.21  2004/03/02 03:16:08  yoda2
  * Fixed typo in comments for variable that determines version of EDISON port.
  *

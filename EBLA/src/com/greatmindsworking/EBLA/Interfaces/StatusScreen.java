@@ -154,6 +154,7 @@ public class StatusScreen extends JInternalFrame {
 
         // SET ACTION LISTENER FOR CANCEL BUTTON
         	cancelButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent event) {
 					if (eblaCanceled) {
 					// SET EBLA TO NULL
@@ -183,8 +184,10 @@ public class StatusScreen extends JInternalFrame {
 		// ADD INTERNAL FRAME LISTENER TO FORM TO CHECK FOR LOSS OF FOCUS
 			addInternalFrameListener(new InternalFrameAdapter() {
 			// FRAME DEACTIVATED
+				@Override
 				public void internalFrameDeactivated(InternalFrameEvent ife) {
 					SwingUtilities.invokeLater(new Thread() {
+						@Override
 						public void run() {
 							StatusScreen.this.moveToFront();
 							StatusScreen.this.requestFocus();
@@ -362,7 +365,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void setBarMax(final int barIndex, final int max) {
         Runnable doSetBarMax = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (barIndex==1) {
                 	statusBar1.setMaximum(max);
                 	statusBar1.setVisible(true);
@@ -384,7 +388,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void updateBar(final int barIndex, final int i) {
         Runnable doUpdateBar = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (barIndex==1) {
 					statusBar1.setValue(i);
 				} else if (barIndex==2) {
@@ -404,7 +409,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void hideBar(final int barIndex) {
         Runnable doHideBar = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (barIndex==1) {
 					statusBar1.setVisible(false);
 				} else if (barIndex==2) {
@@ -423,7 +429,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void hideImagePanel() {
         Runnable doHideImagePanel = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				imagePanel.setVisible(false);
             }
         };
@@ -438,7 +445,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void updateStatus(final int statusIndex, final String s) {
         Runnable doUpdateStatus = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (statusIndex==1) {
 					statusText1.setText(s);
 				} else if (statusIndex==2) {
@@ -458,7 +466,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void updateImage(final int imageIndex, final BufferedImage bi) {
         Runnable doUpdateImage = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (imageIndex==1) {
 					ic1.updateImage(scaleToSize(imageX, imageY, bi));
 					ic1.setVisible(true);
@@ -485,7 +494,8 @@ public class StatusScreen extends JInternalFrame {
      */
     public void hideImage(final int imageIndex) {
         Runnable doHideImage = new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
 				if (imageIndex==1) {
 					ic1.updateImage(tmpImage);
 					ic1.repaint();
@@ -574,6 +584,9 @@ public class StatusScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.11  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

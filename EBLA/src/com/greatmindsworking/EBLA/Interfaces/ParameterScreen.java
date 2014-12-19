@@ -170,6 +170,7 @@ public class ParameterScreen extends JInternalFrame {
 
 		// SETUP ACTION LISTENER FOR SPEED UP CODE COMBOBOX
 			cmbSegSpeedUpCode.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					if (cmbSegSpeedUpCode.getSelectedIndex() == 2) {
 						txtSegSpeedUpFactor.setEnabled(true);
@@ -182,6 +183,7 @@ public class ParameterScreen extends JInternalFrame {
 
 		// SETUP ACTION LISTENER FOR SELECT EXPERIENCES BUTTON
 			btnSelectExperiences.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					long parameterID = -1;
 					if (! txtParameterID.getText().trim().equals("")) {
@@ -198,6 +200,7 @@ public class ParameterScreen extends JInternalFrame {
 
 						selectExperiencesScreen.addInternalFrameListener(new InternalFrameAdapter() {
 						// FRAME CLOSED
+							@Override
 							public void internalFrameClosed(InternalFrameEvent ife) {
 								selectExperiencesScreen = null;
 							} // end internalFrameClosed()
@@ -214,6 +217,7 @@ public class ParameterScreen extends JInternalFrame {
 
 		// SETUP ACTION LISTENER FOR START SESSION BUTTON
 			btnStartSession.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					long parameterID = -1;
 					parameterID = txtParameterID.getText().equals("") ? 0 : Long.parseLong(txtParameterID.getText());
@@ -223,6 +227,7 @@ public class ParameterScreen extends JInternalFrame {
 
 						sessionScreen.addInternalFrameListener(new InternalFrameAdapter() {
 						// FRAME CLOSED
+							@Override
 							public void internalFrameClosed(InternalFrameEvent ife) {
 								sessionScreen = null;
 							} // end internalFrameClosed()
@@ -237,6 +242,7 @@ public class ParameterScreen extends JInternalFrame {
 		// ADD INTERNAL FRAME LISTENER TO SAVE RECORD UPON LOSS OF FOCUS
 			addInternalFrameListener(new InternalFrameAdapter() {
 			// FRAME DEACTIVATED
+				@Override
 				public void internalFrameDeactivated(InternalFrameEvent ife) {
 					dataNavigator.updatePresentRow();
 				} // end internalFrameDeactivated()
@@ -451,6 +457,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.21  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.20  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

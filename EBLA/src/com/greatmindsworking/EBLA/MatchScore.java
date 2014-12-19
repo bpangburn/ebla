@@ -72,7 +72,8 @@ public class MatchScore implements Comparable<MatchScore> {
 	 *
 	 * @return integer indicating whether passed object is less than, equal to or greater than current object
 	 */
-    public int compareTo(MatchScore _ms) {
+    @Override
+	public int compareTo(MatchScore _ms) {
 
     	//MatchScore ms = (MatchScore)_o;
 
@@ -91,6 +92,9 @@ public class MatchScore implements Comparable<MatchScore> {
 
 /*
  * $Log$
+ * Revision 1.8  2011/04/28 19:29:44  yoda2
+ * Minor JavaDoc fixes.
+ *
  * Revision 1.7  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

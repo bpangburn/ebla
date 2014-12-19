@@ -44,7 +44,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -143,24 +142,17 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 		// CREATE ACTION LISTENER FOR ADD BUTTON
 			btnAddExperiences.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					long[] ids = availableListModel.getExperienceIDs(lstAvailableExperiences.getSelectedIndices());
-					Statement statement = null;
-
-					try {
-						statement = dbc.getStatement();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
 
 					try {
 
 						for (int i=0;i<ids.length;i++) {
 							System.out.println(ids[i]);
-							statement.executeUpdate("INSERT INTO parameter_experience_data(parameter_id,experience_id) VALUES(" + parameterID +"," + ids[i] + ");");
+							dbc.getStatement().executeUpdate("INSERT INTO parameter_experience_data(parameter_id,experience_id) VALUES(" + parameterID +"," + ids[i] + ");");
 						}
 
-						statement.close();
 					} catch(SQLException se) {
 						se.printStackTrace();
 					}
@@ -175,15 +167,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 		// CREATE ACTION LISTENER FOR REMOVE BUTTON
 			btnRemoveExperiences.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					long[] ids = selectedListModel.getParameterExperienceIDs(lstSelectedExperiences.getSelectedIndices());
-					Statement statement = null;
-
-					try {
-						statement = dbc.getStatement();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
 
 					String strIDs = null;
 					for(int i=0;i<ids.length;i++) {
@@ -198,8 +184,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 					strIDs = strIDs + ")";
 
 					try {
-						statement.executeUpdate("DELETE FROM parameter_experience_data WHERE parameter_experience_id IN " + strIDs + ";" );
-						statement.close();
+						dbc.getStatement().executeUpdate("DELETE FROM parameter_experience_data WHERE parameter_experience_id IN " + strIDs + ";" );
 					} catch(SQLException se) {
 						se.printStackTrace();
 					}
@@ -214,6 +199,7 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 				// CLOSE WINDOW
 					try {
@@ -228,8 +214,10 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		// ADD INTERNAL FRAME LISTENER TO FORM TO CHECK FOR LOSS OF FOCUS
 			addInternalFrameListener(new InternalFrameAdapter() {
 			// FRAME DEACTIVATED
+				@Override
 				public void internalFrameDeactivated(InternalFrameEvent ife) {
 					SwingUtilities.invokeLater(new Thread() {
+						@Override
 						public void run() {
 							SelectExperiencesScreen.this.moveToFront();
 							SelectExperiencesScreen.this.requestFocus();
@@ -331,8 +319,6 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 			} catch(SQLException se) {
 				se.printStackTrace();
-			} catch(IOException ioe){
-				ioe.printStackTrace( );
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -346,17 +332,21 @@ public class SelectExperiencesScreen extends JInternalFrame {
 			return experienceIDs;
 		}
 
+		@Override
 		public String getElementAt(int index) {
 			return experienceName.elementAt(index);
 		}
 
+		@Override
 		public int getSize() {
 			return experienceName.size();
 		}
 
+		@Override
 		public void addListDataListener(ListDataListener l) {
 		}
 
+		@Override
 		public void removeListDataListener(ListDataListener l) {
 		}
 
@@ -403,17 +393,21 @@ public class SelectExperiencesScreen extends JInternalFrame {
 			return experienceIDs;
 		}
 
+		@Override
 		public String getElementAt(int index) {
 			return experienceName.elementAt(index);
 		}
 
+		@Override
 		public int getSize() {
 			return experienceName.size();
 		}
 
+		@Override
 		public void addListDataListener(ListDataListener l) {
 		}
 
+		@Override
 		public void removeListDataListener(ListDataListener l) {
 		}
 
@@ -481,6 +475,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.11  2014/04/23 23:05:38  yoda2
+ * misc warning cleanup
+ *
  * Revision 1.10  2014/04/23 13:25:17  yoda2
  * corrected a few warnings related to generics
  *

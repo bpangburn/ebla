@@ -38,6 +38,7 @@ package com.greatmindsworking.EBLA;
 
 import java.sql.*;
 import java.io.*;
+
 import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
@@ -147,6 +148,8 @@ public class EBLA extends Thread {
 	 * @param _statusScreen	EBLA status window
 	 */
     public EBLA(SessionData _sd, DBConnector _dbc, StatusScreen _statusScreen) {
+    	
+    	PrintStream outputPS = null;
 
 		try {
 			// SET SESSION OBJECT
@@ -163,7 +166,7 @@ public class EBLA extends Thread {
 
 			// REDIRECT OUTPUT TO LOG FILE
 				if (sd.getLogToFile()) {
-					PrintStream outputPS = new PrintStream (new FileOutputStream ("ebla_log_"
+					outputPS = new PrintStream (new FileOutputStream ("ebla_log_"
 						+ sd.getSessionID() + ".txt"));
 					System.setOut (outputPS);
 					System.setErr (outputPS);
@@ -172,6 +175,8 @@ public class EBLA extends Thread {
 		} catch (Exception e) {
 			System.out.println("\n--- EBLA Constructor Exception ---\n");
 			e.printStackTrace();
+		} finally {
+			if (outputPS!=null) outputPS.close();
 		}
 
 	} // end EBLA()
@@ -198,12 +203,11 @@ public class EBLA extends Thread {
 	 * prevents unnecessary runs of the computationally expensive video
 	 * processing phase.
 	 */
+	@SuppressWarnings("resource")
 	private void processExperiences() {
 
 		// DECLARATIONS
-			Statement tmpState=null;		// USED TO EXECUTE MISC QUERIES
 			ResultSet tmpRS=null;			// USED TO HOLD RESULTS OF MISC QUERIES
-			Statement experienceState=null;	// STATEMENT FOR CREATING EXPERIENCE DATA RESULTSET
 			ResultSet experienceRS=null;	// RESULTSET FOR QUERIES AGAINST experience_data TABLE
 			String sql;						// USED TO BUILD QUERIES AGAINST THE ebla_data DATABASE
 
@@ -248,13 +252,10 @@ public class EBLA extends Thread {
 
 
 		try {
-			// CREATE TMP STATEMENT
-				tmpState = dbc.getStatement();
-
 			// DETERMINE MAX # OF EXPERIENCES THAT WILL BE PROCESSED IN ORDER TO SET STATUS BAR
 				sql = "SELECT COUNT(*) AS row_count FROM parameter_experience_data"
 					+ " WHERE parameter_id = " + sd.getParameterID() + ";";
-				tmpRS = tmpState.executeQuery(sql);
+				tmpRS = dbc.getStatement().executeQuery(sql);
 				tmpRS.next();
 				experienceCount = tmpRS.getInt("row_count");
 				tmpRS.close();
@@ -288,11 +289,8 @@ public class EBLA extends Thread {
 							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
 							+ "		WHERE parameter_id=" + sd.getParameterID() + ");";
 
-					// CREATE STATEMENT FOR EXPERIENCES
-						experienceState = dbc.getStatement();
-
 					// EXECUTE QUERY
-						experienceRS = experienceState.executeQuery(sql);
+						experienceRS = dbc.getStatement().executeQuery(sql);
 
 					// CREATE TMP STATEMENT
 					//	tmpState = dbc.getStatement();
@@ -355,7 +353,7 @@ public class EBLA extends Thread {
 									+ " WHERE parameter_id=" + sd.getParameterID()
 									+ " AND experience_id=" + experienceID + ";";
 
-								tmpRS = tmpState.executeQuery(sql);
+								tmpRS = dbc.getStatement().executeQuery(sql);
 								tmpRS.next();
 
 								parameterExperienceID = tmpRS.getLong("parameter_experience_id");
@@ -374,7 +372,7 @@ public class EBLA extends Thread {
 										sql = "UPDATE parameter_experience_data SET calc_status_code=1, calc_timestamp=now()"
 											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 
-										tmpState.executeUpdate(sql);
+										dbc.getStatement().executeUpdate(sql);
 								}
 
 							// IF UPDATING frame_analysis_data, DELETE ANY EXISTING DATA FOR CURRENT EXPERIENCE
@@ -382,7 +380,7 @@ public class EBLA extends Thread {
 									sql = "DELETE FROM frame_analysis_data"
 										+ " WHERE parameter_experience_id = " + parameterExperienceID + ";";
 
-									tmpState.executeUpdate(sql);
+									dbc.getStatement().executeUpdate(sql);
 								}
 
 							// CREATE A FRAME GRABBER TO EXTRACT IMAGES
@@ -401,7 +399,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
+									expTmpPath, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -422,7 +420,7 @@ public class EBLA extends Thread {
 											+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 									}
 
-									tmpState.executeUpdate(sql);
+									dbc.getStatement().executeUpdate(sql);
 								}
 
 							// HIDE INTERMEDIATE IMAGES
@@ -469,11 +467,8 @@ public class EBLA extends Thread {
 // check next line...
 							+ " 	AND (calc_status_code=0 OR (calc_status_code=1 AND (now()-calc_timestamp)>" + maxCalcMS + ")) LIMIT 1);";
 
-					// CREATE STATEMENT FOR EXPERIENCES
-						experienceState = dbc.getStatement();
-
 					// EXECUTE QUERY
-						experienceRS = experienceState.executeQuery(sql);
+						experienceRS = dbc.getStatement().executeQuery(sql);
 
 					// CREATE TMP STATEMENT
 					//	tmpState = dbc.getStatement();
@@ -532,7 +527,7 @@ public class EBLA extends Thread {
 									+ " WHERE parameter_id = " + sd.getParameterID()
 									+ " AND experience_id = " + experienceID + ";";
 
-								tmpRS = tmpState.executeQuery(sql);
+								tmpRS = dbc.getStatement().executeQuery(sql);
 								tmpRS.next();
 								parameterExperienceID = tmpRS.getLong("parameter_experience_id");
 								tmpRS.close();
@@ -541,13 +536,13 @@ public class EBLA extends Thread {
 								sql = "UPDATE parameter_experience_data SET calc_status_code=1, calc_timestamp=now()"
 									+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// DELETE ANY EXISTING DATA FOR CURRENT EXPERIENCE
 								sql = "DELETE FROM frame_analysis_data"
 									+ " WHERE parameter_experience_id = " + parameterExperienceID + ";";
 
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// CREATE A FRAME GRABBER TO EXTRACT IMAGES
 								FrameGrabber fg = new FrameGrabber(moviePath, (expTmpPath + pd.getFramePrefix()),
@@ -565,7 +560,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
+									expTmpPath, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -585,7 +580,7 @@ public class EBLA extends Thread {
 										+ " WHERE parameter_experience_id=" + parameterExperienceID + ";";
 								}
 
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 							// HIDE INTERMEDIATE IMAGES
 								statusScreen.hideImage(1);
@@ -625,7 +620,7 @@ public class EBLA extends Thread {
 				sql = "SELECT COUNT(*) AS row_count FROM parameter_experience_data"
 					+ " WHERE parameter_id = " + sd.getParameterID()
 					+ " AND calc_status_code = 2;";
-				tmpRS = tmpState.executeQuery(sql);
+				tmpRS = dbc.getStatement().executeQuery(sql);
 				tmpRS.next();
 				experienceCount = tmpRS.getInt("row_count");
 				tmpRS.close();
@@ -665,7 +660,7 @@ public class EBLA extends Thread {
 						// GET A NEW RUN ID & ADD RUN RECORD
 							// GET NEXT run_id
 								sql = "SELECT nextval('run_data_seq') AS next_index;";
-								tmpRS = tmpState.executeQuery(sql);
+								tmpRS = dbc.getStatement().executeQuery(sql);
 								tmpRS.next();
 								runID = tmpRS.getLong("next_index");
 								tmpRS.close();
@@ -674,7 +669,7 @@ public class EBLA extends Thread {
 								sql = "INSERT INTO run_data (run_id, session_id, run_index, min_sd) VALUES ("
 									+ runID + "," + sd.getSessionID() + "," + loopCount + "," + i + ");";
 
-								tmpState.executeUpdate(sql);
+								dbc.getStatement().executeUpdate(sql);
 
 						// DETERMINE START TIME FOR CURRENT RUN
 							startTime = new java.util.Date();
@@ -696,14 +691,8 @@ public class EBLA extends Thread {
 									+ " ORDER BY experience_data.experience_id ASC;";
 							}
 
-						// CREATE STATEMENT
-							experienceState = dbc.getStatement();
-
 						// EXECUTE QUERY
-							experienceRS = experienceState.executeQuery(sql);
-
-						// CREATE STATEMENT
-						//	tmpState = dbc.getStatement();
+							experienceRS = dbc.getStatement().executeQuery(sql);
 
 						// INITIALIZE experienceIndex;
 							experienceIndex = 0;
@@ -717,9 +706,6 @@ public class EBLA extends Thread {
 								// CHECK TO SEE IF CANCEL BUTTON HAS BEEN PRESSED
 									if (statusScreen.getEBLACanceled()) {
 										stopEBLA = true;
-										fo1.close();
-										fo2.close();
-										fo3.close();
 										throw new Exception("EBLA Execution Canceled.");
 									}
 
@@ -746,13 +732,13 @@ public class EBLA extends Thread {
 										+ " experience_index) VALUES (" + experienceID + "," + runID
 										+ "," + experienceIndex + ");";
 
-									tmpState.executeUpdate(sql);
+									dbc.getStatement().executeUpdate(sql);
 
 								// PROCESS ENTITIES
 									// CREATE AN ENTITY EXTRACTOR TO PERFORM MORE DETAILED ANALYSIS
 									// OF OBJECTS AND RELATIONSHIPS BASED ON BASIC FRAME ANALYSIS
 										EntityExtractor ee = new EntityExtractor(experienceID, parameterExperienceID,
-											runID, dbc, sd, pd, ((double)i/100.0));
+											runID, dbc, sd, pd, (i/100.0));
 
 									// EXTRACT ENTITIES & WRITE RESULTS TO DATABASE
 										ee.extractEntities();
@@ -794,11 +780,7 @@ public class EBLA extends Thread {
 						// UPDATE ENDING TIMESTAMP FOR CURRENT RUN
 							sql = "UPDATE run_data SET run_stop=now() WHERE run_id=" + runID + ";";
 
-							tmpState.executeUpdate(sql);
-
-						// CLOSE EXPERIENCE STATEMENTS
-						//	tmpState.close();
-							experienceState.close();
+							dbc.getStatement().executeUpdate(sql);
 
 						// PRINT START AND STOP TIME
 							java.util.Date stopTime = new java.util.Date();
@@ -816,7 +798,7 @@ public class EBLA extends Thread {
 						// NEED: loopCount, stdDev, experienceIndex, totalSec, totalLex, totalEnt, unmappedLex, unmappedEnt
 						//	tmpState = dbc.getStatement();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS lex_count FROM experience_run_data, experience_lexeme_data"
+							tmpRS = dbc.getStatement().executeQuery("SELECT COUNT(*) AS lex_count FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
 								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id;");
@@ -824,7 +806,7 @@ public class EBLA extends Thread {
 							int totalLex = tmpRS.getInt("lex_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS ent_count FROM experience_run_data, experience_entity_data"
+							tmpRS = dbc.getStatement().executeQuery("SELECT COUNT(*) AS ent_count FROM experience_run_data, experience_entity_data"
 								  + " WHERE experience_run_data.run_id = " + runID
 								  + " AND experience_entity_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id;");
@@ -832,7 +814,7 @@ public class EBLA extends Thread {
 							int totalEnt = tmpRS.getInt("ent_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_lex_count FROM experience_run_data, experience_lexeme_data"
+							tmpRS = dbc.getStatement().executeQuery("SELECT COUNT(*) AS um_lex_count FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
 								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_lexeme_data.experience_id"
@@ -841,7 +823,7 @@ public class EBLA extends Thread {
 							int totalUMLex = tmpRS.getInt("um_lex_count");
 							tmpRS.close();
 
-							tmpRS = tmpState.executeQuery("SELECT COUNT(*) AS um_ent_count FROM experience_run_data, experience_entity_data"
+							tmpRS = dbc.getStatement().executeQuery("SELECT COUNT(*) AS um_ent_count FROM experience_run_data, experience_entity_data"
 								  + " WHERE experience_run_data.run_id = " + runID
 								  + " AND experience_entity_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id=experience_entity_data.experience_id"
@@ -856,7 +838,7 @@ public class EBLA extends Thread {
 
 						// WRITE MAPPING LOG INFO
 						// NEED: loopCount, experienceIndex, (resolutionIndex-experienceIndex)
-							tmpRS = tmpState.executeQuery("SELECT * FROM experience_run_data, experience_lexeme_data"
+							tmpRS = dbc.getStatement().executeQuery("SELECT * FROM experience_run_data, experience_lexeme_data"
 								  + " WHERE experience_run_data.run_id = " + runID
 								  + " AND experience_lexeme_data.run_id = " + runID
 								  + " AND experience_run_data.experience_id = experience_lexeme_data.experience_id"
@@ -877,9 +859,6 @@ public class EBLA extends Thread {
 					} // end j loop
 
 				} // end i loop
-
-			// CLOSE TMP STATEMENT
-				tmpState.close();
 
 			// UPDATE STATUS SCREEN
 				statusScreen.updateStatus(1, "EBLA Session Completed!");
@@ -913,20 +892,17 @@ public class EBLA extends Thread {
 		} finally {
 		// CLOSE OPEN FILES/RESULTSETS
 			try {
-				experienceRS.close();
-				tmpRS.close();
-				tmpState.close();
+				if (experienceRS!=null) experienceRS.close();
+				if (tmpRS!=null) tmpRS.close();
+				
+				if (fo1!=null) fo1.close();
+				if (fo2!=null) fo2.close();
+				if (fo3!=null) fo3.close();
 
 			} catch (Exception misc) {
 				System.out.println("\n--- EBLA.processExperiences() Exception ---\n");
 				misc.printStackTrace();
 			}
-			
-		// CLOSE LOG FILES
-			close(fo1);
-			close(fo2);
-			close(fo3);
-
 		}
 
 	} // end processExperiences()
@@ -947,6 +923,7 @@ public class EBLA extends Thread {
 	/**
 	 * Run routine for threaded execution of EBLA's methods.
 	 */
+	@Override
 	public void run() {
 
 		try {
@@ -1079,6 +1056,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.45  2014/04/24 12:34:25  yoda2
+ * potential filewriter memory leak cleanup
+ *
  * Revision 1.44  2011/06/03 14:45:45  yoda2
  * Restored RANDOM() in SQL now that it is supported in addition to RAND() for H2. This preserves backward compatibility with PostgreSQL.
  *

@@ -150,6 +150,7 @@ public class DBSettingsScreen extends JInternalFrame {
 
 		// ADD ACTION LISTENER TO CHECKBOX TO DISABLE FIELDS NOT NECESSARY FOR A LOCAL CONNECTION
 			chkRemoteDB.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					JCheckBox checkBox = (JCheckBox)ae.getSource();
 					if (checkBox.isSelected()) {
@@ -170,6 +171,7 @@ public class DBSettingsScreen extends JInternalFrame {
 
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					// WRITE DB SETTINGS TO LOCAL FILE
 						String dbPath = "jdbc:postgresql://" + txtIP.getText() + ":" + txtPort.getText() +"/" + txtDBPath.getText();
@@ -201,8 +203,10 @@ public class DBSettingsScreen extends JInternalFrame {
 		// ADD INTERNAL FRAME LISTENER TO FORM TO CHECK FOR LOSS OF FOCUS OR CLOSE
 			addInternalFrameListener(new InternalFrameAdapter() {
 			// FRAME DEACTIVATED
+				@Override
 				public void internalFrameDeactivated(InternalFrameEvent ife) {
 					SwingUtilities.invokeLater(new Thread() {
+						@Override
 						public void run() {
 							DBSettingsScreen.this.moveToFront();
 							DBSettingsScreen.this.requestFocus();
@@ -217,6 +221,7 @@ public class DBSettingsScreen extends JInternalFrame {
 				} // end internalFrameDeactivated()
 
 			// FRAME CLOSED
+				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
 				// DISPLAY MESSAGE
 					JOptionPane.showInternalMessageDialog(desktop,"If you are connected to another database you must logout and log back in for any new settings to take effect.",
@@ -323,6 +328,9 @@ public class DBSettingsScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.10  2014/04/23 23:05:38  yoda2
+ * misc warning cleanup
+ *
  * Revision 1.9  2011/04/28 14:55:07  yoda2
  * Addressing Java 1.6 -Xlint warnings.
  *

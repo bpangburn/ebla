@@ -105,7 +105,8 @@ public class SegParams implements Comparable<SegParams> {
 
   // IMPLEMENT COMPARETO METHOD FOR SORTING SO THAT JAVA WILL KNOW HOW TO SORT
   //  AN ARRAY OF SegParams
-    public int compareTo(SegParams _sp) {
+    @Override
+	public int compareTo(SegParams _sp) {
 
 		//SegParams sp = (SegParams)_o;
 
@@ -171,6 +172,9 @@ public class SegParams implements Comparable<SegParams> {
 
 /*
  * $Log$
+ * Revision 1.2  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.1  2004/01/21 19:40:30  yoda2
  * Added experimental jEDISON genetic training algorithm for determining "optimal" segmentation parameters for a given set of images.
  *

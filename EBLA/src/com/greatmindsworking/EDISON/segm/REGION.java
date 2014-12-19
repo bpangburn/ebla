@@ -83,12 +83,15 @@ public class REGION {
 	 */
 	public int region[];
 
-}; // end REGION class
+} // end REGION class
 
 
 
 /*
  * $Log$
+ * Revision 1.9  2004/02/25 21:59:22  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.8  2003/11/24 16:20:10  yoda2
  * Updated copyright to 2002-2003.
  *

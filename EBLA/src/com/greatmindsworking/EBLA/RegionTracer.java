@@ -516,9 +516,8 @@ public class RegionTracer {
 		// RETURN POLYGON LIST
 			if (traceFailed) {
 				return null;
-			} else {
-				return polygonList;
 			}
+			return polygonList;
 
 	} // end bugWalk
 
@@ -528,6 +527,9 @@ public class RegionTracer {
 
 /*
  * $Log$
+ * Revision 1.9  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.8  2011/04/25 02:34:51  yoda2
  * Coding for Java Generics.
  *

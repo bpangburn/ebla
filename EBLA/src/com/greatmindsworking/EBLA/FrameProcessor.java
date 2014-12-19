@@ -53,7 +53,6 @@ import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 import com.greatmindsworking.EDISON.segm.ImageType;
 import com.greatmindsworking.EDISON.segm.MSImageProcessor;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
-import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -86,10 +85,6 @@ import com.greatmindsworking.utils.DBConnector;
  * @version	$Revision$
  */
 public class FrameProcessor {
-	/**
-	 * database connection info
-	 */
-	private DBConnector dbc = null;
 
 	/**
 	 * long containing the database record ID for the parameter-experience
@@ -108,7 +103,7 @@ public class FrameProcessor {
 	private int width;
 
 	/**
-	 * integer contaiing the height of the current frame image
+	 * integer containing the height of the current frame image
 	 */
 	private int height;
 
@@ -195,14 +190,13 @@ public class FrameProcessor {
 	 * @param _lastFrameIndex		index of last frame image to process
 	 * @param _paramExpID			unique id of parameter_experience_data record
 	 * @param _expPath				processing path for experiences
-	 * @param _dbc					connection to EBLA database
 	 * @param _pd					vision system parameters
 	 * @param _sd					calculation session settings
 	 * @param _updateFAD			boolean indicating whether or not to update frame_analysis_data
 	 * @param _statusScreen			EBLA status window where intermediate images should be displayed (if applicable)
 	 */
 	public FrameProcessor(int _firstFrameIndex, int _lastFrameIndex,
-		long _paramExpID, String _expPath, DBConnector _dbc, ParameterData _pd,
+		long _paramExpID, String _expPath, ParameterData _pd,
 		SessionData _sd, boolean _updateFAD, StatusScreen _statusScreen) {
 
 		try {
@@ -216,9 +210,6 @@ public class FrameProcessor {
 
 			// SET PROCESSING PATH FOR EXPERIENCE
 				expPath = _expPath;
-
-			// SET DATABASE CONNECTION
-				dbc = _dbc;
 
 			// SET VISION PARAMETERS
 				pd = _pd;
@@ -427,11 +418,6 @@ public class FrameProcessor {
 
 		try {
 
-			// CREATE STATEMENT
-				if (_updateFAD) {
-					tmpState = dbc.getStatement();
-				}
-
 			// DETERMINE IF FIRST FRAME IS BEING PROCESSED
 				if (cfoArrayList == null) {
 					firstFrame = true;
@@ -587,11 +573,6 @@ public class FrameProcessor {
 					}
 				}
 
-			// CLOSE STATEMENT
-				if (_updateFAD) {
-					tmpState.close();
-				}
-
 		} catch (Exception e) {
 			System.out.println("\n--- FrameProcessor.analyzeFrame() Exception ---\n");
 			e.printStackTrace();
@@ -685,6 +666,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.38  2011/04/25 03:52:10  yoda2
+ * Fixing compiler warnings for Generics, etc.
+ *
  * Revision 1.37  2011/04/25 02:34:51  yoda2
  * Coding for Java Generics.
  *

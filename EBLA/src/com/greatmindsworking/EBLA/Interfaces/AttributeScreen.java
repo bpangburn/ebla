@@ -136,6 +136,7 @@ public class AttributeScreen extends JInternalFrame {
 
 		// ADD ACTION LISTENER TO "CLOSE" BUTTON
 			btnClose.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 				// CLOSE WINDOW
 					try {
@@ -150,6 +151,7 @@ public class AttributeScreen extends JInternalFrame {
 		// ADD INTERNAL FRAME LISTENER TO SAVE RECORD UPON LOSS OF FOCUS
 			addInternalFrameListener(new InternalFrameAdapter() {
 			// FRAME DEACTIVATED
+				@Override
 				public void internalFrameDeactivated(InternalFrameEvent ife) {
 					dataNavigator.updatePresentRow();
 				} // end internalFrameDeactivated()
@@ -282,6 +284,9 @@ public class AttributeScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.14  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.13  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

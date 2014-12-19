@@ -39,9 +39,13 @@ package com.greatmindsworking.EDISON.utils;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+
 import com.greatmindsworking.utils.DBConnector;
+
 import java.awt.image.*;
+
 import javax.imageio.ImageIO;
+
 import com.greatmindsworking.EDISON.segm.*;
 
 
@@ -183,7 +187,7 @@ public class GeneticSegmentation {
 		// 		NEXTDOUBLE() == VALUE BETWEEN 0 AND 1
 			for (int i = 0; i < poolSize; i++) {
 				// SET COLOR RADIUS (0 to 25 in increments of 0.5)
-					colorRadius = (float)rand.nextInt(51) / (float)2.0;
+					colorRadius = rand.nextInt(51) / (float)2.0;
 
 				// SET SPATIAL RADIUS (0 to 25)
 					spatialRadius = rand.nextInt(26);
@@ -193,7 +197,7 @@ public class GeneticSegmentation {
 
 				// SET SPEEDUP FACTOR
 					if (speedUpLevel == 2) {
-						speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+						speedUpFactor = (rand.nextInt(91)+5)/(float)100.0;
 					}
 
 				// SETTINGS TO GENE POOL
@@ -214,6 +218,9 @@ public class GeneticSegmentation {
 	// main loop to perform genetic optimization in order to determine the "best"
 	// segmentation settings for a given set of videos
 
+
+		try {
+			
 		// NEXT GENERATION OF PARAMETERS
 			SegParams nextGen[] = new SegParams[poolSize];
 
@@ -229,8 +236,6 @@ public class GeneticSegmentation {
 		// TEXT FILE FOR RESULTS
 			FileWriter fw = null;
 
-
-		try {
 		// GET START DATE/TIME
 			java.util.Date startTime = new java.util.Date();
 
@@ -309,7 +314,7 @@ public class GeneticSegmentation {
 						double tmp = (double)poolSize * totExcessRegions;
 
 						for (int j=0; j<poolSize; j++) {
-							chance[j] = (double)(totExcessRegions - pool[j].excessRegions) / tmp;
+							chance[j] = (totExcessRegions - pool[j].excessRegions) / tmp;
 						}
 
 						for (int j=0; j<poolSize; j++) {
@@ -424,7 +429,7 @@ public class GeneticSegmentation {
 		// 		NEXTDOUBLE() == VALUE BETWEEN 0 AND 1
 
 		// SET COLOR RADIUS (0 to 25 in increments of 0.5)
-			colorRadius = (float)rand.nextInt(51) / (float)2.0;
+			colorRadius = rand.nextInt(51) / (float)2.0;
 
 		// SET SPATIAL RADIUS (0 to 25)
 			spatialRadius = rand.nextInt(26);
@@ -434,7 +439,7 @@ public class GeneticSegmentation {
 
 		// SET SPEEDUP FACTOR
 			if (speedUpLevel == 2) {
-				speedUpFactor = (float)(rand.nextInt(91)+5)/(float)100.0;
+				speedUpFactor = (rand.nextInt(91)+5)/(float)100.0;
 			}
 
 		// SETTINGS TO GENE POOL
@@ -469,7 +474,7 @@ public class GeneticSegmentation {
 			//for (int i=0; i<fileList.size(); i++) {\
 			for (int i=0; i<imageSampleSize; i++) {
 			// EXTRACT CURRENT FILE PATH
-				String tmpFile = (String)fileList.get(rand.nextInt(fileList.size()));
+				String tmpFile = fileList.get(rand.nextInt(fileList.size()));
 
 			// LOAD SOURCE IMAGE USING LOADER CLASS
 				tmpImage = ImageIO.read(new File(tmpFile));
@@ -598,6 +603,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.6  2011/04/28 14:55:07  yoda2
+ * Addressing Java 1.6 -Xlint warnings.
+ *
  * Revision 1.5  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *

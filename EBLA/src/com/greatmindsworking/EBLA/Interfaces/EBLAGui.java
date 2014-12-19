@@ -232,7 +232,7 @@ public class EBLAGui extends JFrame {
      *
      * @return return true if login sucessfully
 	 */
-	private boolean login() {
+	boolean login() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -245,8 +245,6 @@ public class EBLAGui extends JFrame {
 					try {
 						dbc = new DBConnector("dbSettings",true);
 						showParameterScreen();
-					} catch(IOException ioe) {
-						return false;
 					} catch(Exception e) {
 						return false;
 					}
@@ -270,7 +268,7 @@ public class EBLAGui extends JFrame {
 	 *
 	 * @return returns true on successful logout
 	 */
-	private boolean logout() {
+	boolean logout() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -315,7 +313,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the vision parameter screen in the application window
 	 */
-	private void showParameterScreen() {
+	void showParameterScreen() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -328,6 +326,7 @@ public class EBLAGui extends JFrame {
 
 				parameterScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
+					@Override
 					public void internalFrameClosed(InternalFrameEvent ife) {
 						parameterScreen = null;
 					} // end internalFrameClosed()
@@ -345,7 +344,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the attribute screen in the application window
 	 */
-	private void showAttributesScreen() {
+	void showAttributesScreen() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -358,6 +357,7 @@ public class EBLAGui extends JFrame {
 
 				attributeScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
+					@Override
 					public void internalFrameClosed(InternalFrameEvent ife) {
 						attributeScreen = null;
 					} // end internalFrameClosed()
@@ -375,7 +375,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the experience screen in the application window
 	 */
-	private void showExperiencesScreen() {
+	void showExperiencesScreen() {
 		// DEBUG INFO
 			if (guiDebug) {
 				System.out.println("Show Experiences Screen");
@@ -387,6 +387,7 @@ public class EBLAGui extends JFrame {
 
 				experienceScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
+					@Override
 					public void internalFrameClosed(InternalFrameEvent ife) {
 						experienceScreen = null;
 					} // end internalFrameClosed()
@@ -404,7 +405,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the database settings screen in the application window
 	 */
-	private void showDBSettings() {
+	void showDBSettings() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -420,6 +421,7 @@ public class EBLAGui extends JFrame {
 
 				dbSettingsScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
+					@Override
 					public void internalFrameClosed(InternalFrameEvent ife) {
 						dbSettingsScreen = null;
 					} // end internalFrameClosed()
@@ -436,7 +438,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 * method to create database tables for EBLA
 	 */
-	private void loadSQL() {
+	static void loadSQL() {
 		
 		try {
 	        Class.forName("org.h2.Driver");
@@ -444,7 +446,7 @@ public class EBLAGui extends JFrame {
 
 			Statement stmt = conn.createStatement();
 			stmt.execute("RUNSCRIPT FROM './database/ebla_data_H2.sql';");
-
+			stmt.close();
 			conn.close();
 		} catch (Exception e) {
 			System.out.println(e);
@@ -456,7 +458,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 * method to populate database tables for EBLA with sample dataset
 	 */
-	private void loadSampleData() {
+	static void loadSampleData() {
 		
 		try {
 	        Class.forName("org.h2.Driver");
@@ -464,7 +466,7 @@ public class EBLAGui extends JFrame {
 
 			Statement stmt = conn.createStatement();
 			stmt.execute("RUNSCRIPT FROM './database/ebla_sample_H2.sql';");
-
+			stmt.close();
 			conn.close();
 		} catch (Exception e) {
 			System.out.println(e);
@@ -477,7 +479,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays information about EBLA reports
 	 */
-	private void showReports() {
+	void showReports() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -500,7 +502,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the EBLA about screen.
 	 */
-	private void showAboutScreen() {
+	void showAboutScreen() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -520,7 +522,7 @@ public class EBLAGui extends JFrame {
 	/**
 	 *	displays the EBLA ReadMe file.
 	 */
-	private void showReadMe() {
+	void showReadMe() {
 
 		// DEBUG INFO
 			if (guiDebug) {
@@ -653,7 +655,11 @@ public class EBLAGui extends JFrame {
 
 		// LISTENER CLASS FOR THE MENU ITEMS.
 			private class EBLAMenuListener implements ActionListener {
+				
+				// EMPTY CONSTRUCTOR
+				EBLAMenuListener() {}
 
+				@Override
 				public void actionPerformed(ActionEvent ae){
 
 					// GET THE SOURCE ITEM THAT TRIGGERED THE EVENT.
@@ -721,6 +727,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.17  2011/04/29 19:56:41  yoda2
+ * Added ability to create EBLA H2 tables & load sample dataset from EBLA GUI.
+ *
  * Revision 1.16  2011/04/28 14:55:07  yoda2
  * Addressing Java 1.6 -Xlint warnings.
  *

@@ -160,7 +160,7 @@ public class PolyAnalyzer {
 	 *
 	 * @return twice the area of the triangle specified
 	 */
-	private int doubleTriArea(Point _a, Point _b, Point _c) {
+	private static int doubleTriArea(Point _a, Point _b, Point _c) {
 
 		// 	DECLARATIONS
 			int area = 0;						// TWICE AREA OF TRIANGLE
@@ -191,7 +191,7 @@ public class PolyAnalyzer {
 	 *
 	 * @return thrice the centroid of triangle specified
 	 */
-	private Point tripleTriCentroid(Point _a, Point _b, Point _c) {
+	private static Point tripleTriCentroid(Point _a, Point _b, Point _c) {
 
 		// 	DECLARATIONS
 			Point centroid = new Point();		// THRICE CENTROID OF TRIANGLE
@@ -224,6 +224,9 @@ public class PolyAnalyzer {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.8  2004/02/25 21:58:10  yoda2
+ * Updated copyright notice.
+ *
  * Revision 1.7  2002/12/11 22:56:07  yoda2
  * Initial migration to SourceForge.
  *
