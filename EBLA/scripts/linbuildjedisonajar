@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# $Id$
+#
+# LINUX JAR CREATION SCRIPT FOR jEDISON
+
+# MOVE UP A LEVEL IN SOURCE TREE
+cd ..
+
+# DELETE ANY EXISTING RELEASE JARS
+rm ./release_jars/jedison.jar
+
+# CREATE RELEASE JAR LOCATION (IF NEEDED)
+mkdir ./release_jars
+
+# CLEANUP ANY EXISTING SCRATCH SPACE
+rm -r ./scratch
+
+# CREATE SCRATCH SPACE
+mkdir ./scratch
+mkdir ./scratch/jedison
+mkdir ./scratch/jedison/bin
+mkdir ./scratch/jedison/docs
+
+# RECOMPILE jEDISON
+javac -d ./scratch/jedison/bin -classpath . ./src/com/greatmindsworking/EDISON/segm/*.java
+
+# REBUILD JAVADOCS
+javadoc -d ./scratch/jedison/docs -classpath . ./src/com/greatmindsworking/EDISON/segm/*.java
+
+# COPY MISC FILES
+cp ./jEDISON/* ./scratch/jedison/
+
+# COPY SOURCE CODE
+mkdir ./scratch/jedison/src
+mkdir ./scratch/jedison/src/com
+mkdir ./scratch/jedison/src/com/greatmindsworking
+mkdir ./scratch/jedison/src/com/greatmindsworking/EDISON
+mkdir ./scratch/jedison/src/com/greatmindsworking/EDISON/segm
+mkdir ./scratch/jedison/src/com/greatmindsworking/EDISON/utils
+cp ./src/com/greatmindsworking/EDISON/segm/*.java ./scratch/jedison/src/com/greatmindsworking/EDISON/segm/
+cp ./src/com/greatmindsworking/EDISON/utils/*.java ./scratch/jedison/src/com/greatmindsworking/EDISON/utils/
+
+# BUILD MONOLITHIC JAR
+jar -cvf ./release_jars/jedison.jar -C ./scratch jedison

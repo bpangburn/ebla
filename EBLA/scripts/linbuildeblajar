@@ -79,5 +79,5 @@ cp ./src/com/greatmindsworking/EDISON/utils/*.java ./scratch/ebla/src/com/greatm
 # BUILD MONOLITHIC JAR
 jar -cvf ./release_jars/ebla.jar -C ./scratch ebla
 
-# BUILD WEBSTART JAR
-jar -cvf ./release_jars/eblaweb.jar -C ./scratch/ebla/bin com -C ./scratch/ebla database -C ./scratch/ebla experiences -C ./scratch/ebla dbSettings
+# BUILD WEBSTART JAR - ABANDONED BECAUSE IT'S NOT WORTH THE PRICE OF A CODING CERTIFICATE
+# jar -cvf ./release_jars/eblaweb.jar -C ./scratch/ebla/bin com -C ./scratch/ebla database -C ./scratch/ebla experiences -C ./scratch/ebla dbSettings
