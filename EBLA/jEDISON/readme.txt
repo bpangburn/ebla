@@ -94,7 +94,7 @@ documentation.
 There is a changelog.txt file, which contains changes for both jEDISON & EBLA.
 
 To extract jEDISON, place the JAR file where you would like it installed (e.g.
-"c:\temp\jEDISON\" or "/home/<username>/jEDISON/") and issue the command:
+"c:\temp\" or "/home/<username>/") and issue the command:
 
 jar -xf jEDISON_1.0.jar
 
