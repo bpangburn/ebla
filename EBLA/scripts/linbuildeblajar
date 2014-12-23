@@ -23,10 +23,10 @@ mkdir ./scratch/ebla/bin
 mkdir ./scratch/ebla/docs
 
 # RECOMPILE EBLA
-javac -d ./scratch/ebla/bin -classpath .:./jars/h2-1.4.177.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
+javac -d ./scratch/ebla/bin -classpath .:./jars/h2-1.4.184.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EDISON/segm/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java
 
 # REBUILD JAVADOCS
-javadoc -d ./scratch/ebla/docs -classpath .:./jars/h2-1.4.177.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./src/com/greatmindsworking/EDISON/segm/*.java
+javadoc -d ./scratch/ebla/docs -classpath .:./jars/h2-1.4.184.jar:./jars/jmf.jar:./jars/swingset-bin.jar ./src/com/greatmindsworking/utils/*.java ./src/com/greatmindsworking/EBLA/*.java ./src/com/greatmindsworking/EBLA/Interfaces/*.java ./src/com/greatmindsworking/EDISON/segm/*.java
 
 # COPY JARS
 mkdir ./scratch/ebla/jars
