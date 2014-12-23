@@ -91,6 +91,8 @@ This release of jEDISON is being distributed as a single JAR file
 (jEDISON_1.0.jar) containing the source, binaries, and JavaDoc
 documentation.
 
+There is a changelog.txt file, which contains changes for both jEDISON & EBLA.
+
 To extract jEDISON, place the JAR file where you would like it installed (e.g.
 "c:\temp\jEDISON\" or "/home/<username>/jEDISON/") and issue the command:
 
@@ -104,8 +106,8 @@ To run the SegTest demo for jEDISON:
   1. change to the directory containing this file, SegText.java,
      and my_image.png (e.g. "cd ./jedison")
   2. compile SegTest.java using:
-     "javac -classpath ./src SegTest.java" (Linux)
-     "javac -classpath .\src SegTest.java" (Windows)
+     "javac -classpath ./bin SegTest.java" (Linux)
+     "javac -classpath .\bin SegTest.java" (Windows)
   3. get command line options using "java SegTest"
   4. run SegTest against my_image.png using appropriate command line options:
      "java -classpath ./bin:. SegTest my_image.png 0 true 6.5 7 20 0" (Linux)
