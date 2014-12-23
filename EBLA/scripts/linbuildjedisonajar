@@ -28,8 +28,13 @@ javac -d ./scratch/jedison/bin -classpath . ./src/com/greatmindsworking/EDISON/s
 # REBUILD JAVADOCS
 javadoc -d ./scratch/jedison/docs -classpath . ./src/com/greatmindsworking/EDISON/segm/*.java
 
-# COPY MISC FILES
-cp ./jEDISON/* ./scratch/jedison/
+# COPY README & CHANGELOG
+cp ./jEDISON/readme.txt ./scratch/jedison/
+cp ./changelog.txt ./scratch/jedison/
+
+# COPY FILES NEEDED FOR SegTest DEMO
+cp ./jEDISON/my_image.png ./scratch/jedison/
+cp ./jEDISON/SegTest.java ./scratch/jedison/
 
 # COPY SOURCE CODE
 mkdir ./scratch/jedison/src
