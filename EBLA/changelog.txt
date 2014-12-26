@@ -20,6 +20,10 @@ Version 1.0 - Released 2014-12-26
 
 6. Updates to latest H2 jar (h2-1.4.184)
 
+7. readme.txt cleanup
+
+8. improved UI functionality surrounding database connections
+
 ==============================================================================
 Version 0.9 - Released 06-21-2014
 ==============================================================================

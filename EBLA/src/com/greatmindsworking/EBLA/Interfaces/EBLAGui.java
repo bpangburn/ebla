@@ -40,12 +40,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.ResultSet;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -86,8 +84,28 @@ public class EBLAGui extends JFrame {
 	/**
 	 * EBLA version string
 	 */
-	private final static String eblaVersion = "version 0.7.0-alpha";
-
+	private final static String eblaVersion = "version 1.0";
+	
+	/**
+	 * EBLA Copyright string
+	 */
+	private final static String eblaCopyright = "\u00A9 Brian E. Pangburn 2002-2014";
+		
+	/**
+	 * EBLA default H2 connection string
+	 */
+	private final static String defaultH2Connection = "jdbc:h2:~/ebla";
+	
+	/**
+	 * EBLA default H2 username string
+	 */
+	private final static String defaultH2Username = "sa";
+	
+	/**
+	 * EBLA default H2 password string
+	 */
+	private final static String defaultH2Password = "";	
+	
 	/**
 	 * debugging option
 	 */
@@ -132,11 +150,21 @@ public class EBLAGui extends JFrame {
 	 * file name (including path) containing the database connection information
 	 */
 	public static final String dbFileName = "dbSettings";
-
+	
 	/**
-	 * indicates whether or not the database setting file is available
+	 * EBLA H2 connection string
 	 */
-	boolean dbFileMissing = false;
+	String h2Connection = "jdbc:h2:~/ebla";
+	
+	/**
+	 * EBLA H2 username string
+	 */
+	String h2Username = "sa";
+	
+	/**
+	 * EBLA H2 password string
+	 */
+	String h2Password = "";		
 
 
 
@@ -166,20 +194,10 @@ public class EBLAGui extends JFrame {
 		// ADD THE DESKTOP TO THE FRAME
 			getContentPane().add(desktop);
 
-		// TRY LOGGING IN
-			if (!login()) {
-			// IF LOGIN FAILS SHOW A DIALOG WARNING USER AND THEN SHOW THE DATABASE SETTINGS SCREEN
-				if (dbFileMissing) {
-					showDBSettings();
-					dbFileMissing = false;
-				} else {
-				int option = JOptionPane.showInternalConfirmDialog
-						(desktop,"Login failed. \n Try changing the database settings.",
-						"Login failed",JOptionPane.OK_CANCEL_OPTION);
-					if (option == JOptionPane.OK_OPTION) {
-						showDBSettings();
-					}
-				}
+		// TRY LOGGING IN AND OPEN THE PARAMETER SCREEN IF SUCCESSFUL
+			if (login()) {
+				menuBar.setLogin(true);
+				showParameterScreen();
 			}
 
 		// FORCE EBLA TO END IF APPLICATION WINDOW IS CLOSED
@@ -190,47 +208,10 @@ public class EBLAGui extends JFrame {
 
 
 	/**
-	 * Determines if the database configuration file is present.  If not, the database
-	 * settings screen is displayed.
-	 *
-	 * @return returns true if configuration file is present and is readable
-	 */
-	private boolean getDBSettings() {
-
-	  	// INITIALIZE FILE
-			File dbFile = new File(dbFileName);
-
-		// DETERMINE IF DATABASE CONFIG FILE IS PRESENT
-			if (!dbFile.canRead()) {
-				// INDICATE THAT DB SETTING FILE WAS NOT FOUND
-					dbFileMissing = true;
-
-				// TELL USER THAT DB INFO NOT PRESENT
-					int option = JOptionPane.showInternalConfirmDialog
-						(desktop,"No database settings found.\nPlease provide the database connection information.",
-						"No Database Settings",JOptionPane.OK_CANCEL_OPTION);
-
-				// IF USER WISHES TO ENTER THE INFO, SHOW THE DATABASE SETTINGS SCREEN
-					if (option == JOptionPane.OK_OPTION) {
-						showDBSettings();
-						return true;
-					}
-
-				return false;
-			}
-
-		// IF DATABASE CONFIG FILE IS PRESENT, RETURN TRUE
-			return true;
-
-	} // end getDBSettings()
-
-
-
-	/**
 	 * Logs into the database. If the login succeeds, show the vision parameter screen.
 	 * Otherwise, show the database settings screen and return false.
      *
-     * @return return true if login sucessfully
+     * @return return true if login successfully
 	 */
 	boolean login() {
 
@@ -238,26 +219,91 @@ public class EBLAGui extends JFrame {
 			if (guiDebug) {
 				System.out.println("Login");
 			}
+			
+		// ATTEMPT TO READ DATABASE CONFIGURATION FILE
+			try {
+				// CREATE BUFFERED READER TO READ IN DATABASE CONNECTION INFO FROM FILE
+				// (IF AVAILABLE)
+					BufferedReader bufRead = new BufferedReader(new FileReader(dbFileName));
+					
+				// READ CONNECTION STRING
+					h2Connection = bufRead.readLine();
 
-		// RETRIEVE THE DATABASE CONFIG FILE
-			if (getDBSettings()) {
-				// TRY CONNECTING TO THE DATABASE. IF SUCCESSFUL SHOW THE PARAMETER SCREEN.
-					try {
-						dbc = new DBConnector("dbSettings",true);
-						showParameterScreen();
-					} catch(Exception e) {
-						return false;
-					}
+				// READ USERNAME
+					h2Username = bufRead.readLine();
 
-				// UPDATE THE MENUBAR TO REFLECT SUCCESSFUL LOGIN
-					menuBar.setLogin(true);
+				// READ PASSWORD
+					h2Password = bufRead.readLine();
+					
+				// CLOSE BUFFERED READER
+					bufRead.close();
 
-				// RETURN
-					return true;
+			} catch(Exception e) {
+				// let user know that no config file was found so going with defaults
+				JOptionPane.showInternalConfirmDialog
+						(desktop,"Database config file not found or not formatted correctly. Using system default database values.",
+						"No Configuration File",JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				h2Connection = defaultH2Connection;
+				h2Username = defaultH2Username;
+				h2Password = defaultH2Password;
+			}				
+			
+			
+		// TRY CONNECTING TO THE DATABASE
+			try {
+				dbc = new DBConnector(true, h2Connection, h2Username, h2Password);
+			} catch(Exception e) {
+				// let user know that no config file was found so going with defaults
+				JOptionPane.showInternalConfirmDialog
+						(desktop,"Unable to connect to database. Please check configuration settings then Login again.",
+						"Database Connection Error",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+				showDBSettings();
+				return false;
 			}
+			
+		// CHECK FOR parameter_data TABLE
+		// IF NOT FOUND, LOAD DEFAULT STRUCTURE
+		// WHEN QUERYING META DATA, NEED TO USE CAPS FOR TABLE NAME
+			try {
+				ResultSet r1 = dbc.getConnection().getMetaData().getTables(null, null, "PARAMETER_DATA", null);
+				if (r1.next()) {
+					ResultSet r2 = dbc.getStatement().executeQuery("SELECT COUNT(*) AS count FROM parameter_data;");
+					r2.next();
+					if (r2.getInt("count")==0) {
+					// PROMPT USER TO LOAD SAMPLE DATASET
+						int promptResponse =  JOptionPane.showInternalConfirmDialog
+							(desktop,"The EBLA database structure exists, but it does not contain any records. Would you like to load the sample dataset?",
+							"No Records Found",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	
+						if (promptResponse == JOptionPane.YES_OPTION) {
+							loadSampleData(dbc, parameterScreen);
+						}
+					}
+					//System.out.println("# records: " + r2.getInt("count"));
+					r2.close();
+	
+				} else {
+				// INFORM USER THAT DATABASE
+					JOptionPane.showInternalConfirmDialog
+						(desktop,"The EBLA database does not contain any tables so the table structure will be loaded now.",
+						"No Tables Found",JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);	
+					loadSQL(dbc);
+					
+				// PROMPT USER TO LOAD SAMPLE DATASET
+					int promptResponse =  JOptionPane.showInternalConfirmDialog
+						(desktop,"The EBLA database structure exists, but it does not contain any records. Would you like to load the sample dataset?",
+						"No Records Found",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	
+					if (promptResponse == JOptionPane.YES_OPTION) {
+						loadSampleData(dbc, parameterScreen);
+					}
+				}
+				r1.close();
+			} catch(Exception e) {
+				e.printStackTrace();
+				return false;
+			}		
 
-		// RETURN FALSE IF getDBSetting FAILS
-			return false;
+		// INDICATE SUCCESS
+			return true;
 
 	} // end login()
 
@@ -299,9 +345,6 @@ public class EBLAGui extends JFrame {
 				dbc.closeConnection();
 				dbc = null;
 			}
-
-		// UPDATE THE MENUBAR TO REFLECT SUCCESSFUL LOGOUT
-			menuBar.setLogout(true);
 
 		// RETURN
 			return true;
@@ -413,11 +456,11 @@ public class EBLAGui extends JFrame {
 			}
 
 		// CREATE A FILE WITH THE DB CONFIG FILE NAME
-			File file = new File(dbFileName);
+		//	File file = new File(dbFileName);
 
 		// IF AN INSTANCE DOES NOT EXIST, CREATE ONE AND DISPLAY IT ON THE DESKTOP.
 			if (dbSettingsScreen == null) {
-				dbSettingsScreen = new DBSettingsScreen(desktop, file);
+				dbSettingsScreen = new DBSettingsScreen(desktop, dbFileName, h2Connection, h2Username, h2Password);
 
 				dbSettingsScreen.addInternalFrameListener(new InternalFrameAdapter() {
 				// FRAME CLOSED
@@ -438,16 +481,10 @@ public class EBLAGui extends JFrame {
 	/**
 	 * method to create database tables for EBLA
 	 */
-	static void loadSQL() {
+	static void loadSQL(DBConnector _dbc) {
 		
 		try {
-	        Class.forName("org.h2.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:h2:~/ebla", "sa", "");
-
-			Statement stmt = conn.createStatement();
-			stmt.execute("RUNSCRIPT FROM './database/ebla_data_H2.sql';");
-			stmt.close();
-			conn.close();
+			_dbc.getStatement().execute("RUNSCRIPT FROM './database/ebla_data_H2.sql';");
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -458,16 +495,13 @@ public class EBLAGui extends JFrame {
 	/**
 	 * method to populate database tables for EBLA with sample dataset
 	 */
-	static void loadSampleData() {
+	static void loadSampleData(DBConnector _dbc, ParameterScreen _ps) {
 		
 		try {
-	        Class.forName("org.h2.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:h2:~/ebla", "sa", "");
-
-			Statement stmt = conn.createStatement();
-			stmt.execute("RUNSCRIPT FROM './database/ebla_sample_H2.sql';");
-			stmt.close();
-			conn.close();
+			_dbc.getStatement().execute("RUNSCRIPT FROM './database/ebla_sample_H2.sql';");
+			if (_ps!=null) {
+				_ps.dataNavigator.getSSRowSet().execute();
+			}
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -511,7 +545,7 @@ public class EBLAGui extends JFrame {
 
 		// GENERATE EBLA ABOUT DIALOG
 			JOptionPane.showInternalMessageDialog(desktop,"EBLA -- " + eblaVersion
-				+ "\n\u00A9 Brian E. Pangburn 2002-2004"
+				+ "\n" + eblaCopyright
 				+ "\n<html><a href=http:\\www.greatmindsworking.com>www.greatmindsworking.com</a></html>",
 					"Experience Based Language Acquisition",JOptionPane.INFORMATION_MESSAGE);
 
@@ -592,21 +626,28 @@ public class EBLAGui extends JFrame {
 				if (login == true) {
 					menuFileLogin.setEnabled(false);
 					menuFileLogout.setEnabled(true);
+					menuEditExperiences.setEnabled(true);
+					menuEditAttributes.setEnabled(true);
+					menuEditParameters.setEnabled(true);
+					menuUtilitiesDBSettings.setEnabled(false);
+					menuUtilitiesDBLoadSQL.setEnabled(true);
+					menuUtilitiesDBLoadSampleData.setEnabled(true);
+					
 				} else {
 					menuFileLogin.setEnabled(true);
 					menuFileLogout.setEnabled(false);
+					menuEditExperiences.setEnabled(false);
+					menuEditAttributes.setEnabled(false);
+					menuEditParameters.setEnabled(false);
+					menuUtilitiesDBSettings.setEnabled(true);
+					menuUtilitiesDBLoadSQL.setEnabled(false);
+					menuUtilitiesDBLoadSampleData.setEnabled(false);
 				}
 			} // end setLogin()
 
 		// DISABLES THE LOGOUT BUTTON AND ENABLES LOGIN BUTTON.
 			public void setLogout(boolean logout){
-				if (logout == true) {
-					menuFileLogin.setEnabled(true);
-					menuFileLogout.setEnabled(false);
-				} else {
-					menuFileLogin.setEnabled(false);
-					menuFileLogout.setEnabled(true);
-				}
+				setLogin(!logout);
 			} // end setLogout()
 
 		// CONSTRUCTS AN OBJECT OF THE MENU BAR.
@@ -668,14 +709,13 @@ public class EBLAGui extends JFrame {
 					// CHECK WHICH ITEM HAS BEEN CLICKED AND CALL THE CORRESPONDING FUNCTION
 						if (menuItem.equals(menuFileLogin)) {
 							if (login()){
-								menuFileLogin.setEnabled(false);
-								menuFileLogout.setEnabled(true);
+								setLogin(true);
+								showParameterScreen();
 							}
 
 						} else if (menuItem.equals(menuFileLogout)) {
 							if(logout()){
-								menuFileLogin.setEnabled(true);
-								menuFileLogout.setEnabled(false);
+								setLogout(true);
 							}
 						} else if (menuItem.equals(menuFileExit)) {
 							System.exit(0);
@@ -688,9 +728,14 @@ public class EBLAGui extends JFrame {
 						} else if (menuItem.equals(menuUtilitiesDBSettings)) {
 							showDBSettings();
 						} else if (menuItem.equals(menuUtilitiesDBLoadSQL)) {
-							loadSQL();
+							loadSQL(dbc);
 						} else if (menuItem.equals(menuUtilitiesDBLoadSampleData)) {
-							loadSampleData();
+							int promptResponse =  JOptionPane.showInternalConfirmDialog
+								(desktop,"Loading the sample dataset will overwrite any data already in the EBLA database. Are you sure?",
+								"Confirm Dataset Load",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	
+							if (promptResponse == JOptionPane.YES_OPTION) {
+								loadSampleData(dbc, parameterScreen);
+							}							
 						} else if (menuItem.equals(menuReportsDataFiles)) {
 							showReports();
 						} else if (menuItem.equals(menuHelpAbout)) {
@@ -727,6 +772,9 @@ public class EBLAGui extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.18  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.17  2011/04/29 19:56:41  yoda2
  * Added ability to create EBLA H2 tables & load sample dataset from EBLA GUI.
  *

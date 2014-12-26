@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002-2011, Brian E. Pangburn
+Copyright (c) 2002-2014, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -85,129 +85,39 @@ Prasanth R. Pasala.
 CODE EXECUTION, DOCUMENTATION, & COMPILATION
 ==============================================================================
 
-This code has been tested on both Windows and Linux platforms using
-the Java SE 6 available from
- http://www.oracle.com/technetwork/java/javase/downloads/index.html
+This code has been tested using the Java SE 7
+
+This release of EBLA is being distributed as a single JAR file
+(EBLA_1.0.jar) containing the source, binaries, and JavaDoc
+documentation.
+
+There is a changelog.txt file, which contains changes for EBLA.
+
+To extract EBLA, place the JAR file where you would like it installed (e.g.
+"c:\temp\" or "/home/<username>/") and issue the command:
+
+jar -xf jEDISON_1.0.jar
 
 To run EBLA:
-  1. download the binary release file to the desired folder/directory and type:
-     jar -xf ebla-bin_CURRENT.jar
-  2. type:
-     linrun (Linux platforms)
-     OR
-     winrun (Windows platforms)
-     
-To download the source code for EBLA:
-	(NEED THIS)
-	
+  1. navigate to the "scripts" folder/director (e.g. "cd ./ebla/scripts/")
+  2. type "winrun.bat" (Windows) or "sh linrun" (Linux)
+
 To recompile EBLA:
-  1. download checkout the project from SourceForge
-     OR
-     download the source release file to the desired folder/directory and type:
-     jar -xf ebla-src_CURRENT.jar   
-  2. type "lincompile" (Linux platforms)
-     OR
-     type "wincompile" (Windows platforms)   
+  1. navigate to the "scripts" folder/director (e.g. "cd ./ebla/scripts/")
+  2. type "wincompile.bat" (Windows) or "sh lincompile" (Linux)
      
 To generate the JavaDoc documentation for EBLA:
-  1. download the JavaDoc release file to the desired folder/directory and type:
-     jar -xf ebla-docs_CURRENT.jar
-  OR
-  2. download the source code (see above) and type:
-     lindocs (Linux platforms)
-     OR
-     windocs (Windows platforms)
-     
-  
+  1. navigate to the "scripts" folder/director (e.g. "cd ./ebla/scripts/")
+  2. type "windocs.bat" (Windows) or "sh lindocs" (Linux)
 
 
 ==============================================================================
 DATABASE INSTALLATION
 ==============================================================================
 
-The EBLA software framework requires a PostgreSQL database called ebla_data
+The EBLA software framework utilizes an embedded H2 database called ebla
 for storage of its parameters, dataset, intermediate results, and 
 entity-lexeme mappings.
-
-If you are interested in evaluating EBLA, but do not wish to install 
-PostgreSQL, a "demo" database with limited functionality is available at
-pgserver.greatmindsworking.com.  The "demo" database allows users to 
-process several sets of videos, but restricts access to several top-level
-tables to read-only.  For instructions on connecting to the demo server,
-see the user's manual "manual.pdf" in the EBLA installation directory.
-
-To fully customize EBLA, its parameters, and the video dataset requires access
-to a PostgreSQL database server.  Instructions on creating and populating the
-ebla_data database are provided below, but this file does not discuss how to
-setup a PostgreSQL database server.  For more information, see
-http://www.postgresql.org/users-lounge/docs/.  Chapter 1 of the
-Administrator's Guide is particularly helpful.  After installing, remember that
-TCP/IP connections are disabled in PostgreSQL by default.  If connecting to the
-EBLA database via TCP/IP, the "#tcpip_socket = false" should be changed to
-"tcpip_socket = true" in the ./data/postgresql.conf file in the PostgreSQL
-installation directory.
-
-The database, ebla_data, can be installed in two ways:
-  1. table structure only (no sample dataset)
-  2. table structure along with parameters, experiences, and attributes for
-     evaluating EBLA with the video dataset (see next section).
-     
-Method 1 (from a command prompt on the database server type):
-  1. createdb ebla_data (creates database)
-  2. psql ebla_data (starts command line interface for ebla_data)
-  3. \i ebla_data.sql (loads SQL to create database table structure)
-     *** note that the file, ebla_data.sql, from the ./database/ subdirectory of
-         the EBLA installation directory must be on the machine running
-         the database server ***
-  4. \q (quits psql interface)
-  
-Method 2 (from a command prompt on the database server type):
-  1. createdb ebla_data (creates database)
-  2. psql ebla_data (starts command line interface for ebla_data)
-  3. \i ebla_data_with_experiences.sql (loads SQL to create database table
-     structure and populates parameters, experiences, & attributes)
-     *** note that the file, ebla_data_with_experiences.sql, from the
-         ./database/ subdirectory of the EBLA installation directory must be on
-         the machine running the database server ***
-  4. \q (quits psql interface)
-         
-Until you are comfortable with how EBLA operates and are ready to create your
-own experiences, it is recommended that you setup the database WITH the sample
-parameters, experiences, & attributes (method 2).
-
-Note that as you use EBLA, a lot of data is temporarily written to and
-deleted from the database.  Over time, this can severely impair performance.
-To keep the database running well, it is a good idea to run the VACUUMDB
-command periodically from the command prompt on the database server. The 
-command "vacuumdb -a -f -z" will perform a full vacuum and analysis
-on all of the databases on the PostgreSQL server.
-
-To browse and interact with the ebla_data database, there are excellent
-GUI interfaces for both Windows and Linux:
-  1. PGAdmin (Cross-Platform via wxWindows):  http://www.pgadmin.org
-  2. PGAccess (Linux): http://www.pgaccess.org
-  
-Finally, if you are interested in install PostgreSQL, but only have access
-to a Windows machine, EBLA will work with the PostgreSQL 8.0.X "win32"
-distribution.  A general overview of this install process follows below:
-  1. Go to http://www.postgresql.org/ftp
-  2. Click on the "win32" link
-  3. Download postgresql-X.Y.Z.zip
-  4. Unzip the file downloaded in step #3
-  5. From the directory into which you Unzipped the installation files, right-
-     click the ".msi" file to install PostgreSQL.
-  6. Choose any custom options that you want, but note that the default
-     installation options appear to work fine.  Also note that the default
-     installation options DO NOT seem allow outside connections meaning that
-     EBLA will have to be run locally.
-  7. Either add the PostgreSQL "bin" subdirectory to your path or from a
-     command prompt, change to the "bin" subdirectory (e.g. "c:\Program Files\
-     PostgreSQL\8.0\bin\"
-  8. Type "createdb -U postgres ebla_data"
-  9. Type "psql -U postgres ebla_data"
- 10. Type "\i {path to .sql file to load per Method 1 or 2 above}"
-     Note that to load ebla_data.sql from the "tmp" directory on your "d" drive,
-     you would enter "\i d:/tmp/ebla_data.sql" NOT "\i d:\tmp\ebla_data.sql"
 
 
 ==============================================================================
@@ -320,13 +230,13 @@ For more information on EBLA, see:
   http://www.greatmindsworking.com
   
 For more information on EDISON, see:
-  http://www.caip.rutgers.edu/riul/research/code/EDISON/index.html
+  http://coewww.rutgers.edu/riul/research/code/EDISON/
 
-For more information on PostgreSQL, see:
-  http://www.postgresql.org
+For more information on H2, see:
+  http://www.h2database.com
   
 For more information on Java, see:
-  http://java.sun.com
+  http://www.java.com
   
 For questions or comments regarding EBLA, send e-mail to
 Brian E. Pangburn (ebla@greatmindsworking.com)
