@@ -43,7 +43,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import java.sql.ResultSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -458,6 +457,9 @@ public class ParameterScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.23  2014/12/26 16:30:06  yoda2
+ * improved UI functionality surrounding database connections
+ *
  * Revision 1.22  2014/12/19 23:23:32  yoda2
  * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
  *
