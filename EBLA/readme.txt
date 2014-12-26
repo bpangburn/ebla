@@ -91,6 +91,11 @@ This release of EBLA is being distributed as a single JAR file
 (EBLA_1.0.jar) containing the source, binaries, and JavaDoc
 documentation.
 
+Note that this JAR file only contains the AVI files for the "Animation"
+Experience Set. Unless you download the full video dataset (see VIDEO DATASET
+below), you will only be able to run EBLA Sessions for the 1st record on the
+Parameter Screen.
+
 There is a changelog.txt file, which contains changes for EBLA.
 
 To extract EBLA, place the JAR file where you would like it installed (e.g.
