@@ -137,7 +137,7 @@ The set of animations are contained in ./experiences/ subdirectory of
 the installation directory.  The full set of real videos used to
 evaluate EBLA is just over 326MB (compressed JAR file).  It is available 
 from the following link:
-http://www.greatmindsworking.com/downloads/ebla_experiences.jar
+http://sourceforge.net/projects/ebla/files/EBLA/ebla_experiences.jar/download
 
 To install the full test set, simply download the release file
 ebla_experiences.jar to the EBLA installation directory and type:
