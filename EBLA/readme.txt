@@ -101,7 +101,7 @@ There is a changelog.txt file, which contains changes for EBLA.
 To extract EBLA, place the JAR file where you would like it installed (e.g.
 "c:\temp\" or "/home/<username>/") and issue the command:
 
-jar -xf jEDISON_1.0.jar
+jar -xf EBLA_1.0.jar
 
 To run EBLA:
   1. navigate to the "scripts" folder/director (e.g. "cd ./ebla/scripts/")
