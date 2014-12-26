@@ -8,7 +8,7 @@
 cd ..
 
 # DELETE ANY EXISTING RELEASE JARS
-rm -r ./release_jars
+rm ./release_jars/ebla.jar
 
 # CLEANUP ANY EXISTING SCRATCH SPACE
 rm -r ./scratch
