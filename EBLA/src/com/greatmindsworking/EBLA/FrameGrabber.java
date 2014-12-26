@@ -136,40 +136,34 @@ public class FrameGrabber extends JFrame {
 	 * @param _statusScreen	EBLA status window where video should be displayed (if applicable)
 	 * @param _displayFlag	flag indicating whether or not to display movie while processing
 	 */
-	public FrameGrabber(String _sourcePath, String _targetPath, StatusScreen _statusScreen, boolean _displayFlag) {
+	public FrameGrabber(String _sourcePath, String _targetPath, StatusScreen _statusScreen, boolean _displayFlag) throws Exception {
 
-		try {
 
-			// CONVERT SOURCE PATH TO URL
-				sourceURL = "file:" + _sourcePath;
+		// CONVERT SOURCE PATH TO URL
+			sourceURL = "file:" + _sourcePath;
 
-			// SET REMAINING PARAMETERS
-				targetPath = _targetPath;
-				displayFlag = _displayFlag;
+		// SET REMAINING PARAMETERS
+			targetPath = _targetPath;
+			displayFlag = _displayFlag;
 
-			// CALL FUNCTION TO INITIALIZE PLAYER AND CONTROLS
-				if (initializePlayer()==false) {
-					initializationError = true;
-					System.out.println("Error initializing player and / or controllers ... exiting.");
-				} else {
-					initializationError = false;
+		// CALL FUNCTION TO INITIALIZE PLAYER AND CONTROLS
+			if (initializePlayer()==false) {
+				initializationError = true;
+				System.out.println("Error initializing player and / or controllers ... exiting.");
+			} else {
+				initializationError = false;
+			}
+
+		// SET STATUS WINDOW
+			statusScreen = _statusScreen;
+
+		// CALL FUNCTION TO INITIALIZE DISPLAY
+		// IF STATUS WINDOW IS NOT NULL, DON'T INITIALIZE A SEPARATE WINDOW
+			if ((displayFlag) && (statusScreen==null)) {
+				if (initializeDisplay()==false) {
+					System.out.println("Unable to initialize display.");
 				}
-
-			// SET STATUS WINDOW
-				statusScreen = _statusScreen;
-
-			// CALL FUNCTION TO INITIALIZE DISPLAY
-			// IF STATUS WINDOW IS NOT NULL, DON'T INITIALIZE A SEPARATE WINDOW
-				if ((displayFlag) && (statusScreen==null)) {
-					if (initializeDisplay()==false) {
-						System.out.println("Unable to initialize display.");
-					}
-				}
-
-	  	} catch (Exception e) {
-			System.out.println("\n--- FrameGrabber Constructor Exception ---\n");
-			e.printStackTrace();
-		}
+			}
 
 	} // end FrameGrabber()
 
@@ -182,50 +176,39 @@ public class FrameGrabber extends JFrame {
 	 *
 	 * @return flag indicating success of media player initialization
 	 */
-	private boolean initializePlayer() {
+	private boolean initializePlayer() throws Exception {
 
-		boolean result = false;
+		// ATTEMPT TO BUILD MEDIA LOCATOR
+			if ((ml = new MediaLocator(sourceURL)) == null) {
+				System.err.println("Cannot build media locator from: " + sourceURL);
+				return false;
+			}
 
-		try {
-			// ATTEMPT TO BUILD MEDIA LOCATOR
-				if ((ml = new MediaLocator(sourceURL)) == null) {
-					System.err.println("Cannot build media locator from: " + sourceURL);
-					return false;
-				}
+		// OUTPUT VIDEO URL
+			System.out.println("Extracting frames from: " + sourceURL);
 
-			// OUTPUT VIDEO URL
-				System.out.println("Extracting frames from: " + sourceURL);
+		// CREATE PLAYER FOR MEDIA LOCATOR
+			player = Manager.createRealizedPlayer(ml);
 
-			// CREATE PLAYER FOR MEDIA LOCATOR
-				player = Manager.createRealizedPlayer(ml);
+		// PREFETCH VIDEO
+			player.prefetch();
 
-			// PREFETCH VIDEO
-				player.prefetch();
+		// INTIALIZE FRAME POSITIONER
+			fpc = (FramePositioningControl) player.getControl("javax.media.control.FramePositioningControl");
+			if (fpc == null) {
+				System.out.println("The player for this video format does not support the FramePositioningControl.");
+				return false;
+			}
 
-			// INTIALIZE FRAME POSITIONER
-				fpc = (FramePositioningControl) player.getControl("javax.media.control.FramePositioningControl");
-				if (fpc == null) {
-					System.out.println("The player for this video format does not support the FramePositioningControl.");
-					return false;
-				}
+		// INTIALIZE FRAME GRABBER
+			fgc = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
+			if (fgc == null) {
+				System.out.println("The player for this video format does not support the FrameGrabbingControl.");
+				return false;
+			}
 
-			// INTIALIZE FRAME GRABBER
-				fgc = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
-				if (fgc == null) {
-					System.out.println("The player for this video format does not support the FrameGrabbingControl.");
-					return false;
-				}
-
-			// INDICATE SUCCESS
-				result = true;
-
-	  	} catch (Exception e) {
-			System.out.println("\n--- FrameGrabber.initializePlayer() Exception ---\n");
-			e.printStackTrace();
-		}
-
-		// INDICATE SUCCESS AND RETURN
-			return result;
+		// INDICATE SUCCESS
+			return true;
 
 	} // end initializePlayer()
 
@@ -517,6 +500,9 @@ public class FrameGrabber extends JFrame {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.18  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.17  2011/04/28 14:55:07  yoda2
  * Addressing Java 1.6 -Xlint warnings.
  *

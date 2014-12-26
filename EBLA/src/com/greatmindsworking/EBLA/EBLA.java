@@ -39,6 +39,8 @@ package com.greatmindsworking.EBLA;
 import java.sql.*;
 import java.io.*;
 
+import javax.swing.JOptionPane;
+
 import com.greatmindsworking.utils.DBConnector;
 import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 
@@ -147,7 +149,8 @@ public class EBLA extends Thread {
 	 * @param _dbc			connection to database containing parameter table
 	 * @param _statusScreen	EBLA status window
 	 */
-    public EBLA(SessionData _sd, DBConnector _dbc, StatusScreen _statusScreen) {
+    @SuppressWarnings("resource")
+	public EBLA(SessionData _sd, DBConnector _dbc, StatusScreen _statusScreen) {
     	
     	PrintStream outputPS = null;
 
@@ -175,8 +178,6 @@ public class EBLA extends Thread {
 		} catch (Exception e) {
 			System.out.println("\n--- EBLA Constructor Exception ---\n");
 			e.printStackTrace();
-		} finally {
-			if (outputPS!=null) outputPS.close();
 		}
 
 	} // end EBLA()
@@ -399,7 +400,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, pd, sd, updateFAD, statusScreen);
+									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -560,7 +561,7 @@ public class EBLA extends Thread {
 
 							// CREATE A FRAME PROCESSOR TO PERFORM INITIAL ANALYSIS OF FRAMES
 								FrameProcessor fp = new FrameProcessor(1, frameCount, parameterExperienceID,
-									expTmpPath, pd, sd, updateFAD, statusScreen);
+									expTmpPath, dbc, pd, sd, updateFAD, statusScreen);
 
 							// PROCESS FRAMES
 								processorResult = fp.processFrames();
@@ -879,10 +880,15 @@ public class EBLA extends Thread {
 				System.gc();
 
 		} catch (Exception e) {
-		// CHECK FOR CANCEL BUTTON
+		// CHECK FOR CANCEL BUTTON & UPDATE STATUS
 			if (stopEBLA) {
-			// UPDATE STATUS
-				statusScreen.updateStatus(1, "EBLA Session Interrupted!");
+				statusScreen.updateStatus(1, "EBLA Session Canceled!");
+			} else {
+				statusScreen.indicateEBLACompletion();
+				JOptionPane.showInternalConfirmDialog
+					(statusScreen,"EBLA Processor Exception. Please check log file for details.",
+					"Processor Exception",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);	
+				statusScreen.updateStatus(1, "");
 			}
 
 		// DISPLAY EXCEPTION MESSAGE
@@ -1056,6 +1062,9 @@ public class EBLA extends Thread {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.46  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.45  2014/04/24 12:34:25  yoda2
  * potential filewriter memory leak cleanup
  *

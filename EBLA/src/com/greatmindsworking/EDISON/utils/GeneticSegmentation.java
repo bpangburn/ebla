@@ -116,11 +116,8 @@ public class GeneticSegmentation {
 				+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
 				+ "		WHERE parameter_id=" + _parameterID + ");";
 
-		// CREATE STATEMENT FOR EXPERIENCES
-			Statement experienceState = dbc.getStatement();
-
 		// EXECUTE QUERY
-			ResultSet experienceRS = experienceState.executeQuery(sql);
+			ResultSet experienceRS = dbc.getStatement().executeQuery(sql);
 
 		// LOAD PNG FILE LOCATIONS (APPROX 7000 FILES)
 		// (REMOVE FIRST AND LAST FIVE FILES FROM EACH BATCH)
@@ -141,7 +138,6 @@ public class GeneticSegmentation {
 
 		// CLOSE DATABASE CONNECTIONS
 			experienceRS.close();
-			experienceState.close();
 			dbc.closeConnection();
 
 
@@ -603,6 +599,9 @@ public class GeneticSegmentation {
 
 /*
  * $Log$
+ * Revision 1.7  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.6  2011/04/28 14:55:07  yoda2
  * Addressing Java 1.6 -Xlint warnings.
  *

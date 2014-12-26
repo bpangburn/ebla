@@ -46,7 +46,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -306,16 +305,14 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 			try {
 				connector = new DBConnector(EBLAGui.dbFileName,true);
-				Statement statement = connector.getStatement();
 				String query = "SELECT description, notes, experience_id FROM experience_data"
 					+ " ORDER BY description;";
-				ResultSet rs = statement.executeQuery(query);
+				ResultSet rs = connector.getStatement().executeQuery(query);
 				while (rs.next()) {
 					experienceName.add(rs.getString("description") + "--" + rs.getString("notes") );
 					experienceID.add(new Long(rs.getLong("experience_id")));
 				} // end while
 				rs.close();
-				statement.close();
 
 			} catch(SQLException se) {
 				se.printStackTrace();
@@ -365,19 +362,17 @@ public class SelectExperiencesScreen extends JInternalFrame {
 		public SelectedExperiencesListModel(long parameterID){
 
 			try {
-				Statement statement = dbc.getStatement();
 				String query = "SELECT description, notes, parameter_experience_id"
 					+ " FROM parameter_experience_data,experience_data"
 					+ " WHERE experience_data.experience_id = parameter_experience_data.experience_id"
 					+ " AND parameter_id=" + parameterID
 					+ " ORDER BY description;";
-				ResultSet rs = statement.executeQuery(query);
+				ResultSet rs = dbc.getStatement().executeQuery(query);
 				while (rs.next()) {
 					experienceName.add(rs.getString("description") + "--" + rs.getString("notes") );
 					parameterExperienceID.add(new Long(rs.getLong("parameter_experience_id")));
 				}
 				rs.close();
-				statement.close();
 			} catch(SQLException se) {
 				se.printStackTrace();
 			} catch(Exception e) {
@@ -475,6 +470,9 @@ public class SelectExperiencesScreen extends JInternalFrame {
 
 /*
  * $Log$
+ * Revision 1.12  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.11  2014/04/23 23:05:38  yoda2
  * misc warning cleanup
  *

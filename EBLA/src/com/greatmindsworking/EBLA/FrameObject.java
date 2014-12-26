@@ -36,8 +36,11 @@ package com.greatmindsworking.EBLA;
 
 
 
-import java.sql.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -159,7 +162,7 @@ public class FrameObject {
 	 *
 	 * @return boolean indicating success (true) or failure (false)
 	 */
-	public boolean writeToDB(Statement _tmpState, long _paramExpID) {
+	public boolean writeToDB(DBConnector _dbc, long _paramExpID) {
 
 		// DECLARATIONS
 			boolean result = true;		// ASSUME DB WRITE IS OK UNTIL ERROR IS ENCOUNTERED
@@ -193,7 +196,7 @@ public class FrameObject {
 					+ "," + area + ");";
 
 			// WRITE VALUES TO DATABASE
-				_tmpState.executeUpdate(sql);
+				_dbc.getStatement().executeUpdate(sql);
 
 		} catch (Exception e) {
 			result = false;
@@ -212,6 +215,9 @@ public class FrameObject {
 
 /*
  * $Log$
+ * Revision 1.10  2005/02/17 23:33:15  yoda2
+ * JavaDoc fixes & retooling for SwingSet 1.0RC compatibility.
+ *
  * Revision 1.9  2004/02/25 21:58:10  yoda2
  * Updated copyright notice.
  *

@@ -42,7 +42,6 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -53,6 +52,7 @@ import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
 import com.greatmindsworking.EDISON.segm.ImageType;
 import com.greatmindsworking.EDISON.segm.MSImageProcessor;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
+import com.greatmindsworking.utils.DBConnector;
 
 
 
@@ -85,6 +85,10 @@ import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
  * @version	$Revision$
  */
 public class FrameProcessor {
+	/**
+	 * database connection info
+	 */
+	private DBConnector dbc = null;	
 
 	/**
 	 * long containing the database record ID for the parameter-experience
@@ -190,13 +194,14 @@ public class FrameProcessor {
 	 * @param _lastFrameIndex		index of last frame image to process
 	 * @param _paramExpID			unique id of parameter_experience_data record
 	 * @param _expPath				processing path for experiences
+	 * @param _dbc					connection to EBLA database
 	 * @param _pd					vision system parameters
 	 * @param _sd					calculation session settings
 	 * @param _updateFAD			boolean indicating whether or not to update frame_analysis_data
 	 * @param _statusScreen			EBLA status window where intermediate images should be displayed (if applicable)
 	 */
 	public FrameProcessor(int _firstFrameIndex, int _lastFrameIndex,
-		long _paramExpID, String _expPath, ParameterData _pd,
+		long _paramExpID, String _expPath, DBConnector _dbc, ParameterData _pd,
 		SessionData _sd, boolean _updateFAD, StatusScreen _statusScreen) {
 
 		try {
@@ -210,6 +215,9 @@ public class FrameProcessor {
 
 			// SET PROCESSING PATH FOR EXPERIENCE
 				expPath = _expPath;
+				
+			// SET DATABASE CONNECTION
+				dbc = _dbc;
 
 			// SET VISION PARAMETERS
 				pd = _pd;
@@ -408,7 +416,6 @@ public class FrameProcessor {
 		int _frameNumber, boolean _updateFAD) {
 
 		// DECLARATIONS
-			Statement tmpState = null;	// USED TO EXECUTE DELETE AND INSERT STATEMENTS AGAINT frame_analysis_data
 			int rgb = 0;				// RGB COLOR OF "CURRENT" REGION
 			//String sql;					// USED TO BUILD QUERY AGAINST frame_analysis_data TABLE
 			double score = 0.0;			// CORRELATION SCORE COMPARING AN OBJECT IN CURRENT FRAME TO OBJECT IN PRIOR FRAME
@@ -569,7 +576,7 @@ public class FrameProcessor {
 							FrameObject fo = itr.next();
 
 						// WRITE TO DATABASE
-							fo.writeToDB(tmpState, paramExpID);
+							fo.writeToDB(dbc, paramExpID);
 					}
 				}
 
@@ -666,6 +673,9 @@ public class FrameProcessor {
  ******************************************************************************
  *
  * $Log$
+ * Revision 1.39  2014/12/19 23:23:32  yoda2
+ * Cleanup of misc compiler warnings. Made EDISON GFunction an abstract class.
+ *
  * Revision 1.38  2011/04/25 03:52:10  yoda2
  * Fixing compiler warnings for Generics, etc.
  *
