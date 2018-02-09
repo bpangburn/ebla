@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002-2014, Brian E. Pangburn
+Copyright (c) 2002-2018, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
