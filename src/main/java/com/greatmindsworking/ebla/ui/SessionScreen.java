@@ -32,7 +32,7 @@
 
 
 
-package com.greatmindsworking.EBLA.Interfaces;
+package com.greatmindsworking.ebla.ui;
 
 
 

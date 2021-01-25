@@ -32,7 +32,7 @@
 
 
 
-package com.greatmindsworking.EBLA;
+package com.greatmindsworking.ebla;
 
 
 
