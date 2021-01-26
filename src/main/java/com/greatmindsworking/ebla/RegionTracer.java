@@ -39,7 +39,7 @@ package com.greatmindsworking.ebla;
 import java.util.*;
 import java.awt.*;
 
-import com.greatmindsworking.EDISON.segm.*;
+import com.greatmindsworking.jedison.*;
 
 
 

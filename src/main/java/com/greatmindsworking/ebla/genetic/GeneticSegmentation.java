@@ -46,7 +46,7 @@ import java.awt.image.*;
 
 import javax.imageio.ImageIO;
 
-import com.greatmindsworking.EDISON.segm.*;
+import com.greatmindsworking.jedison.*;
 
 
 

@@ -39,7 +39,7 @@ package com.greatmindsworking.ebla;
 import java.sql.*;
 
 import com.greatmindsworking.utils.DBConnector;
-import com.greatmindsworking.EDISON.segm.SpeedUpLevel;
+import com.greatmindsworking.jedison.SpeedUpLevel;
 
 
 
