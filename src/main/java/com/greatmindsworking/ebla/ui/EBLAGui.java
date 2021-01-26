@@ -32,8 +32,7 @@
 
 
 
-package com.greatmindsworking.ebla.ui;
-
+com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Dimension;
@@ -54,6 +53,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.text.JTextComponent;
@@ -195,6 +195,7 @@ public class EBLAGui extends JFrame {
 			getContentPane().add(desktop);
 
 		// TRY LOGGING IN AND OPEN THE PARAMETER SCREEN IF SUCCESSFUL
+// TODO: Add finally block to force close of database connection			
 			if (login()) {
 				menuBar.setLogin(true);
 				showParameterScreen();
@@ -500,7 +501,7 @@ public class EBLAGui extends JFrame {
 		try {
 			_dbc.getStatement().execute("RUNSCRIPT FROM './database/ebla_sample_H2.sql';");
 			if (_ps!=null) {
-				_ps.dataNavigator.getSSRowSet().execute();
+				_ps.dataNavigator.getRowSet().execute();
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -759,8 +760,8 @@ public class EBLAGui extends JFrame {
 
 		System.out.println("Starting EBLA...");
 
-		@SuppressWarnings("unused")
-		EBLAGui mainFrame = new EBLAGui();
+		//EBLAGui mainFrame = new EBLAGui();
+		SwingUtilities.invokeLater(() -> new EBLAGui());
 
 	} // end main()
 

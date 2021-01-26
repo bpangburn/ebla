@@ -32,8 +32,7 @@
 
 
 
-package com.greatmindsworking.ebla.ui;
-
+com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Component;
@@ -52,12 +51,15 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import com.greatmindsworking.utils.DBConnector;
-import com.nqadmin.swingSet.SSComboBox;
-import com.nqadmin.swingSet.SSDBNavImp;
-import com.nqadmin.swingSet.SSDataNavigator;
-import com.nqadmin.swingSet.SSTextArea;
-import com.nqadmin.swingSet.SSTextField;
-import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
+import com.nqadmin.swingset.SSComboBox;
+import com.nqadmin.swingset.SSDBNavImpl;
+import com.nqadmin.swingset.SSDataNavigator;
+import com.nqadmin.swingset.SSTextArea;
+import com.nqadmin.swingset.SSTextField;
+import com.nqadmin.swingset.enums.YesNo;
+
+import javax.sql.RowSet;
+import com.nqadmin.rowset.JdbcRowSetImpl;
 
 
 
@@ -84,7 +86,7 @@ public class AttributeScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR ATTRIBUTE SCREEN
 		DBConnector dbc = null;
-		SSJdbcRowSetImpl rowset = null;
+		RowSet rowset = null;
 
 	// INITIALIZE ATTRIBUTE SCREEN WIDGETS
 		SSTextField txtAttributeID 		= new SSTextField();
@@ -123,11 +125,11 @@ public class AttributeScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR ATTRIBUTE LIST DATA
-				rowset = new SSJdbcRowSetImpl(dbc.getSSConnection());
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM attribute_list_data WHERE attribute_list_id>0;");
 				dataNavigator = new SSDataNavigator(rowset);
-				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+				dataNavigator.setDBNav(new SSDBNavImpl(getContentPane()));
 
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -164,7 +166,7 @@ public class AttributeScreen extends JInternalFrame {
 
 			txtDescription.bind(rowset,"description");
 
-			cmbIncludeCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+			cmbIncludeCode.setOptions(YesNo.class);
 			cmbIncludeCode.bind(rowset,"include_code");
 
 			String[] tmpString = {"Object", "Object-Object Relation"};

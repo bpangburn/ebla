@@ -32,8 +32,7 @@
 
 
 
-package com.greatmindsworking.ebla.ui;
-
+com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Component;
@@ -52,11 +51,12 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import com.greatmindsworking.utils.DBConnector;
-import com.nqadmin.swingSet.SSDBNavImp;
-import com.nqadmin.swingSet.SSDataNavigator;
-import com.nqadmin.swingSet.SSTextArea;
-import com.nqadmin.swingSet.SSTextField;
-import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
+import com.nqadmin.swingset.SSDBNavImpl;
+import com.nqadmin.swingset.SSDataNavigator;
+import com.nqadmin.swingset.SSTextArea;
+import com.nqadmin.swingset.SSTextField;
+import javax.sql.RowSet;
+import com.nqadmin.rowset.JdbcRowSetImpl;
 
 
 
@@ -83,7 +83,7 @@ public class ExperienceScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR EXPERIENCE SCREEN
 		DBConnector dbc = null;
-		SSJdbcRowSetImpl rowset = null;
+		RowSet rowset = null;
 
 	// INITIALIZE EXPERIENCE SCREEN WIDGETS
 		SSTextField txtExperienceID 	= new SSTextField();
@@ -122,11 +122,11 @@ public class ExperienceScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR EXPERIENCE DATA
-				rowset = new SSJdbcRowSetImpl(dbc.getSSConnection());
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM experience_data WHERE experience_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
-				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+				dataNavigator.setDBNav(new SSDBNavImpl(getContentPane()));
 
 			} catch(Exception e) {
 				e.printStackTrace();

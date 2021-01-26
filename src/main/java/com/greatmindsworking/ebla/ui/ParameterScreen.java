@@ -32,8 +32,7 @@
 
 
 
-package com.greatmindsworking.ebla.ui;
-
+com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Component;
@@ -53,12 +52,15 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import com.greatmindsworking.utils.DBConnector;
-import com.nqadmin.swingSet.SSComboBox;
-import com.nqadmin.swingSet.SSDBNavImp;
-import com.nqadmin.swingSet.SSDataNavigator;
-import com.nqadmin.swingSet.SSTextArea;
-import com.nqadmin.swingSet.SSTextField;
-import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
+import com.nqadmin.swingset.SSComboBox;
+import com.nqadmin.swingset.SSDBNavImpl;
+import com.nqadmin.swingset.SSDataNavigator;
+import com.nqadmin.swingset.SSTextArea;
+import com.nqadmin.swingset.SSTextField;
+import com.nqadmin.swingset.enums.YesNo;
+
+import javax.sql.RowSet;
+import com.nqadmin.rowset.JdbcRowSetImpl;
 
 
 
@@ -85,7 +87,7 @@ public class ParameterScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR PARAMETER SCREEN
 		DBConnector dbc = null;
-		SSJdbcRowSetImpl rowset = null;
+		RowSet rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -157,11 +159,11 @@ public class ParameterScreen extends JInternalFrame {
 			try {
 
 			// INITIALIZE ROWSET FOR PARAMETER DATA
-				rowset = new SSJdbcRowSetImpl(dbc.getSSConnection());
+				rowset = new JdbcRowSetImpl(dbc.getConnection());
 
 				rowset.setCommand("SELECT * FROM parameter_data WHERE parameter_id>0 ORDER BY description;");
 				dataNavigator = new SSDataNavigator(rowset);
-				dataNavigator.setDBNav(new SSDBNavImp(getContentPane()));
+				dataNavigator.setDBNav(new SSDBNavImpl(getContentPane()));
 
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -172,7 +174,7 @@ public class ParameterScreen extends JInternalFrame {
 			cmbSegSpeedUpCode.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ae) {
-					if (cmbSegSpeedUpCode.getSelectedIndex() == 2) {
+					if (cmbSegSpeedUpCode.getSelectedMapping() == 2) {
 						txtSegSpeedUpFactor.setEnabled(true);
 					} else {
 						txtSegSpeedUpFactor.setEnabled(false);
@@ -279,7 +281,7 @@ public class ParameterScreen extends JInternalFrame {
 
 				txtMinFrameCount.bind(rowset,"min_frame_count");
 
-				cmbReduceColorCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
+				cmbReduceColorCode.setOptions(YesNo.class);
 				cmbReduceColorCode.bind(rowset,"reduce_color_code");
 
 			// "RESULTS" TAB

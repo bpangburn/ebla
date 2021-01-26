@@ -32,8 +32,7 @@
 
 
 
-package com.greatmindsworking.ebla.ui;
-
+com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Component;
@@ -54,11 +53,13 @@ import javax.swing.event.InternalFrameEvent;
 
 import com.greatmindsworking.EBLA.SessionData;
 import com.greatmindsworking.utils.DBConnector;
-import com.nqadmin.swingSet.SSComboBox;
-import com.nqadmin.swingSet.SSDataNavigator;
-import com.nqadmin.swingSet.SSTextArea;
-import com.nqadmin.swingSet.SSTextField;
-import com.nqadmin.swingSet.datasources.SSJdbcRowSetImpl;
+import com.nqadmin.swingset.SSComboBox;
+import com.nqadmin.swingset.SSDataNavigator;
+import com.nqadmin.swingset.SSTextArea;
+import com.nqadmin.swingset.SSTextField;
+import com.nqadmin.swingset.enums.YesNo;
+import javax.sql.RowSet;
+import com.nqadmin.rowset.JdbcRowSetImpl;
 
 
 
@@ -88,7 +89,7 @@ public class SessionScreen extends JInternalFrame {
 
 	// INITIALIZE DATABASE CONNECTIVITY COMPONENTS FOR SESSION SCREEN
 		DBConnector dbc = null;
-		SSJdbcRowSetImpl rowset = null;
+		RowSet rowset = null;
 
 	// INITIALIZE TABBED PANE TO HOLD SCREEN CONTENTS
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -178,20 +179,20 @@ public class SessionScreen extends JInternalFrame {
 				java.util.Date now = new java.util.Date();
 				txtDescription.setText(_parameterDesc + " - " + now);
 
-				cmbLogToFileCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbLogToFileCode.setSelectedIndex(1);
+				cmbLogToFileCode.setOptions(YesNo.class);
+				cmbLogToFileCode.setSelectedMapping(1);
 
-				cmbRandomizeExpCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbRandomizeExpCode.setSelectedIndex(1);
+				cmbRandomizeExpCode.setOptions(YesNo.class);
+				cmbRandomizeExpCode.setSelectedMapping(1);
 
-				cmbRegenerateImages.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbRegenerateImages.setSelectedIndex(0);
+				cmbRegenerateImages.setOptions(YesNo.class);
+				cmbRegenerateImages.setSelectedMapping(0);
 
-				//cmbDisplayVideosCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				//cmbDisplayVideosCode.setSelectedIndex(1);
+				//cmbDisplayVideosCode.setOptions(YesNo.class);
+				//cmbDisplayVideosCode.setSelectedMapping(1);
 
-				cmbDisplayMessages.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbDisplayMessages.setSelectedIndex(0);
+				cmbDisplayMessages.setOptions(YesNo.class);
+				cmbDisplayMessages.setSelectedMapping(0);
 
 			// "ENTITIES" TAB
 				txtMinSDStart.setText("5");
@@ -202,14 +203,14 @@ public class SessionScreen extends JInternalFrame {
 
 				txtLoopCount.setText("1");
 
-				cmbFixedSDCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbFixedSDCode.setSelectedIndex(0);
+				cmbFixedSDCode.setOptions(YesNo.class);
+				cmbFixedSDCode.setSelectedMapping(0);
 
 			// "LEXEMES" TAB
 				txtDescToGenerate.setText("0");
 
-				cmbCaseSensitiveCode.setPredefinedOptions(SSComboBox.YES_NO_OPTION);
-				cmbCaseSensitiveCode.setSelectedIndex(0);
+				cmbCaseSensitiveCode.setOptions(YesNo.class);
+				cmbCaseSensitiveCode.setSelectedMapping(0);
 
 			// "MISC" TAB
 				// NOTHING TO DO...
@@ -320,28 +321,28 @@ public class SessionScreen extends JInternalFrame {
 				String desc = txtDescription.getText();
 
 				boolean boolLogToFile = false;
-				if (cmbLogToFileCode.getSelectedIndex() == 1) {
+				if (cmbLogToFileCode.getSelectedMapping() == 1) {
 					boolLogToFile = true;
 				}
 
 				boolean boolRandomizeExp = false;
-				if (cmbRandomizeExpCode.getSelectedIndex() == 1) {
+				if (cmbRandomizeExpCode.getSelectedMapping() == 1) {
 					boolRandomizeExp = true;
 				}
 
 				boolean boolRegenerateImages = false;
-				if (cmbRegenerateImages.getSelectedIndex() == 1) {
+				if (cmbRegenerateImages.getSelectedMapping() == 1) {
 					boolRegenerateImages = true;
 				}
 
 				//boolean boolDisplayVideos = false;
-				//if (cmbDisplayVideosCode.getSelectedIndex() == 1) {
+				//if (cmbDisplayVideosCode.getSelectedMapping() == 1) {
 				//	boolDisplayVideos = true;
 				//}
 				boolean boolDisplayVideos = true;
 
 				boolean boolDisplayMessages = false;
-				if (cmbDisplayMessages.getSelectedIndex() == 1) {
+				if (cmbDisplayMessages.getSelectedMapping() == 1) {
 					boolDisplayMessages = true;
 				}
 
@@ -368,7 +369,7 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolFixedSD = false;
-				if (cmbFixedSDCode.getSelectedIndex() == 1) {
+				if (cmbFixedSDCode.getSelectedMapping() == 1) {
 					boolFixedSD = true;
 				}
 
@@ -380,7 +381,7 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolCaseSensitive = false;
-				if (cmbCaseSensitiveCode.getSelectedIndex() == 1) {
+				if (cmbCaseSensitiveCode.getSelectedMapping() == 1) {
 					boolCaseSensitive = true;
 				}
 

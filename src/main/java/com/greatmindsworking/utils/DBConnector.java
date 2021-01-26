@@ -38,7 +38,7 @@ package com.greatmindsworking.utils;
 
 import java.sql.*;
 import java.io.*;
-import com.nqadmin.swingSet.datasources.*;
+import com.nqadmin.swingset.datasources.*;
 
 
 
@@ -100,7 +100,7 @@ public class DBConnector {
 	/**
 	 * connection to the "server" database file
 	 */
-	private SSConnection dbConnection;
+	private Connection dbConnection;
 
 	/**
 	 * boolean to indicate whether to auto-commit database changes
@@ -221,15 +221,18 @@ public class DBConnector {
             if (driver == "" || driver ==null) {
 				driver = jdbcDriver;
 			}
+            
+    		Class.forName(driver);
+    		dbConnection = DriverManager.getConnection(dbPath, username, password);
 
-            dbConnection = new SSConnection(dbPath, username, password);
-            dbConnection.setDriverName(driver);
-            dbConnection.createConnection();				
+//            dbConnection = new Connection(dbPath, username, password);
+//            dbConnection.setDriverName(driver);
+//            dbConnection.createConnection();				
 
             if (autoCommit) {
-                dbConnection.getConnection().setAutoCommit(true);
+                dbConnection.setAutoCommit(true);
             } else {
-                dbConnection.getConnection().setAutoCommit(false);
+                dbConnection.setAutoCommit(false);
             }
 
 		} catch (Exception e) {
@@ -238,22 +241,22 @@ public class DBConnector {
 		}
 
 	} // end initializeDatabase()
-
+//
+//	/**
+//	 * Returns a Connection to the database
+//	 *
+//	 * @return a Connection to the database
+//	 */
+//    public Connection getConnection(){
+//		return dbConnection.getConnection();
+//	}
+	
 	/**
 	 * Returns a Connection to the database
 	 *
-	 * @return a Connection to the database
+	 * @return a SwingSet Connection to the database
 	 */
     public Connection getConnection(){
-		return dbConnection.getConnection();
-	}
-	
-	/**
-	 * Returns a SSConnection to the database
-	 *
-	 * @return a SwingSet SSConnection to the database
-	 */
-    public SSConnection getSSConnection(){
 		return dbConnection;
 	}	
 
@@ -269,7 +272,8 @@ public class DBConnector {
 
 		try {
 
-			myState = dbConnection.getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			//myState = dbConnection.getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			myState = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 		} catch (Exception e) {
 			System.out.println("\n--- DBConnector.getStatement() Exception ---\n");
@@ -288,7 +292,8 @@ public class DBConnector {
 		try {
 
 			// COMMIT CHANGES
-				dbConnection.getConnection().commit();
+				//dbConnection.getConnection().commit();
+				dbConnection.commit();
 
 		} catch (Exception e) {
 			System.out.println("\n--- DBConnector.commitChanges() Exception ---\n");
@@ -306,7 +311,8 @@ public class DBConnector {
 		try {
 
 			// ROLLBACK CHANGES
-			dbConnection.getConnection().rollback();
+			//dbConnection.getConnection().rollback();
+			dbConnection.rollback();
 
 		} catch (Exception e) {
 			System.out.println("\n ------DBConnector.rollbackChanges() Exception------\n");
@@ -324,7 +330,8 @@ public class DBConnector {
 		try {
 
 			// CLOSE CONNECTION
-				dbConnection.getConnection().close();
+				//dbConnection.getConnection().close();
+				dbConnection.close();
 
 		} catch (Exception e) {
 			System.out.println("\n--- DBConnector.closeConnection() Exception ---\n");
