@@ -48,7 +48,7 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
-import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
+import com.greatmindsworking.ebla.ui.StatusScreen;
 import com.greatmindsworking.EDISON.segm.ImageType;
 import com.greatmindsworking.EDISON.segm.MSImageProcessor;
 import com.greatmindsworking.EDISON.segm.SpeedUpLevel;

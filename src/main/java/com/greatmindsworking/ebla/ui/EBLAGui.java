@@ -32,7 +32,7 @@
 
 
 
-com.greatmindsworking.ebla.ui;
+package com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Dimension;

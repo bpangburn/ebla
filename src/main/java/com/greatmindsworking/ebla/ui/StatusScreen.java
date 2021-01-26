@@ -58,9 +58,9 @@ import javax.swing.border.Border;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import com.greatmindsworking.EBLA.EBLA;
-import com.greatmindsworking.EBLA.ImageComponent;
-import com.greatmindsworking.EBLA.SessionData;
+import com.greatmindsworking.ebla.EBLA;
+import com.greatmindsworking.ebla.ImageComponent;
+import com.greatmindsworking.ebla.SessionData;
 import com.greatmindsworking.utils.DBConnector;
 
 

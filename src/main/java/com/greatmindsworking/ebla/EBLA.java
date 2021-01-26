@@ -42,7 +42,7 @@ import java.io.*;
 import javax.swing.JOptionPane;
 
 import com.greatmindsworking.utils.DBConnector;
-import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
+import com.greatmindsworking.ebla.ui.StatusScreen;
 
 
 
@@ -1166,7 +1166,7 @@ public class EBLA extends Thread {
  * Added setting to allow dump of screen output to redirect.out file.
  *
  * Revision 1.12  2002/06/26 13:29:44  bpangburn
- * Removed import com.greatmindsworking.EBLA.* command.
+ * Removed import com.greatmindsworking.ebla.* command.
  *
  * Revision 1.11  2002/05/31 22:32:36  bpangburn
  * Re-enabled frame processing code (instead of just object recognition and lexical acquisition).

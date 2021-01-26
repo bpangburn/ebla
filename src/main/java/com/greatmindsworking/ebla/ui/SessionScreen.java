@@ -32,7 +32,7 @@
 
 
 
-com.greatmindsworking.ebla.ui;
+package com.greatmindsworking.ebla.ui;
 
 
 import java.awt.Component;
@@ -43,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 
+import javax.sql.RowSet;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
@@ -51,15 +52,13 @@ import javax.swing.border.Border;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import com.greatmindsworking.EBLA.SessionData;
+import com.greatmindsworking.ebla.SessionData;
 import com.greatmindsworking.utils.DBConnector;
 import com.nqadmin.swingset.SSComboBox;
 import com.nqadmin.swingset.SSDataNavigator;
 import com.nqadmin.swingset.SSTextArea;
 import com.nqadmin.swingset.SSTextField;
 import com.nqadmin.swingset.enums.YesNo;
-import javax.sql.RowSet;
-import com.nqadmin.rowset.JdbcRowSetImpl;
 
 
 

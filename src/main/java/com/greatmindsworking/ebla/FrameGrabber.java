@@ -47,7 +47,7 @@ import javax.media.control.FrameGrabbingControl;
 import javax.media.format.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
-import com.greatmindsworking.EBLA.Interfaces.StatusScreen;
+import com.greatmindsworking.ebla.ui.StatusScreen;
 
 
 

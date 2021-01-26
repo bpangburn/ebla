@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- NOT SPECIFYING PARENT SO EACH MODULE STANDS ALONE -->
+
+	<groupId>com.greatmindsworking.ebla</groupId>
+	<artifactId>ebla</artifactId>
+	<version>1.1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Experience-Based Language Acquisition (EBLA)</name>
+	<description>Experience-Based Language Acquisition (EBLA) is an early (circa 2001) computational model of human language acquisition.</description>
+	<url>https://github.com/bpangburn/ebla</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<version.maven>3.6.3</version.maven>
+		<version.java>1.8</version.java>
+
+		<version.jmf>2.1.1e</version.jmf>
+		<version.jedison>1.1.0-SNAPSHOT</version.jedison>
+		<version.h2>1.4.200</version.h2>
+		<version.swingset>4.0.0-SNAPSHOT</version.swingset>
+		<version.log4j>2.14.0</version.log4j>
+
+		<version.maven-enforcer-plugin>3.0.0-M3</version.maven-enforcer-plugin>
+		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+		<version.dependency-check-maven>5.3.2</version.dependency-check-maven>
+		<version.maven-source-plugin>3.2.1</version.maven-source-plugin>
+		<version.maven-assembly-plugin>3.3.0</version.maven-assembly-plugin>
+		<version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>BSD 3-Clause</name>
+			<url>https://spdx.org/licenses/BSD-3-Clause.html</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Brian E. Pangburn</name>
+			<email>ebla@greatmindsworking.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:git@github.com:bpangburn/ebla.git</connection>
+		<url>scm:git:git@github.com:bpangburn/ebla.git</url>
+		<developerConnection>scm:git:git@github.com:bpangburn/ebla.git</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/javax.media/jmf -->
+		<dependency>
+			<groupId>javax.media</groupId>
+			<artifactId>jmf</artifactId>
+			<version>${version.jmf}</version>
+		</dependency>
+	
+		<!-- https://mvnrepository.com/artifact/com.greatmindsworking.jedison/jedison -->
+		<dependency>
+			<groupId>com.greatmindsworking.jedison</groupId>
+			<artifactId>jedison</artifactId>
+			<version>${version.jedison}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${version.h2}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.nqadmin.swingset/swingset -->
+		<dependency>
+			<groupId>com.nqadmin.swingset</groupId>
+			<artifactId>swingset</artifactId>
+			<version>${version.swingset}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${version.log4j}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${version.log4j}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Maven Enforcer forces specified version of Java and Maven -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${version.maven-enforcer-plugin}</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<bannedPlugins>
+									<!-- will only display a warning but does not fail the build. -->
+									<level>WARN</level>
+									<excludes>
+										<exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+									</excludes>
+									<message>Please consider using the maven-invoker-plugin
+										(http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+								</bannedPlugins>
+								<requireMavenVersion>
+									<version>${version.maven}</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>${version.java}</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+
+				<configuration>
+					<source>${version.java}</source>
+					<target>${version.java}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<!-- invoked during verify phase -->
+			<!-- https://jeremylong.github.io/DependencyCheck/dependency-check-maven/ -->
+			<id>owasp-check</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${version.dependency-check-maven}</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>${version.maven-source-plugin}</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+
+						<artifactId>maven-assembly-plugin</artifactId>
+
+						<version>${version.maven-assembly-plugin}</version><!--$NO-MVN-MAN-VER$ -->
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<archive>
+										<manifest>
+											<mainClass>
+												com.greatmindsworking.ebla.ui.EBLAGui
+											</mainClass>
+										</manifest>
+										<manifestEntries>
+											<Multi-Release>true</Multi-Release>
+										</manifestEntries>
+									</archive>
+									<descriptorRefs>
+										<descriptorRef>jar-with-dependencies</descriptorRef>
+									</descriptorRefs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${version.maven-gpg-plugin}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<keyname>${gmw.gpg.keyname}</keyname>
+									<passphraseServerId>${gmw.gpg.keyname}</passphraseServerId>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
