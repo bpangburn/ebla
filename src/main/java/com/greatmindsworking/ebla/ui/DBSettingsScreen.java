@@ -85,8 +85,11 @@ public class DBSettingsScreen extends JInternalFrame {
 	/**
 	 * DBSettingsScreen constructor.
 	 *
-	 * @param _desktop    the container in which the screen has to showup.
-	 * @param _file    file containing database connection settings
+	 * @param _desktop the container in which the screen has to showup.
+	 * @param _dbFileName file containing database connection settings
+	 * @param _dbConnection	the database connection
+	 * @param _dbUsername database username
+	 * @param _dbPassword database password
 	 */
 	public DBSettingsScreen(Container _desktop, String _dbFileName, String _dbConnection, String _dbUsername, String _dbPassword) {
 		// CALL JINTERNALFRAME CONSTRUCTOR TO INITIALIZE EXPERIENCE SCREEN

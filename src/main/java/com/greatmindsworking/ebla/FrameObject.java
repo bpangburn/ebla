@@ -157,7 +157,7 @@ public class FrameObject {
 	/**
 	 * Public method to write data members to the database
 	 *
-	 * @param _tmpState		database statement for execution of any SQL commands
+	 * @param _dbc	database connection for execution of any SQL commands
 	 * @param _paramExpID	ID of parent parameter_experience_data record
 	 *
 	 * @return boolean indicating success (true) or failure (false)
