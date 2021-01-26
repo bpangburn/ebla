@@ -399,7 +399,6 @@ public class LexemeResolver {
 	 * current experience and attempts to back-fill lexeme-entity relations
 	 * for prior experiences.
 	 */
-	@SuppressWarnings("resource")
 	public void resolveLexemes() {
 
 		// DECLARATIONS

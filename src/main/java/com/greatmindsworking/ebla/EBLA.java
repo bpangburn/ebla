@@ -149,7 +149,6 @@ public class EBLA extends Thread {
 	 * @param _dbc			connection to database containing parameter table
 	 * @param _statusScreen	EBLA status window
 	 */
-    @SuppressWarnings("resource")
 	public EBLA(SessionData _sd, DBConnector _dbc, StatusScreen _statusScreen) {
     	
     	PrintStream outputPS = null;
@@ -204,7 +203,6 @@ public class EBLA extends Thread {
 	 * prevents unnecessary runs of the computationally expensive video
 	 * processing phase.
 	 */
-	@SuppressWarnings("resource")
 	private void processExperiences() {
 
 		// DECLARATIONS

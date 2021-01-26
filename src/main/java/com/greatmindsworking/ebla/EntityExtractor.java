@@ -639,7 +639,6 @@ public class EntityExtractor {
 	 *
 	 * @return boolean indicating success (true) or failure (false)
 	 */
-	@SuppressWarnings("resource")
 	public boolean writeToDB() {
 
 		// DECLARATIONS
