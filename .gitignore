@@ -1,2 +1,4 @@
 /target/
-/bin/
+/images/
+/log/
+ebla_log*
