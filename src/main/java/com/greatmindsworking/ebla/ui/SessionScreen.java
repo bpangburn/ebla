@@ -320,17 +320,20 @@ public class SessionScreen extends JInternalFrame {
 				String desc = txtDescription.getText();
 
 				boolean boolLogToFile = false;
-				if (cmbLogToFileCode.getSelectedMapping() == 1) {
+				//if (cmbLogToFileCode.getSelectedMapping() == 1) {
+				if (cmbLogToFileCode.getSelectedEnum() == YesNo.YES) {
 					boolLogToFile = true;
 				}
 
 				boolean boolRandomizeExp = false;
-				if (cmbRandomizeExpCode.getSelectedMapping() == 1) {
+				//if (cmbRandomizeExpCode.getSelectedMapping() == 1) {
+				if (cmbRandomizeExpCode.getSelectedEnum() == YesNo.YES) {
 					boolRandomizeExp = true;
 				}
 
 				boolean boolRegenerateImages = false;
-				if (cmbRegenerateImages.getSelectedMapping() == 1) {
+				//if (cmbRegenerateImages.getSelectedMapping() == 1) {
+				if (cmbRegenerateImages.getSelectedEnum() == YesNo.YES) {
 					boolRegenerateImages = true;
 				}
 
@@ -341,7 +344,8 @@ public class SessionScreen extends JInternalFrame {
 				boolean boolDisplayVideos = true;
 
 				boolean boolDisplayMessages = false;
-				if (cmbDisplayMessages.getSelectedMapping() == 1) {
+				//if (cmbDisplayMessages.getSelectedMapping() == 1) {
+				if (cmbDisplayMessages.getSelectedEnum() == YesNo.YES) {
 					boolDisplayMessages = true;
 				}
 
@@ -368,7 +372,8 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolFixedSD = false;
-				if (cmbFixedSDCode.getSelectedMapping() == 1) {
+				//if (cmbFixedSDCode.getSelectedMapping() == 1) {
+				if (cmbFixedSDCode.getSelectedEnum() == YesNo.YES) {
 					boolFixedSD = true;
 				}
 
@@ -380,7 +385,8 @@ public class SessionScreen extends JInternalFrame {
 				}
 
 				boolean boolCaseSensitive = false;
-				if (cmbCaseSensitiveCode.getSelectedMapping() == 1) {
+				//if (cmbCaseSensitiveCode.getSelectedMapping() == 1) {
+				if (cmbCaseSensitiveCode.getSelectedEnum() == YesNo.YES) {
 					boolCaseSensitive = true;
 				}
 
