@@ -24,8 +24,8 @@
 		<version.jmf>2.1.1e</version.jmf>
 		<version.jedison>1.1.0-SNAPSHOT</version.jedison>
 		<version.h2>1.4.200</version.h2>
-		<version.swingset>4.0.0-SNAPSHOT</version.swingset>
-		<version.log4j>2.14.0</version.log4j>
+		<version.swingset>4.0.6</version.swingset>
+		<version.log4j>2.15.0</version.log4j>
 
 		<version.maven-enforcer-plugin>3.0.0-M3</version.maven-enforcer-plugin>
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
