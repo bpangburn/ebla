@@ -23,7 +23,8 @@
 
 		<version.jmf>2.1.1e</version.jmf>
 		<version.jedison>1.1.0-SNAPSHOT</version.jedison>
-		<version.h2>1.4.200</version.h2>
+		<!-- <version.h2>1.4.200</version.h2> -->
+		<version.h2>2.0.204</version.h2>
 		<version.swingset>4.0.7</version.swingset>
 		<version.log4j>2.17.0</version.log4j>
 

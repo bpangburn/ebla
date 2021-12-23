@@ -12,7 +12,8 @@ Version 1.x - Released TBD
 
 2. 2021-12-21: Updated to Log4j 2.17.0; Updated to SwingSet 4.0.7.
 
-3. ...
+3. 2021-12-23: Updated to H2 2.0.204 and modified millisecond evaluation in SQL
+   (EBLA.java around line 466)
 
 
 ==============================================================================

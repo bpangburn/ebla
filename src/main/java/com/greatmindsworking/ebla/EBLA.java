@@ -132,7 +132,7 @@ public class EBLA extends Thread {
 	 * maximum time (in milliseconds) allowed for a client to perform
 	 * the vision processing for a given experience (try 10 minutes)
 	 */
-	private final static int maxCalcMS = 1000 * 60 * 10;
+	private final static long maxCalcMS = 1000 * 60 * 10;
 
 	/**
 	 * EBLA status screen where intermediate images should be displayed as they are processed
@@ -463,8 +463,10 @@ public class EBLA extends Thread {
 						sql = "SELECT * FROM experience_data"
 							+ " WHERE experience_id IN (SELECT experience_id FROM parameter_experience_data"
 							+ "		WHERE parameter_id=" + sd.getParameterID()
-// check next line...
-							+ " 	AND (calc_status_code=0 OR (calc_status_code=1 AND (now()-calc_timestamp)>" + maxCalcMS + ")) LIMIT 1);";
+							// H2 2.0.202+ struggled data types in existing millisecond comparison:
+							// ---org.h2.jdbc.JdbcSQLSyntaxErrorException: Values of types "INTERVAL DAY(18) TO SECOND(9)" and "INTEGER" are not comparable
+							//+ " 	AND (calc_status_code=0 OR (calc_status_code=1 AND (now()-calc_timestamp)>" + maxCalcMS + ")) LIMIT 1);";
+							+ " 	AND (calc_status_code=0 OR (calc_status_code=1 AND datediff('ms',calc_timestamp, now())>" + maxCalcMS + ")) LIMIT 1);";
 
 					// EXECUTE QUERY
 						experienceRS = dbc.getStatement().executeQuery(sql);
