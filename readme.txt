@@ -68,14 +68,17 @@ verbs using a grounded computer vision system.
 EBLA was developed as part of Brian E. Pangburn's dissertation research
 in the Department of Computer Science at Louisiana State University.
 
-The full dissertation along with other information on EBLA is available from
-http://www.greatmindsworking.com
+A brief workshop paper on EBLA is available from:
+https://aclanthology.org/W03-0607.pdf
+
+The full dissertation is available from:
+https://digitalcommons.lsu.edu/gradschool_dissertations/2162/
 
 Much of the vision system is based on a partial Java port of the EDISON
 image processing system developed by Chris M. Christoudias and Bogdan
 Georgescu at the Robust Image Understanding Laboratory at Rutgers University
-(http://coewww.rutgers.edu/riul/).  See the "seg_readme.txt" file for
-more information.
+(https://web.archive.org/web/20100814112001/http://coewww.rutgers.edu/riul/research/code/EDISON/index.html).
+See the "seg_readme.txt" file for more information.
 
 The graphical user interface (GUI) for EBLA was developed in part by
 Prasanth R. Pasala.
