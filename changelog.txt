@@ -11,12 +11,28 @@ Version 1.x - Released TBD
 1. 2018-02-09: Migrated EBLA SourceForge Repository from CVS to git.
 2. 2021-01-26: Maven conversion/support.
 3. 2021-12-19: Updated Log4j to 2.17.0.
-4. 2021-12-21: Updated SwingSet to 4.0.7.
-5. 2021-12-23: Updated H2 to 2.0.204 and modified millisecond evaluation in SQL
+4. 2021-12-29: Updated Log4j to 2.17.1.
+5. 2021-12-21: Updated SwingSet to 4.0.7.
+6. 2021-12-23: Updated H2 to 2.0.204 and modified millisecond evaluation in SQL
    (EBLA.java around line 466)
-6. 2021-12-29: Updated Log4j to 2.17.1.
 7. 2022-01-25: Updated H2 to 2.1.210.
-
+8. 2023-12-08: Updated H2 to 2.2.224
+9. 2023-12-08: Updated Log4j to 2.22.0
+10.2023-12-08: Updated SwingSet to 4.0.11
+11.2023-12-08: Updated maven-enforcer-plugin to 3.4.1
+12.2023-12-08: Updated maven-compiler-plugin to 3.11.0
+13.2023-12-08: Updated dependency-check-maven to 9.0.3
+14.2023-12-08: Updated maven-source-plugin to 3.3.0
+15.2023-12-08: Updated maven-javadoc-plugin to 3.6.3
+16.2023-12-08: Updated maven-assembly-plugin to 3.6.0
+17.2023-12-08: Updated maven-gpg-plugin to 3.1.0
+18.2023-12-08: Added maven-clean-plugin version 3.3.2
+19.2023-12-08: Added maven-deploy-plugin version 3.1.1
+20.2023-12-08: Added maven-install-plugin version 3.1.1
+21.2023-12-08: Added maven-jar-plugin version 3.3.0
+22.2023-12-08: Added maven-resources-plugin version 3.3.1
+23.2023-12-08: Added maven-site-plugin version 4.0.0-M12
+24.2023-12-08: Added maven-surefire-plugin version 3.2.2
 
 ==============================================================================
 Version 1.0 - Released 2014-12-26

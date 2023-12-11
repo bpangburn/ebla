@@ -19,22 +19,29 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<version.maven>3.6.3</version.maven>
-		<version.java>1.8</version.java>
+		<version.java>8</version.java>
 
 		<version.jmf>2.1.1e</version.jmf>
 		<version.jedison>1.1.0-SNAPSHOT</version.jedison>
 		<!-- <version.h2>1.4.200</version.h2> -->
-		<version.h2>2.1.210</version.h2>
-		<version.swingset>4.0.7</version.swingset>
-		<version.log4j>2.17.1</version.log4j>
+		<version.h2>2.2.224</version.h2>
+		<version.swingset>4.0.11</version.swingset>
+		<version.log4j>2.22.0</version.log4j>
 
-		<version.maven-enforcer-plugin>3.0.0-M3</version.maven-enforcer-plugin>
-		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
-		<version.dependency-check-maven>5.3.2</version.dependency-check-maven>
-		<version.maven-source-plugin>3.2.1</version.maven-source-plugin>
-		<version.maven-javadoc-plugin>3.2.0</version.maven-javadoc-plugin>
-		<version.maven-assembly-plugin>3.3.0</version.maven-assembly-plugin>
-		<version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
+		<version.maven-enforcer-plugin>3.4.1</version.maven-enforcer-plugin>
+		<version.maven-clean-plugin>3.3.2</version.maven-clean-plugin>
+		<version.maven-deploy-plugin>3.1.1</version.maven-deploy-plugin>
+		<version.maven-install-plugin>3.1.1</version.maven-install-plugin>
+		<version.maven-jar-plugin>3.3.0</version.maven-jar-plugin>
+		<version.maven-resources-plugin>3.3.1</version.maven-resources-plugin>
+		<version.maven-site-plugin>4.0.0-M12</version.maven-site-plugin>
+		<version.maven-surefire-plugin>3.2.2</version.maven-surefire-plugin>
+		<version.maven-compiler-plugin>3.11.0</version.maven-compiler-plugin>
+		<version.dependency-check-maven>9.0.4</version.dependency-check-maven>
+		<version.maven-source-plugin>3.3.0</version.maven-source-plugin>
+		<version.maven-javadoc-plugin>3.6.3</version.maven-javadoc-plugin>
+		<version.maven-assembly-plugin>3.6.0</version.maven-assembly-plugin>
+		<version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
 	</properties>
 
 	<licenses>
@@ -127,18 +134,17 @@
 						</goals>
 						<configuration>
 							<rules>
-								<bannedPlugins>
-									<!-- will only display a warning but does not fail the build. -->
-									<level>WARN</level>
-									<excludes>
-										<exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
-									</excludes>
-									<message>Please consider using the maven-invoker-plugin
-										(http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
-								</bannedPlugins>
+								<requirePluginVersions>
+									<message>Best Practice is to always define plugin versions!</message>
+									<banLatest>true</banLatest>
+									<banRelease>true</banRelease>
+									<banSnapshots>true</banSnapshots>
+								</requirePluginVersions>
+
 								<requireMavenVersion>
 									<version>${version.maven}</version>
 								</requireMavenVersion>
+
 								<requireJavaVersion>
 									<version>${version.java}</version>
 								</requireJavaVersion>
@@ -147,15 +153,48 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${version.maven-clean-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${version.maven-deploy-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>${version.maven-install-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${version.maven-jar-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${version.maven-resources-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>${version.maven-site-plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${version.maven-surefire-plugin}</version>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${version.maven-compiler-plugin}</version>
 
 				<configuration>
-					<source>${version.java}</source>
-					<target>${version.java}</target>
+					<release>${version.java}</release>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -209,8 +248,7 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>${version.maven-javadoc-plugin}</version>
 						<configuration>
-							<source>${version.java}</source>
-							<target>${version.java}</target>
+							<release>${version.java}</release>
 							<additionalJOption>-Xdoclint:none</additionalJOption>
 							<failOnError>false</failOnError>
 						</configuration>

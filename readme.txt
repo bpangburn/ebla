@@ -9,7 +9,7 @@ $Id$
 LICENSE
 ==============================================================================
 
-Copyright (c) 2002-2018, Brian E. Pangburn
+Copyright (c) 2002-2023, Brian E. Pangburn
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ Prasanth R. Pasala.
 CODE EXECUTION, DOCUMENTATION, & COMPILATION
 ==============================================================================
 
-This code has been tested using the Java SE 7
+This code has been tested using the Java SE 8
 
 This release of EBLA is being distributed as a single JAR file
 (EBLA_1.0.jar) containing the source, binaries, and JavaDoc
