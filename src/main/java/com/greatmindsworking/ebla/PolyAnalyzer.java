@@ -129,8 +129,10 @@ public class PolyAnalyzer {
 						triArea =  doubleTriArea(a, b, c);
 
 					// UPDATE CENTROID AND AREA TOTALS
-						centroid.x += triArea * triCentroid.x;
-						centroid.y += triArea * triCentroid.y;
+					// 2023-12-15: casting multiplication result to int to avoid implicit narrowing conversion
+					//	code scanning alert from GitHub
+						centroid.x += (int)(triArea * triCentroid.x);
+						centroid.y += (int)(triArea * triCentroid.y);
 						totalArea += triArea;
 				}
 
