@@ -2,10 +2,8 @@
 ChangeLog file for the Experience-Based Language Acquisition (EBLA) system.
 ==============================================================================
 
-$Id$
-
 ==============================================================================
-Version 1.x - Released TBD
+Version 1.1.0 - Released TBD
 ==============================================================================
 
 1. 2018-02-09: Migrated EBLA SourceForge Repository from CVS to git.
@@ -33,6 +31,7 @@ Version 1.x - Released TBD
 22.2023-12-08: Added maven-resources-plugin version 3.3.1
 23.2023-12-08: Added maven-site-plugin version 4.0.0-M12
 24.2023-12-15: Added maven-surefire-plugin version 3.2.3
+25.2023-12-15: Updated jEDISON to 1.1.0
 
 ==============================================================================
 Version 1.0 - Released 2014-12-26
