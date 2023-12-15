@@ -22,7 +22,7 @@
 		<version.java>8</version.java>
 
 		<version.jmf>2.1.1e</version.jmf>
-		<version.jedison>1.1.0-SNAPSHOT</version.jedison>
+		<version.jedison>1.1.0</version.jedison>
 		<!-- <version.h2>1.4.200</version.h2> -->
 		<version.h2>2.2.224</version.h2>
 		<version.swingset>4.0.11</version.swingset>
