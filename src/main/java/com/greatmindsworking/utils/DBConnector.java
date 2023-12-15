@@ -265,7 +265,7 @@ public class DBConnector {
 	}	
 
 	/**
-	 * Returns a statement for running queries, deletes, & updates against the database
+	 * Returns a statement for running queries, deletes, and updates against the database
 	 *
 	 * @return a new statement for the database connection
 	 */

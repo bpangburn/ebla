@@ -54,7 +54,7 @@ import com.greatmindsworking.utils.DBConnector;
  *<p>
  *<pre>
  * TO-DO:
- *  1. consider adding attributes for R, G, & B color components
+ *  1. consider adding attributes for R, G, and B color components
  *  2. finish code for dynamic loading of attribute calculations using
  *     forName()
  *  3. restructure attInclusion[] array in extractEntities() method
@@ -118,7 +118,7 @@ public class EntityExtractor {
 	 * @param _dbc			connection to EBLA database
 	 * @param _sd			calculation session options
 	 * @param _pd			vision system parameters
-	 * @param _minSD		minimum standard deviation (<1)
+	 * @param _minSD		minimum standard deviation (less than 1)
 	 */
     public EntityExtractor(long _expID, long _paramExpID, long _runID,
     	DBConnector _dbc, SessionData _sd, ParameterData _pd, double _minSD) {
@@ -156,7 +156,7 @@ public class EntityExtractor {
 
 
 	/**
-	 * Extracts the object & relation entities from frame_analysis_data
+	 * Extracts the object and relation entities from frame_analysis_data
 	 */
 	public void  extractEntities() {
 

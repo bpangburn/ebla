@@ -52,6 +52,7 @@ import java.io.*;
  * Resolves lexemes describing an experience to the entities in that experience.
  *<p>
  *<pre>
+ *{@literal
  * 1. Loop through all lexemes and determine if they already exist in lexeme_data
  *		a. if there is an existing record, bump its occurance_count
  *		b. if there is not an existing record, add one with occurance_count = 1
@@ -77,7 +78,7 @@ import java.io.*;
  * 		e. set resolution_code in experience_entity_data to 1
  *    This is essentially the model merging logic and will be added later.
  *
- * 4. After #1, #2, & #3, if there is only one unmapped word and entity for
+ * 4. After #1, #2, and #3, if there is only one unmapped word and entity for
  *    the current experience, declare a "match" and:
  *		a. add the lexeme-entity mapping to entity_lexeme_data with
  *         occurance_count = 1
@@ -87,10 +88,10 @@ import java.io.*;
  *		e. search for single unmatched pairs created by the new resolution
  *
  * 5. Attempt to resolve any remaining unmatched lexemes by comparing to prior
- *    experiences & using process of elimination (cross-situitational learning):
+ *    experiences and using process of elimination (cross-situitational learning):
  *		a. dealing only with unresolved entities/lexemes from this point forward
  *		b. need to examine set intersection and difference between all pairs of
- *         experiences (current & prior) with unresolved entities/lexemes
+ *         experiences (current and prior) with unresolved entities/lexemes
  *
  *		   e.g. examine all: 	EXP_A INT EXP_B
  *								EXP_A DIF EXP_B
@@ -107,36 +108,37 @@ import java.io.*;
  *         occurance_count = 1
  * 		d. set resolution_code in experience_lexeme_data to 1
  * 		e. set resolution_code in experience_entity_data to 1
- *		f. search for other instaces of that resolution
+ *		f. search for other instances of that resolution
  *		g. search for single unmatched pairs created by the new resolution
  *
  *	  This technique will solve "C" for cases such as:
  *
- *                           exp_id          entity
- *                           ======          ======
- *				1		A
- *				1		B
- *				1		C
- *				1		D
- *				1		E
+ *			exp_id		entity
+ *			======		======
+ *				1			A
+ *				1			B
+ *				1			C
+ *				1			D
+ *				1			E
  *
- *				2		D
- *				2		E
- *				2		F
- *				2		G
+ *				2			D
+ *				2			E
+ *				2			F
+ *				2			G
  *
- *				3		A
- *				3		F
- *				3		H
+ *				3			A
+ *				3			F
+ *				3			H
  *
- *				4		B
- *				4		G
- *				4		I
+ *				4			B
+ *				4			G
+ *				4			I
  *
  *	 Processing experiences sequentially...
  *		#3-1 solves A, #3-2 solves F, #3-3 solves H
  *		#4-1 solves B, #4-2 solves G, #4-4 solves I
  *		#1-2 solves C
+ *}
  *</pre>
  *<p>
  * @author	$Author$

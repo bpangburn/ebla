@@ -334,7 +334,7 @@ public class StatusScreen extends JInternalFrame {
 
 
 	/**
-	 * from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+	 * @see http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
 	 */
 	public static BufferedImage scaleToSize(int nMaxWidth, int nMaxHeight, BufferedImage imgSrc) {
 		int nHeight = imgSrc.getHeight();
@@ -348,7 +348,7 @@ public class StatusScreen extends JInternalFrame {
 
 
 	/**
-	 * from http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
+	 * @see http://forum.java.sun.com/thread.jsp?forum=20&thread=260711&message=982907
 	 */
 	public static BufferedImage scale(double scale, BufferedImage srcImg) {
 		if (scale == 1 ) {
