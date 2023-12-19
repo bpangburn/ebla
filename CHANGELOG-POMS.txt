@@ -15,24 +15,25 @@ EBLA 1.1.0 - TBD
 2. java .............................1.8 -> 8 (using <release> rather than <source> and <target>
 
 (EBLA dependencies)
-1. jmf ..............................2.1.1e
-2. jEDISON ..........................1.1.0
-3. h2 ...............................2.2.224
-4. swingset .........................4.0.11
-5. log4j ............................2.22.0
+1. jmf ..............................2.1.1e -> X
+2. jEDISON ..........................1.1.0 -> X
+3. h2 ...............................2.2.224 -> X
+4. swingset .........................4.0.12 -> X
+5. log4j ............................2.22.0 -> X
 
 (EBLA plugins)
-1. maven-enforcer-plugin ............3.4.1
-2. maven-clean-plugin ...............3.3.2
-3. maven-deploy-plugin ..............3.1.1
-4. maven-install-plugin .............3.1.1
-5. maven-jar-plugin .................3.3.0
-6. maven-resources-plugin ...........3.3.1
-7. maven-site-plugin ................4.0.0-M12
-8. maven-surefire-plugin ............3.2.3
-9. maven-compiler-plugin ............3.11.0
-10.dependency-check-maven ...........9.0.6
-11.maven-source-plugin ..............3.3.0
-12.maven-javadoc-plugin .............3.6.3
-13.maven-assembly-plugin ............3.6.0
-14.maven-gpg-plugin .................3.1.0
+1. maven-enforcer-plugin ............3.4.1 -> X
+2. maven-clean-plugin ...............3.3.2 -> X
+3. maven-deploy-plugin ..............3.1.1 -> X
+4. maven-install-plugin .............3.1.1 -> X
+5. maven-jar-plugin .................3.3.0 -> X
+6. maven-resources-plugin ...........3.3.1 -> X
+7. maven-site-plugin ................4.0.0-M12 -> X
+8. maven-surefire-plugin ............3.2.3 -> X
+9. maven-compiler-plugin ............3.11.0 -> X
+10.dependency-check-maven ...........9.0.6 -> 9.0.7
+11.maven-source-plugin ..............3.3.0 -> X
+12.maven-javadoc-plugin .............3.6.3 -> X
+13.maven-assembly-plugin ............3.6.0 -> X
+14.maven-gpg-plugin .................3.1.0 -> X
+
