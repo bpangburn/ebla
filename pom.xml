@@ -25,7 +25,7 @@
 		<version.jedison>1.1.0</version.jedison>
 		<!-- <version.h2>1.4.200</version.h2> -->
 		<version.h2>2.2.224</version.h2>
-		<version.swingset>4.0.11</version.swingset>
+		<version.swingset>4.0.12</version.swingset>
 		<version.log4j>2.22.0</version.log4j>
 
 		<version.maven-enforcer-plugin>3.4.1</version.maven-enforcer-plugin>
@@ -37,7 +37,7 @@
 		<version.maven-site-plugin>4.0.0-M12</version.maven-site-plugin>
 		<version.maven-surefire-plugin>3.2.3</version.maven-surefire-plugin>
 		<version.maven-compiler-plugin>3.11.0</version.maven-compiler-plugin>
-		<version.dependency-check-maven>9.0.6</version.dependency-check-maven>
+		<version.dependency-check-maven>9.0.7</version.dependency-check-maven>
 		<version.maven-source-plugin>3.3.0</version.maven-source-plugin>
 		<version.maven-javadoc-plugin>3.6.3</version.maven-javadoc-plugin>
 		<version.maven-assembly-plugin>3.6.0</version.maven-assembly-plugin>
