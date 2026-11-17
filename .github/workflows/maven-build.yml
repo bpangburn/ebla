@@ -1,0 +1,41 @@
+name: Maven Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maven-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build with JDK ${{ matrix.java-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: ['11', '21', '25']
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java-version }}
+          cache: maven
+
+      # EBLA's POM targets Java 8, but its existing H2/JMF/legacy dependency
+      # mix may impose a newer build/runtime JVM. Validate that separately.
+      - name: Compile and verify Maven project
+        run: mvn -B -ntp clean verify
