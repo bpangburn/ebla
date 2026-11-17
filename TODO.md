@@ -1,9 +1,11 @@
 # EBLA final-pass TODO
 
 ## Build and compatibility
-- [ ] Run and review the initial Maven and CodeQL workflows proposed in
-      the CI PR. Fix any missing Maven artifacts, plugin incompatibilities,
-      or Java compiler issues they expose.
+- [ ] Review the new Maven CI matrix (JDK 11/21/25) and GitHub's
+      existing **CodeQL default setup** scans. Do not add an advanced
+      CodeQL workflow without first disabling GitHub's default setup.
+- [ ] Fix any Maven artifact, plugin, or Java compiler issues that CI
+      reveals.
 - [ ] Add automated tests for deterministic image segmentation/entity
       extraction/lexical resolution without depending on a graphical desktop.
 - [ ] Test the H2 2.2.224 schema migration/runtime behavior against sample
