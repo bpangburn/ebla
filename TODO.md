@@ -1,0 +1,40 @@
+# EBLA final-pass TODO
+
+## Build and compatibility
+- [ ] Review the new Maven CI matrix (JDK 11/21/25) and GitHub's
+      existing **CodeQL default setup** scans. Do not add an advanced
+      CodeQL workflow without first disabling GitHub's default setup.
+- [ ] Fix any Maven artifact, plugin, or Java compiler issues that CI
+      reveals.
+- [ ] Add automated tests for deterministic image segmentation/entity
+      extraction/lexical resolution without depending on a graphical desktop.
+- [ ] Test the H2 2.2.224 schema migration/runtime behavior against sample
+      datasets and EBLA's existing SQL files. Avoid a blind H2 update.
+- [ ] Verify the actual **Java runtime** baseline, especially H2, JMF and
+      legacy Swing dependencies. The POM's Java 8 release target alone
+      does not establish Java 8 runtime compatibility.
+- [ ] Audit video/AVI decoding with JMF 2.1.1e, native libraries, and
+      GUI/headless behavior under supported Linux/Windows JDKs.
+- [ ] Confirm compatibility with published
+      `com.greatmindsworking.jedison:jedison:1.1.0` and SwingSet 4.0.12
+      before upgrading across major lines.
+
+## Release process and repository hygiene
+- [ ] Replace legacy Sonatype OSSRH endpoints and the release
+      distribution process with a tested Central Portal publishing setup.
+      OSSRH reached end of life in June 2025. Avoid unattended publication
+      until credentials, artifacts and license metadata are reviewed.
+- [ ] Retain `archive/` research artifacts and `experiences/` samples
+      intentionally; do not delete these as generated build products.
+- [ ] Reconcile the historical README/manual and current Maven installation
+      flow after a reproducible runtime test.
+- [ ] Review the sample `dbSettings` file before public distribution.
+      It currently contains a local H2 URL and the default user name,
+      rather than an embedded secret, but deployment-specific credentials
+      should never be committed.
+- [ ] Assess whether CodeQL and dependency update checks should be required
+      before merging once their runs are stable.
+
+The existing `.github/SECURITY.md` already documents the supported
+`1.1.x` line on `master`; keep it rather than replacing it with a
+generic template.
