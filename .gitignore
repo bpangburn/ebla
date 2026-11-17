@@ -4,3 +4,11 @@
 ebla_log*
 session*.ssv
 /ebla_experiences.jar
+
+# IDE and generated outputs
+bin/
+.classpath
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.m2e.core.prefs
+hs_err_pid*
