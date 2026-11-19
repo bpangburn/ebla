@@ -42,6 +42,7 @@
 		<version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
 		<version.maven-assembly-plugin>3.8.0</version.maven-assembly-plugin>
 		<version.maven-gpg-plugin>3.2.8</version.maven-gpg-plugin>
+		<version.central-publishing-maven-plugin>0.12.0</version.central-publishing-maven-plugin>
 	</properties>
 
 	<licenses>
@@ -60,20 +61,9 @@
 	
 	<scm>
 		<connection>scm:git:git@github.com:bpangburn/ebla.git</connection>
-		<url>scm:git:git@github.com:bpangburn/ebla.git</url>
+		<url>https://github.com/bpangburn/ebla</url>
 		<developerConnection>scm:git:git@github.com:bpangburn/ebla.git</developerConnection>
 	</scm>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/javax.media/jmf -->
@@ -232,6 +222,11 @@
 
 		<profile>
 			<id>release</id>
+			<properties>
+				<!-- A release bundle may be generated locally without contacting Central. -->
+				<!-- An explicit override is required to upload. -->
+				<central.skipUpload>true</central.skipUpload>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -309,12 +304,22 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
-								<configuration>
-									<keyname>${gmw.gpg.keyname}</keyname>
-									<passphraseServerId>${gmw.gpg.keyname}</passphraseServerId>
-								</configuration>
+
 							</execution>
 						</executions>
+					</plugin>
+					<!-- Upload to the Sonatype Central Publisher Portal only if explicitly enabled. -->
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${version.central-publishing-maven-plugin}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<autoPublish>false</autoPublish>
+							<skipUpload>${central.skipUpload}</skipUpload>
+							<waitUntil>validated</waitUntil>
+						</configuration>
 					</plugin>
 
 				</plugins>
