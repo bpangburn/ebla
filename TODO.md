@@ -6,9 +6,11 @@
       CodeQL workflow without first disabling GitHub's default setup.
 - [ ] Fix any Maven artifact, plugin, or Java compiler issues that CI
       reveals.
+- [x] Add minimal headless JUnit smoke tests for statistics and score ordering.
+      These do not exercise the image/video pipeline.
 - [ ] Add automated tests for deterministic image segmentation/entity
       extraction/lexical resolution without depending on a graphical desktop.
-- [ ] Test the H2 2.2.224 schema migration/runtime behavior against sample
+- [ ] Test the H2 2.5.252 schema migration/runtime behavior against sample
       datasets and EBLA's existing SQL files. Avoid a blind H2 update.
 - [ ] Verify the actual **Java runtime** baseline, especially H2, JMF and
       legacy Swing dependencies. The POM's Java 8 release target alone
@@ -16,7 +18,7 @@
 - [ ] Audit video/AVI decoding with JMF 2.1.1e, native libraries, and
       GUI/headless behavior under supported Linux/Windows JDKs.
 - [ ] Confirm compatibility with published
-      `com.greatmindsworking.jedison:jedison:1.1.0` and SwingSet 4.0.12
+      `com.greatmindsworking.jedison:jedison:1.1.0` and SwingSet 4.0.13
       before upgrading across major lines.
 
 ## Release process and repository hygiene
