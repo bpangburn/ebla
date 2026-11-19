@@ -188,9 +188,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${version.maven-compiler-plugin}</version>
-
 				<configuration>
-					<release>${version.java}</release>
+				    <release>${version.java}</release>
+				    <compilerArgs>
+				        <arg>-Xlint:-options</arg>
+				    </compilerArgs>
 				</configuration>
 			</plugin>
 		</plugins>
