@@ -4,7 +4,8 @@ This README preserves the original EBLA research-era documentation and
 distribution instructions. For the current Maven checkout, use
 [BUILDING.md](BUILDING.md), [IDE_SETUP.md](IDE_SETUP.md), and
 [TODO.md](TODO.md). Private vulnerability reports are covered by
-[the security policy](.github/SECURITY.md).
+[the security policy](.github/SECURITY.md). The BSD 3-Clause license is
+also provided in [LICENSE](LICENSE).
 
 ---
 
