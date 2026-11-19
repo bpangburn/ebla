@@ -15,7 +15,7 @@ mvn -B -ntp clean verify
 ```
 
 The POM currently specifies Java 8 as the `release` target and has
-dependencies on jEDISON 1.1.0, SwingSet 4.0.12, JMF 2.1.1e, H2 2.2.224,
+dependencies on jEDISON 1.1.0, SwingSet 4.0.13, JMF 2.1.1e, H2 2.5.252,
 and Log4j 2.26.1. The proposed GitHub Actions CI matrix initially checks
 compilation on JDK 11/21/25. **Java 8 bytecode output does not prove all
 dependencies or GUI/video functionality run on Java 8.**
