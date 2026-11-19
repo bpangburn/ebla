@@ -22,10 +22,13 @@
       before upgrading across major lines.
 
 ## Release process and repository hygiene
-- [ ] Replace legacy Sonatype OSSRH endpoints and the release
-      distribution process with a tested Central Portal publishing setup.
-      OSSRH reached end of life in June 2025. Avoid unattended publication
-      until credentials, artifacts and license metadata are reviewed.
+- [x] Replace retired Sonatype OSSRH endpoints with an opt-in Central
+      Publisher Portal release profile. Bundle generation is upload-disabled
+      by default; publication remains manual.
+- [ ] Validate a signed Central Portal release bundle locally, inspect
+      the attached executable JAR and licensing, and test a Portal upload
+      using a new, unpublished version when a release is actually needed.
+      Do not store Portal credentials or GPG secrets in the repository.
 - [ ] Retain `archive/` research artifacts and `experiences/` samples
       intentionally; do not delete these as generated build products.
 - [ ] Reconcile the historical README/manual and current Maven installation
