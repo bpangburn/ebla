@@ -21,7 +21,9 @@ compilation on JDK 11/21/25. **Java 8 bytecode output does not prove all
 dependencies or GUI/video functionality run on Java 8.**
 
 Do not invoke `-Prelease` just for ordinary builds: that profile performs
-signing and legacy publishing-related packaging.
+GPG signing and executable-JAR packaging. It now uses Central Portal bundling,
+with uploads **disabled by default**. See [PUBLISHING.md](PUBLISHING.md)
+for local bundle generation and the deliberate release procedure.
 
 ## Running EBLA
 
