@@ -26,6 +26,7 @@
 		<!-- <version.h2>1.4.200</version.h2> -->
 		<version.h2>2.5.252</version.h2>
 		<version.swingset>4.0.13</version.swingset>
+		<version.jdbcrowsetimpl>1.0.4</version.jdbcrowsetimpl>
 		<version.log4j>2.26.1</version.log4j>
 
 		<version.maven-enforcer-plugin>3.7.0</version.maven-enforcer-plugin>
@@ -92,6 +93,13 @@
 			<groupId>com.nqadmin.swingset</groupId>
 			<artifactId>swingset</artifactId>
 			<version>${version.swingset}</version>
+		</dependency>
+
+		<!-- JdbcRowSetImpl used directly by EBLA UI classes -->
+		<dependency>
+			<groupId>com.nqadmin.rowset</groupId>
+			<artifactId>jdbcrowsetimpl</artifactId>
+			<version>${version.jdbcrowsetimpl}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
